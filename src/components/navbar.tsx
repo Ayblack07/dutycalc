@@ -1,62 +1,46 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import {
-  Calculator,
-  Search,
-  FileText,
-  BookOpen,
-  Phone,
-} from "lucide-react"; // icons
+import { Menu, X } from "lucide-react";
 
 export default function Navbar() {
-  const pathname = usePathname();
-
-  const links = [
-    { href: "/calculator", label: "Calculator", icon: Calculator },
-    { href: "/tariff", label: "Tariff Lookup", icon: Search },
-    { href: "/manifest", label: "Manifest Check", icon: FileText },
-    { href: "/learning-hub", label: "Learning Hub", icon: BookOpen },
-    { href: "/contact", label: "Contact", icon: Phone },
-  ];
+  const [open, setOpen] = useState(false);
 
   return (
-    <nav className="bg-gradient-to-r from-[#090A0B] to-[#0066E6] text-white shadow-lg">
-      <div className="container mx-auto flex justify-between items-center px-6 py-4">
+    <nav className="bg-[#0f172a] text-white px-4 py-3 shadow-md">
+      <div className="max-w-7xl mx-auto flex justify-between items-center">
         {/* Logo */}
-        <Link href="/" className="flex items-center space-x-2">
-          <span className="bg-[#F7D234] text-black px-2 py-1 rounded font-bold">
-            DutyCalc
-          </span>
+        <Link href="/" className="text-xl font-bold text-[#F7D234]">
+          DutyCalc
         </Link>
 
-        {/* Menu */}
-        <div className="flex space-x-6">
-          {links.map(({ href, label, icon: Icon }) => (
-            <Link
-              key={href}
-              href={href}
-              className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition ${
-                pathname === href
-                  ? "bg-[#0066E6] text-white"
-                  : "text-gray-200 hover:text-white hover:bg-[#1F2937]/50"
-              }`}
-            >
-              <Icon size={18} />
-              {label}
-            </Link>
-          ))}
+        {/* Desktop Menu */}
+        <div className="hidden md:flex space-x-6">
+          <Link href="/" className="hover:text-[#F7D234]">Home</Link>
+          <Link href="/manifest" className="hover:text-[#F7D234]">Manifest</Link>
+          <Link href="/tariff" className="hover:text-[#F7D234]">Tariff</Link>
+          <Link href="/contact" className="hover:text-[#F7D234]">Contact</Link>
         </div>
 
-        {/* CTA Button */}
-        <Link
-          href="/calculator"
-          className="bg-[#F7D234] hover:bg-[#F4D465] text-black px-4 py-2 rounded-lg font-semibold shadow-md"
+        {/* Mobile Hamburger */}
+        <button
+          className="md:hidden p-2"
+          onClick={() => setOpen(!open)}
         >
-          Get Started
-        </Link>
+          {open ? <X size={24} /> : <Menu size={24} />}
+        </button>
       </div>
+
+      {/* Mobile Dropdown */}
+      {open && (
+        <div className="md:hidden mt-2 space-y-2 bg-[#1e293b] p-4 rounded-lg">
+          <Link href="/" className="block hover:text-[#F7D234]">Home</Link>
+          <Link href="/manifest" className="block hover:text-[#F7D234]">Manifest</Link>
+          <Link href="/tariff" className="block hover:text-[#F7D234]">Tariff</Link>
+          <Link href="/contact" className="block hover:text-[#F7D234]">Contact</Link>
+        </div>
+      )}
     </nav>
   );
 }
