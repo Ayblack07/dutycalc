@@ -71,7 +71,7 @@ export default function Footer() {
       </div>
 
       <div className="mt-8 border-t border-gray-700 pt-6 text-center text-sm text-gray-400">
-        © {new Date().getFullYear()} DutyCalc Pro. Built for Nigerian customs
+        © {new Date().getFullYear()} DutyCalc. Built for Nigerian customs
         professionals.
       </div>
     </footer>
