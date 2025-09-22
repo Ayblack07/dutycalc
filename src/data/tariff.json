@@ -1,0 +1,58 @@
+[
+  {
+    "hsCode": "0101210000",
+    "description": "Live purebred breeding horses",
+    "dutyRate": 5,
+    "vat": 0,
+    "levy": 5,
+    "date": "2020-02-12"
+  },
+  {
+    "hsCode": "0101290000",
+    "description": "Other live horses",
+    "dutyRate": 10,
+    "vat": 0,
+    "levy": "",
+    "date": "2020-02-12"
+  },
+  {
+    "hsCode": "0102210000",
+    "description": "Live purebred breeding cattle",
+    "dutyRate": 5,
+    "vat": "",
+    "levy": "",
+    "date": "2020-02-12"
+  },
+  {
+    "hsCode": "0102290000",
+    "description": "Other live cattle",
+    "dutyRate": 10,
+    "vat": 5,
+    "levy": "",
+    "date": "2020-02-12"
+  },
+  {
+    "hsCode": "0102310000",
+    "description": "Live purebred breeding sheep",
+    "dutyRate": 5,
+    "vat": 0,
+    "levy": 5,
+    "date": "2020-02-12"
+  },
+  {
+    "hsCode": "0102390000",
+    "description": "Other live sheep",
+    "dutyRate": 10,
+    "vat": "",
+    "levy": "",
+    "date": "2020-02-12"
+  },
+  {
+    "hsCode": "0102900000",
+    "description": "Other live animals",
+    "dutyRate": 20,
+    "vat": 10,
+    "levy": "",
+    "date": "2020-02-12"
+  }
+]
