@@ -2,18 +2,17 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Calculator, Search, FileText, BookOpen, Phone } from "lucide-react";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const links = [
-    { href: "/", label: "Home" },
-    { href: "/calculator", label: "Calculator" },
-    { href: "/tariff", label: "Tariff" },
-    { href: "/manifest", label: "Manifest" },
-    { href: "/learning-hub", label: "Learning Hub" },
-    { href: "/contact", label: "Contact" },
+    { href: "/calculator", label: "Calculator", icon: Calculator },
+    { href: "/tariff", label: "Tariff Lookup", icon: Search },
+    { href: "/manifest", label: "Manifest Check", icon: FileText },
+    { href: "/learning-hub", label: "Learning Hub", icon: BookOpen },
+    { href: "/contact", label: "Contact", icon: Phone },
   ];
 
   return (
@@ -26,13 +25,14 @@ export default function Navbar() {
 
         {/* Desktop Menu */}
         <div className="hidden md:flex space-x-6">
-          {links.map(({ href, label }) => (
+          {links.map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
               href={href}
-              className="hover:text-[#F7D234] transition"
+              className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition 
+              text-gray-300 hover:text-white hover:bg-[#1F2937]"
             >
-              {label}
+              <Icon size={18} /> {label}
             </Link>
           ))}
         </div>
@@ -59,14 +59,15 @@ export default function Navbar() {
       {/* Mobile Dropdown */}
       {open && (
         <div className="md:hidden bg-[#1F2937] px-4 py-4 space-y-3">
-          {links.map(({ href, label }) => (
+          {links.map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
               href={href}
-              className="block text-gray-300 hover:text-[#F7D234] transition"
+              className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium 
+              text-gray-300 hover:text-white hover:bg-[#2c3446] transition"
               onClick={() => setOpen(false)}
             >
-              {label}
+              <Icon size={18} /> {label}
             </Link>
           ))}
 
