@@ -1,22 +1,25 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { JSX, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { FileDown, FileSpreadsheet } from "lucide-react";
+import { format } from "date-fns";
 
-// ✅ Type for Tariff Data
-export type TariffRow = {
+type TariffRow = {
   hsCode: string;
   description: string;
-  dutyRate: number;
-  vat?: number | null;
-  levy?: number | null;
-  date: string;
+  dutyRate?: number | null; // percent
+  vat?: number | null; // percent
+  levy?: number | null; // percent
+  date: string; // ISO date or displayable string
 };
 
-// ✅ Example Tariff Data (replace with real JSON later)
-const tariffData: TariffRow[] = [
+// ----------------------
+// Mock sample data (replace with your real data / API later)
+// ----------------------
+const SAMPLE_TARIFF: TariffRow[] = [
   {
     hsCode: "0101210000",
     description: "Live purebred breeding horses",
@@ -27,170 +30,184 @@ const tariffData: TariffRow[] = [
   },
   {
     hsCode: "0101290000",
-    description: "Other live horses",
+    description: "Other horses",
     dutyRate: 10,
     vat: null,
-    levy: null,
+    levy: 2,
     date: "2020-02-12",
   },
-  {
-    hsCode: "0101300000",
-    description: "Live asses",
-    dutyRate: 5,
-    vat: 0,
-    levy: null,
-    date: "2020-02-12",
-  },
+  // ... add more sample items as needed (this is just illustrative)
 ];
 
-// ✅ Pagination settings
-const ROWS_PER_PAGE = 10;
+// ----------------------
+// Tariff page component
+// ----------------------
+export default function TariffPage(): JSX.Element {
+  const [query, setQuery] = useState("");
+  const [page, setPage] = useState<number>(1);
+  const rowsPerPage = 10;
 
-export default function TariffPage() {
-  const [keyword, setKeyword] = useState("");
-  const [page, setPage] = useState(1);
-
-  // ✅ Filtering
+  // ----------------------
+  // Filtered list
+  // ----------------------
   const filtered = useMemo(() => {
-    const kw = keyword.toLowerCase();
-    return tariffData.filter(
-      (row) =>
-        row.hsCode.toLowerCase().includes(kw) ||
-        row.description.toLowerCase().includes(kw)
-    );
-  }, [keyword]);
+    const q = query.trim().toLowerCase();
+    if (!q) return SAMPLE_TARIFF;
+    return SAMPLE_TARIFF.filter((r) => {
+      return (
+        r.hsCode.toLowerCase().includes(q) ||
+        r.description.toLowerCase().includes(q)
+      );
+    });
+  }, [query]);
 
-  // ✅ Pagination
-  const totalPages = Math.ceil(filtered.length / ROWS_PER_PAGE);
-  const paginated = filtered.slice(
-    (page - 1) * ROWS_PER_PAGE,
-    page * ROWS_PER_PAGE
-  );
+  const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
+  const paginated = filtered.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
-  // ✅ Export PDF
-  const exportPDF = async () => {
-    const [{ jsPDF }] = await Promise.all([
-      import("jspdf"),
-      import("jspdf-autotable"),
-    ]);
+  const next = () => setPage((p) => Math.min(p + 1, totalPages));
+  const prev = () => setPage((p) => Math.max(1, p - 1));
+  const gotoFirst = () => setPage(1);
+  const gotoLast = () => setPage(totalPages);
+
+  // ----------------------
+  // PDF export (dynamic import)
+  // ----------------------
+  const exportPDF = async (): Promise<void> => {
+    // dynamic import + proper typing without 'any'
+    const jsPDFModule = (await import("jspdf")) as typeof import("jspdf");
+    // plugin
+    await import("jspdf-autotable");
+
+    // jsPDF type
+    type JsPDFType = import("jspdf").jsPDF;
+
+    // autoTable options type (minimal)
+    type AutoTableOptions = {
+      head?: (string | number)[][];
+      body?: (string | number)[][];
+      startY?: number;
+      styles?: { fontSize?: number };
+      headStyles?: Record<string, unknown>;
+      alternateRowStyles?: Record<string, unknown>;
+      [key: string]: unknown;
+    };
+
+    const { jsPDF } = jsPDFModule;
     const doc = new jsPDF();
 
-    const body = filtered.map((r) => [
+    doc.setFontSize(14);
+    doc.text("DutyCalc — Tariff Export", 14, 20);
+    doc.setFontSize(10);
+    doc.text(`Rows exported: ${filtered.length}`, 14, 28);
+
+    const tableBody: (string | number)[][] = filtered.map((r) => [
       r.hsCode,
       r.description,
-      r.dutyRate,
-      r.vat ?? "-",
-      r.levy ?? "-",
+      r.dutyRate !== null && r.dutyRate !== undefined ? `${r.dutyRate}%` : "",
+      r.vat !== null && r.vat !== undefined ? `${r.vat}%` : "",
+      r.levy !== null && r.levy !== undefined ? `${r.levy}%` : "",
       r.date,
     ]);
 
-    doc.autoTable({
-      head: [["HS Code", "Description", "Duty (%)", "VAT (%)", "Levy (%)", "Date"]],
-      body,
-      startY: 20,
-      styles: { fontSize: 10 },
-      headStyles: { fillColor: [6, 48, 100], textColor: 255 },
-      alternateRowStyles: { fillColor: [240, 240, 240] },
+    // call autoTable: safe typing by declaring docWithTable
+    const docWithTable = doc as JsPDFType & {
+      autoTable?: (opts: AutoTableOptions) => void;
+    };
+
+    docWithTable.autoTable?.({
+      startY: 36,
+      head: [["HS Code", "Description", "Duty", "VAT", "Levy", "Date"]],
+      body: tableBody,
+      theme: "grid",
+      styles: { fontSize: 9 },
+      headStyles: { fillColor: [6, 48, 100], textColor: [255, 255, 255] },
+      alternateRowStyles: { fillColor: [245, 245, 245] },
     });
 
-    doc.save("tariff-data.pdf");
+    doc.save(`tariff-export-${new Date().toISOString().slice(0, 10)}.pdf`);
   };
 
-  // ✅ Export Excel (CSV)
-  const exportExcel = () => {
-    const csvRows = [
-      ["HS Code", "Description", "Duty (%)", "VAT (%)", "Levy (%)", "Date"].join(","),
-      ...filtered.map((r) =>
-        [
-          r.hsCode,
-          `"${r.description}"`, // quote to handle commas
-          r.dutyRate,
-          r.vat ?? "-",
-          r.levy ?? "-",
-          r.date,
-        ].join(",")
-      ),
-    ].join("\n");
+  // ----------------------
+  // Excel/CSV export (dynamic)
+  // ----------------------
+  const exportExcel = async (): Promise<void> => {
+    // dynamic import and typed cast
+    const XLSX = (await import("xlsx")) as typeof import("xlsx");
 
-    const blob = new Blob([csvRows], { type: "text/csv" });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "tariff-data.csv";
-    a.click();
-    window.URL.revokeObjectURL(url);
+    const worksheet = XLSX.utils.json_to_sheet(
+      filtered.map((r) => ({
+        "HS Code": r.hsCode,
+        Description: r.description,
+        Duty: r.dutyRate ?? "",
+        VAT: r.vat ?? "",
+        Levy: r.levy ?? "",
+        Date: r.date,
+      }))
+    );
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Tariff");
+    XLSX.writeFile(workbook, `tariff-export-${new Date().toISOString().slice(0, 10)}.xlsx`);
   };
 
+  // ----------------------
+  // Render
+  // ----------------------
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-8">
-      {/* Header */}
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-white mb-2">
-          Nigerian Customs Tariff
-        </h1>
-        <p className="text-gray-300">
-          Browse HS codes, duty rates, VAT, and levy details
-        </p>
-      </div>
+    <div className="max-w-7xl mx-auto p-6 space-y-6">
+      <header className="text-center">
+        <h1 className="text-3xl font-bold text-white">Tariff Lookup</h1>
+        <p className="text-gray-400">Search HS codes, descriptions and download the tariff list.</p>
+      </header>
 
-      {/* Search */}
-      <div className="bg-gradient-to-br from-[#1e293b] to-[#0f172a] p-6 rounded-xl shadow-md border border-[#063064]">
-        <h2 className="text-lg font-semibold text-white mb-4">
-          Search Tariff
-        </h2>
-        <Input
-          value={keyword}
-          onChange={(e) => {
-            setKeyword(e.target.value);
-            setPage(1); // reset to first page when searching
-          }}
-          placeholder="Search by HS code or description"
-          className="bg-white text-black border border-[#063064]"
-        />
-      </div>
-
-      {/* Table Section */}
-      <div className="bg-[#0D0E10] p-6 rounded-xl border border-[#063064] text-white">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">Tariff Table</h2>
-          <div className="flex gap-3">
-            <Button onClick={exportPDF} className="bg-green-600 hover:bg-green-700">
-              <FileDown className="w-4 h-4 mr-2" /> PDF
-            </Button>
-            <Button
-              onClick={exportExcel}
-              className="bg-yellow-500 hover:bg-yellow-600 text-black"
-            >
-              <FileSpreadsheet className="w-4 h-4 mr-2" /> Excel
-            </Button>
-          </div>
+      {/* Controls */}
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <Label className="text-white">Search</Label>
+          <Input
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setPage(1);
+            }}
+            placeholder="Search HS code or description"
+            className="bg-white text-black"
+          />
         </div>
+
+        <div className="flex items-center gap-2">
+          <Button onClick={exportPDF} className="bg-green-600 hover:bg-green-700">
+            <FileDown className="w-4 h-4 mr-2" /> PDF
+          </Button>
+          <Button onClick={exportExcel} className="bg-yellow-400 hover:bg-yellow-500 text-black">
+            <FileSpreadsheet className="w-4 h-4 mr-2" /> Excel
+          </Button>
+        </div>
+      </div>
+
+      {/* Table */}
+      <div className="bg-[#0D0E10] p-4 rounded-lg border border-[#063064] text-white">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-[#063064] text-white">
-                <th className="p-2">HS Code</th>
-                <th className="p-2">Description</th>
-                <th className="p-2">Duty (%)</th>
-                <th className="p-2">VAT (%)</th>
-                <th className="p-2">Levy (%)</th>
-                <th className="p-2">Date</th>
+          <table className="w-full text-sm">
+            <thead className="bg-[#063064] text-white">
+              <tr>
+                <th className="py-2 px-3 text-left">HS Code</th>
+                <th className="py-2 px-3 text-left">Description</th>
+                <th className="py-2 px-3 text-left">Duty</th>
+                <th className="py-2 px-3 text-left">VAT</th>
+                <th className="py-2 px-3 text-left">Levy</th>
+                <th className="py-2 px-3 text-left">Date</th>
               </tr>
             </thead>
             <tbody>
-              {paginated.map((row, i) => (
-                <tr
-                  key={row.hsCode}
-                  className={`hover:bg-[#2c3446] ${
-                    i % 2 === 0 ? "bg-[#1a237e]/40" : "bg-[#004d40]/40"
-                  }`}
-                >
-                  <td className="p-2">{row.hsCode}</td>
-                  <td className="p-2">{row.description}</td>
-                  <td className="p-2">{row.dutyRate}%</td>
-                  <td className="p-2">{row.vat ?? "-"}</td>
-                  <td className="p-2">{row.levy ?? "-"}</td>
-                  <td className="p-2">{row.date}</td>
+              {paginated.map((row) => (
+                <tr key={row.hsCode} className="border-t border-gray-800 hover:bg-[#11131a]">
+                  <td className="py-2 px-3 align-top">{row.hsCode}</td>
+                  <td className="py-2 px-3">{row.description}</td>
+                  <td className="py-2 px-3">{row.dutyRate ?? ""}</td>
+                  <td className="py-2 px-3">{row.vat ?? ""}</td>
+                  <td className="py-2 px-3">{row.levy ?? ""}</td>
+                  <td className="py-2 px-3">{format(new Date(row.date), "yyyy-MM-dd")}</td>
                 </tr>
               ))}
             </tbody>
@@ -198,25 +215,17 @@ export default function TariffPage() {
         </div>
 
         {/* Pagination */}
-        <div className="flex justify-between items-center mt-4">
-          <span className="text-sm text-gray-400">
-            Page {page} of {totalPages || 1}
-          </span>
-          <div className="flex gap-2">
-            <Button
-              disabled={page === 1}
-              onClick={() => setPage((p) => p - 1)}
-              className="bg-[#063064] text-white disabled:opacity-50"
-            >
-              Prev
-            </Button>
-            <Button
-              disabled={page === totalPages || totalPages === 0}
-              onClick={() => setPage((p) => p + 1)}
-              className="bg-[#063064] text-white disabled:opacity-50"
-            >
-              Next
-            </Button>
+        <div className="flex items-center justify-between mt-3">
+          <div className="flex items-center gap-2">
+            <Button onClick={gotoFirst} disabled={page === 1} variant="outline">First</Button>
+            <Button onClick={prev} disabled={page === 1} variant="outline">Prev</Button>
+            <span className="text-sm text-gray-300 px-3">Page {page} / {totalPages}</span>
+            <Button onClick={next} disabled={page === totalPages} variant="outline">Next</Button>
+            <Button onClick={gotoLast} disabled={page === totalPages} variant="outline">Last</Button>
+          </div>
+
+          <div className="text-sm text-gray-400">
+            Showing {paginated.length} of {filtered.length} results
           </div>
         </div>
       </div>
