@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Theme Colors */
+:root {
+  --color-trade-navy: #090A0B;
+  --color-trade-blue: #0066E6;
+  --color-trade-gold: #F7D234;
+  --color-card-bg: #0D0E10;
+  --color-secondary-gray: #1F2937;
+  --color-text-silver: #9CA3AF;
+  --color-white: #FFFFFF;
+}
+
+/* Base body */
+body {
+  @apply bg-[var(--color-trade-navy)] text-[var(--color-white)] min-h-screen;
+  font-family: sans-serif;
+}
