@@ -22,12 +22,12 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="bg-gradient-to-r from-[#090A0B] via-[#0D0E10] to-[#1F2937] text-white shadow-lg">
+    <nav className="bg-gradient-to-r from-[#090A0B] to-[#0066E6] text-white shadow-lg">
       <div className="container mx-auto flex justify-between items-center px-6 py-4">
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2">
           <span className="bg-[#F7D234] text-black px-2 py-1 rounded font-bold">
-            DutyCalc Pro
+            DutyCalc
           </span>
         </Link>
 
@@ -40,7 +40,7 @@ export default function Navbar() {
               className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition ${
                 pathname === href
                   ? "bg-[#0066E6] text-white"
-                  : "text-gray-300 hover:text-white hover:bg-[#1F2937]"
+                  : "text-gray-200 hover:text-white hover:bg-[#1F2937]/50"
               }`}
             >
               <Icon size={18} />
@@ -52,7 +52,7 @@ export default function Navbar() {
         {/* CTA Button */}
         <Link
           href="/calculator"
-          className="bg-[#F7D234] hover:bg-[#F4D465] text-black px-4 py-2 rounded-lg font-semibold"
+          className="bg-[#F7D234] hover:bg-[#F4D465] text-black px-4 py-2 rounded-lg font-semibold shadow-md"
         >
           Get Started
         </Link>

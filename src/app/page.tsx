@@ -1,5 +1,7 @@
 // src/app/page.tsx
+"use client";
 import Link from "next/link";
+import { Calculator, Search, FileText, BookOpen} from "lucide-react";
 
 export default function HomePage() {
   return (
@@ -57,12 +59,12 @@ export default function HomePage() {
         The Nigeria Customs Service has updated its import duty rates in line
         with global market changes...
       </p>
-      <a
+      <Link
         href="/news"
         className="text-[#0066E6] font-medium mt-3 inline-block hover:underline"
       >
         Read More →
-      </a>
+      </Link>
     </div>
 
     <div className="bg-gradient-to-br from-[#0D0E10] to-[#1F2937] p-6 rounded-lg">
@@ -73,12 +75,12 @@ export default function HomePage() {
         Traders importing agricultural goods should take note of new HS codes
         that came into effect this month...
       </p>
-      <a 
-      href="/news"
+      <Link
+        href="/news"
         className="text-[#0066E6] font-medium mt-3 inline-block hover:underline"
       >
         Read More →
-      </a>
+      </Link>
     </div>
 
     <div className="bg-gradient-to-br from-[#0D0E10] to-[#1F2937] p-6 rounded-lg">
@@ -89,12 +91,12 @@ export default function HomePage() {
         The Nigeria Customs Service has announced that all duty payments must
         now be processed electronically...
       </p>
-      <a
+      <Link
         href="/news"
         className="text-[#0066E6] font-medium mt-3 inline-block hover:underline"
       >
         Read More →
-      </a>
+      </Link>
     </div>
   </div>
 </section>
@@ -112,7 +114,7 @@ export default function HomePage() {
     {/* Duty Calculator */}
     <div className="bg-gradient-to-br from-[#0D0E10] to-[#1F2937] p-6 rounded-xl shadow hover:scale-105 transition">
       <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-xl bg-[#0066E6]/20 text-[#0066E6] mx-auto">
-        <i className="fas fa-calculator text-2xl"></i>
+        <Calculator size={28} />
       </div>
       <h3 className="text-xl font-bold text-white mb-2 text-center">Duty Calculator</h3>
       <p className="text-gray-400 mb-4 text-center">
@@ -131,7 +133,7 @@ export default function HomePage() {
     {/* Tariff Lookup */}
     <div className="bg-gradient-to-br from-[#0D0E10] to-[#1F2937] p-6 rounded-xl shadow hover:scale-105 transition">
       <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-xl bg-[#F7D234]/20 text-[#F7D234] mx-auto">
-        <i className="fas fa-search text-2xl"></i>
+        <Search size={28} />
       </div>
       <h3 className="text-xl font-bold text-white mb-2 text-center">Tariff Lookup</h3>
       <p className="text-gray-400 mb-4 text-center">
@@ -150,7 +152,7 @@ export default function HomePage() {
     {/* Manifest Check */}
     <div className="bg-gradient-to-br from-[#0D0E10] to-[#1F2937] p-6 rounded-xl shadow hover:scale-105 transition">
       <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-xl bg-green-500/20 text-green-500 mx-auto">
-        <i className="fas fa-file-alt text-2xl"></i>
+        <FileText size={28} />
       </div>
       <h3 className="text-xl font-bold text-white mb-2 text-center">Manifest Check</h3>
       <p className="text-gray-400 mb-4 text-center">
@@ -169,7 +171,7 @@ export default function HomePage() {
     {/* Learning Hub */}
     <div className="bg-gradient-to-br from-[#0D0E10] to-[#1F2937] p-6 rounded-xl shadow hover:scale-105 transition">
       <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-xl bg-purple-500/20 text-purple-500 mx-auto">
-        <i className="fas fa-book-open text-2xl"></i>
+        <BookOpen size={28} />
       </div>
       <h3 className="text-xl font-bold text-white mb-2 text-center">Learning Hub</h3>
       <p className="text-gray-400 mb-4 text-center">
