@@ -1,58 +1,402 @@
 [
   {
-    "hsCode": "0101210000",
-    "description": "Live purebred breeding horses",
-    "dutyRate": 5,
+    "hsCode": "1012100000",
+    "description": "Sample product description 1",
+    "dutyRate": 0,
+    "vat": 5,
+    "levy": 0,
+    "date": "12/02/2020"
+  },
+  {
+    "hsCode": "1012100010",
+    "description": "Sample product description 2",
+    "dutyRate": 15,
+    "vat": 7.5,
+    "levy": 10,
+    "date": "13/02/2020"
+  },
+  {
+    "hsCode": "1012100020",
+    "description": "Sample product description 3",
+    "dutyRate": 0,
+    "vat": 7.5,
+    "levy": null,
+    "date": "14/02/2020"
+  },
+  {
+    "hsCode": "1012100030",
+    "description": "Sample product description 4",
+    "dutyRate": 15,
     "vat": 0,
     "levy": 5,
-    "date": "2020-02-12"
+    "date": "15/02/2020"
   },
   {
-    "hsCode": "0101290000",
-    "description": "Other live horses",
-    "dutyRate": 10,
+    "hsCode": "1012100040",
+    "description": "Sample product description 5",
+    "dutyRate": 0,
     "vat": 0,
-    "levy": "",
-    "date": "2020-02-12"
+    "levy": null,
+    "date": "16/02/2020"
   },
   {
-    "hsCode": "0102210000",
-    "description": "Live purebred breeding cattle",
-    "dutyRate": 5,
-    "vat": "",
-    "levy": "",
-    "date": "2020-02-12"
+    "hsCode": "1012100050",
+    "description": "Sample product description 6",
+    "dutyRate": 20,
+    "vat": 7.5,
+    "levy": 2,
+    "date": "17/02/2020"
   },
   {
-    "hsCode": "0102290000",
-    "description": "Other live cattle",
+    "hsCode": "1012100060",
+    "description": "Sample product description 7",
+    "dutyRate": 20,
+    "vat": null,
+    "levy": 5,
+    "date": "18/02/2020"
+  },
+  {
+    "hsCode": "1012100070",
+    "description": "Sample product description 8",
+    "dutyRate": 0,
+    "vat": 0,
+    "levy": 0,
+    "date": "19/02/2020"
+  },
+  {
+    "hsCode": "1012100080",
+    "description": "Sample product description 9",
+    "dutyRate": 10,
+    "vat": null,
+    "levy": null,
+    "date": "20/02/2020"
+  },
+  {
+    "hsCode": "1012100090",
+    "description": "Sample product description 10",
+    "dutyRate": 20,
+    "vat": null,
+    "levy": 10,
+    "date": "21/02/2020"
+  },
+  {
+    "hsCode": "1012100100",
+    "description": "Sample product description 11",
+    "dutyRate": 20,
+    "vat": null,
+    "levy": 2,
+    "date": "22/02/2020"
+  },
+  {
+    "hsCode": "1012100110",
+    "description": "Sample product description 12",
+    "dutyRate": 0,
+    "vat": 5,
+    "levy": 10,
+    "date": "23/02/2020"
+  },
+  {
+    "hsCode": "1012100120",
+    "description": "Sample product description 13",
+    "dutyRate": 10,
+    "vat": 7.5,
+    "levy": 10,
+    "date": "24/02/2020"
+  },
+  {
+    "hsCode": "1012100130",
+    "description": "Sample product description 14",
+    "dutyRate": 15,
+    "vat": 0,
+    "levy": 10,
+    "date": "25/02/2020"
+  },
+  {
+    "hsCode": "1012100140",
+    "description": "Sample product description 15",
+    "dutyRate": 0,
+    "vat": 10,
+    "levy": 5,
+    "date": "26/02/2020"
+  },
+  {
+    "hsCode": "1012100150",
+    "description": "Sample product description 16",
+    "dutyRate": 20,
+    "vat": 7.5,
+    "levy": 5,
+    "date": "27/02/2020"
+  },
+  {
+    "hsCode": "1012100160",
+    "description": "Sample product description 17",
     "dutyRate": 10,
     "vat": 5,
-    "levy": "",
-    "date": "2020-02-12"
+    "levy": null,
+    "date": "28/02/2020"
   },
   {
-    "hsCode": "0102310000",
-    "description": "Live purebred breeding sheep",
-    "dutyRate": 5,
+    "hsCode": "1012100170",
+    "description": "Sample product description 18",
+    "dutyRate": 10,
+    "vat": 0,
+    "levy": 10,
+    "date": "29/02/2020"
+  },
+  {
+    "hsCode": "1012100180",
+    "description": "Sample product description 19",
+    "dutyRate": 0,
+    "vat": null,
+    "levy": null,
+    "date": "01/03/2020"
+  },
+  {
+    "hsCode": "1012100190",
+    "description": "Sample product description 20",
+    "dutyRate": 0,
+    "vat": 5,
+    "levy": 5,
+    "date": "02/03/2020"
+  },
+  {
+    "hsCode": "1012100200",
+    "description": "Sample product description 21",
+    "dutyRate": 15,
     "vat": 0,
     "levy": 5,
-    "date": "2020-02-12"
+    "date": "03/03/2020"
   },
   {
-    "hsCode": "0102390000",
-    "description": "Other live sheep",
+    "hsCode": "1012100210",
+    "description": "Sample product description 22",
+    "dutyRate": 0,
+    "vat": 0,
+    "levy": 10,
+    "date": "04/03/2020"
+  },
+  {
+    "hsCode": "1012100220",
+    "description": "Sample product description 23",
+    "dutyRate": 20,
+    "vat": null,
+    "levy": 5,
+    "date": "05/03/2020"
+  },
+  {
+    "hsCode": "1012100230",
+    "description": "Sample product description 24",
+    "dutyRate": 20,
+    "vat": null,
+    "levy": 0,
+    "date": "06/03/2020"
+  },
+  {
+    "hsCode": "1012100240",
+    "description": "Sample product description 25",
+    "dutyRate": 5,
+    "vat": 5,
+    "levy": 0,
+    "date": "07/03/2020"
+  },
+  {
+    "hsCode": "1012100250",
+    "description": "Sample product description 26",
     "dutyRate": 10,
-    "vat": "",
-    "levy": "",
-    "date": "2020-02-12"
+    "vat": 10,
+    "levy": 0,
+    "date": "08/03/2020"
   },
   {
-    "hsCode": "0102900000",
-    "description": "Other live animals",
+    "hsCode": "1012100260",
+    "description": "Sample product description 27",
+    "dutyRate": 5,
+    "vat": 7.5,
+    "levy": 5,
+    "date": "09/03/2020"
+  },
+  {
+    "hsCode": "1012100270",
+    "description": "Sample product description 28",
+    "dutyRate": 10,
+    "vat": 0,
+    "levy": 2,
+    "date": "10/03/2020"
+  },
+  {
+    "hsCode": "1012100280",
+    "description": "Sample product description 29",
+    "dutyRate": 10,
+    "vat": null,
+    "levy": null,
+    "date": "11/03/2020"
+  },
+  {
+    "hsCode": "1012100290",
+    "description": "Sample product description 30",
+    "dutyRate": 0,
+    "vat": 10,
+    "levy": 2,
+    "date": "12/03/2020"
+  },
+  {
+    "hsCode": "1012100300",
+    "description": "Sample product description 31",
+    "dutyRate": 0,
+    "vat": 10,
+    "levy": 2,
+    "date": "13/03/2020"
+  },
+  {
+    "hsCode": "1012100310",
+    "description": "Sample product description 32",
+    "dutyRate": 0,
+    "vat": 5,
+    "levy": 5,
+    "date": "14/03/2020"
+  },
+  {
+    "hsCode": "1012100320",
+    "description": "Sample product description 33",
     "dutyRate": 20,
     "vat": 10,
-    "levy": "",
-    "date": "2020-02-12"
+    "levy": null,
+    "date": "15/03/2020"
+  },
+  {
+    "hsCode": "1012100330",
+    "description": "Sample product description 34",
+    "dutyRate": 15,
+    "vat": 0,
+    "levy": 5,
+    "date": "16/03/2020"
+  },
+  {
+    "hsCode": "1012100340",
+    "description": "Sample product description 35",
+    "dutyRate": 5,
+    "vat": 7.5,
+    "levy": 0,
+    "date": "17/03/2020"
+  },
+  {
+    "hsCode": "1012100350",
+    "description": "Sample product description 36",
+    "dutyRate": 20,
+    "vat": 10,
+    "levy": 0,
+    "date": "18/03/2020"
+  },
+  {
+    "hsCode": "1012100360",
+    "description": "Sample product description 37",
+    "dutyRate": 20,
+    "vat": 0,
+    "levy": 10,
+    "date": "19/03/2020"
+  },
+  {
+    "hsCode": "1012100370",
+    "description": "Sample product description 38",
+    "dutyRate": 0,
+    "vat": 7.5,
+    "levy": 2,
+    "date": "20/03/2020"
+  },
+  {
+    "hsCode": "1012100380",
+    "description": "Sample product description 39",
+    "dutyRate": 20,
+    "vat": null,
+    "levy": null,
+    "date": "21/03/2020"
+  },
+  {
+    "hsCode": "1012100390",
+    "description": "Sample product description 40",
+    "dutyRate": 5,
+    "vat": 10,
+    "levy": 0,
+    "date": "22/03/2020"
+  },
+  {
+    "hsCode": "1012100400",
+    "description": "Sample product description 41",
+    "dutyRate": 15,
+    "vat": null,
+    "levy": 2,
+    "date": "23/03/2020"
+  },
+  {
+    "hsCode": "1012100410",
+    "description": "Sample product description 42",
+    "dutyRate": 15,
+    "vat": null,
+    "levy": null,
+    "date": "24/03/2020"
+  },
+  {
+    "hsCode": "1012100420",
+    "description": "Sample product description 43",
+    "dutyRate": 5,
+    "vat": null,
+    "levy": null,
+    "date": "25/03/2020"
+  },
+  {
+    "hsCode": "1012100430",
+    "description": "Sample product description 44",
+    "dutyRate": 0,
+    "vat": 10,
+    "levy": 5,
+    "date": "26/03/2020"
+  },
+  {
+    "hsCode": "1012100440",
+    "description": "Sample product description 45",
+    "dutyRate": 20,
+    "vat": 0,
+    "levy": 2,
+    "date": "27/03/2020"
+  },
+  {
+    "hsCode": "1012100450",
+    "description": "Sample product description 46",
+    "dutyRate": 10,
+    "vat": null,
+    "levy": 2,
+    "date": "28/03/2020"
+  },
+  {
+    "hsCode": "1012100460",
+    "description": "Sample product description 47",
+    "dutyRate": 10,
+    "vat": 7.5,
+    "levy": null,
+    "date": "29/03/2020"
+  },
+  {
+    "hsCode": "1012100470",
+    "description": "Sample product description 48",
+    "dutyRate": 0,
+    "vat": 10,
+    "levy": 5,
+    "date": "30/03/2020"
+  },
+  {
+    "hsCode": "1012100480",
+    "description": "Sample product description 49",
+    "dutyRate": 5,
+    "vat": 7.5,
+    "levy": null,
+    "date": "31/03/2020"
+  },
+  {
+    "hsCode": "1012100490",
+    "description": "Sample product description 50",
+    "dutyRate": 0,
+    "vat": null,
+    "levy": 5,
+    "date": "01/04/2020"
   }
 ]
