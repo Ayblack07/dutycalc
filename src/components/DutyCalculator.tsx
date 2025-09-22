@@ -158,63 +158,82 @@ ${getCalculationLabel()}: ${formatCurrency(getFinalTotal())}
 
   // Download PDF (matches calculation type)
   const downloadPDF = () => {
-    const doc = new jsPDF();
-    doc.setFontSize(16);
-    doc.text("Duty Calc - Customs Duty Calculation", 14, 20);
+  const doc = new jsPDF();
 
-    const tableBody: (string | number)[][] = [
-      ["Invoice", `${currency} ${invoice} → ${formatCurrency(invoiceNGN)}`],
-      ["Freight", `${currency} ${freight} → ${formatCurrency(freightNGN)}`],
-      ["Exchange Rate", exchangeRate],
-      ["Insurance", formatCurrency(finalInsurance)],
-      ["CIF", formatCurrency(cif)],
-    ];
+  // 📌 Header
+  doc.setFontSize(14);
+  doc.setFont("helvetica", "bold");
+  doc.text("Duty Calc - Customs Duty Calculation", doc.internal.pageSize.getWidth() / 2, 15, {
+    align: "center",
+  });
 
-    if (calculationType === "idec") {
-      tableBody.push(
-        ["FCS (4%)", formatCurrency(fcs)],
-        ["ETLS (0.5%)", formatCurrency(etls)]
-      );
-    } else {
-      tableBody.push(
-        ["FCS (4%)", formatCurrency(fcs)],
-        ["Duty", formatCurrency(duty)],
-        ["Levy", formatCurrency(levy)],
-        ["Surcharge (7%)", formatCurrency(surcharge)],
-        ["ETLS (0.5%)", formatCurrency(etls)]
-      );
+  // Build table
+  const tableBody: (string | number)[][] = [
+    ["Invoice", `${currency} ${invoice} → ${formatCurrency(invoiceNGN)}`],
+    ["Freight", `${currency} ${freight} → ${formatCurrency(freightNGN)}`],
+    ["Exchange Rate", exchangeRate],
+    ["Insurance", formatCurrency(finalInsurance)],
+    ["CIF", formatCurrency(cif)],
+  ];
 
-      if (calculationType === "withVAT") {
-        tableBody.push(["VAT (7.5%)", formatCurrency(vat)]);
-      }
+  if (calculationType === "idec") {
+    tableBody.push(
+      ["FCS (4%)", formatCurrency(fcs)],
+      ["ETLS (0.5%)", formatCurrency(etls)]
+    );
+  } else {
+    tableBody.push(
+      ["FCS (4%)", formatCurrency(fcs)],
+      ["Duty", formatCurrency(duty)],
+      ["Levy", formatCurrency(levy)],
+      ["Surcharge (7%)", formatCurrency(surcharge)],
+      ["ETLS (0.5%)", formatCurrency(etls)]
+    );
+
+    if (calculationType === "withVAT") {
+      tableBody.push(["VAT (7.5%)", formatCurrency(vat)]);
     }
+  }
 
-    tableBody.push([getCalculationLabel(), formatCurrency(getFinalTotal())]);
+  tableBody.push([getCalculationLabel(), formatCurrency(getFinalTotal())]);
 
-    autoTable(doc, {
-      startY: 30,
-      head: [["Item", "Value"]],
-      body: tableBody,
-      theme: "grid",
-      styles: {
-        fontSize: 12,
-        cellPadding: 3,
-      },
-      headStyles: {
-        fillColor: [0, 0, 0],
-        textColor: [255, 255, 255],
-      },
-      alternateRowStyles: {
-        fillColor: [245, 245, 245],
-      },
-    });
+  autoTable(doc, {
+    startY: 25,
+    head: [["Item", "Value"]],
+    body: tableBody,
+    theme: "plain",
+    styles: {
+      fontSize: 11,
+      cellPadding: { top: 1, bottom: 1, left: 2, right: 2 },
+      lineWidth: 0.1,
+    },
+    headStyles: {
+      fillColor: [0, 0, 0],
+      textColor: [255, 255, 255],
+      fontSize: 11,
+    },
+    tableLineColor: [200, 200, 200],
+    tableLineWidth: 0.1,
+    didDrawPage: (data) => {
+      // 📌 Footer
+      const pageHeight = doc.internal.pageSize.getHeight();
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "normal");
+      doc.text(
+        `Generated from www.dutycalc.ng | ${new Date().toLocaleDateString()}`,
+        doc.internal.pageSize.getWidth() / 2,
+        pageHeight - 10,
+        { align: "center" }
+      );
+    },
+  });
 
-    doc.save("duty-calculation.pdf");
-    toast({
-      title: "PDF Downloaded",
-      description: "Your duty calculation has been saved as PDF.",
-    });
-  };
+  doc.save("duty-calculation.pdf");
+  toast({
+    title: "PDF Downloaded",
+    description: "Your duty calculation has been saved as PDF.",
+  });
+};
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
