@@ -20,7 +20,7 @@ import {
 import { Copy, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable"; // ✅ works for v3+, for v2 use: import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 import Link from "next/link";
 import { exchangeRatesData } from "@/data/exchangeRates";
 
@@ -111,7 +111,7 @@ export default function DutyCalculator() {
       minimumFractionDigits: 2,
     }).format(amount);
 
-  // Copy breakdown
+  // Copy breakdown (matches calculation type)
   const copyBreakdown = () => {
     let breakdown = `
 DUTY CALC - CUSTOMS DUTY CALCULATION
@@ -156,22 +156,16 @@ ${getCalculationLabel()}: ${formatCurrency(getFinalTotal())}
     });
   };
 
-  // Download PDF
+  // Download PDF (matches calculation type)
   const downloadPDF = () => {
     const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text("Duty Calc - Customs Duty Calculation", 14, 20);
 
-    // Header
-    doc.setFontSize(14);
-    doc.setFont("helvetica", "bold");
-    doc.text("Duty Calc - Customs Duty Calculation", doc.internal.pageSize.getWidth() / 2, 15, {
-      align: "center",
-    });
-
-    // Table body
-    const tableBody: string[][] = [
+    const tableBody: (string | number)[][] = [
       ["Invoice", `${currency} ${invoice} → ${formatCurrency(invoiceNGN)}`],
       ["Freight", `${currency} ${freight} → ${formatCurrency(freightNGN)}`],
-      ["Exchange Rate", exchangeRate.toString()],
+      ["Exchange Rate", exchangeRate],
       ["Insurance", formatCurrency(finalInsurance)],
       ["CIF", formatCurrency(cif)],
     ];
@@ -198,32 +192,20 @@ ${getCalculationLabel()}: ${formatCurrency(getFinalTotal())}
     tableBody.push([getCalculationLabel(), formatCurrency(getFinalTotal())]);
 
     autoTable(doc, {
-      startY: 25,
+      startY: 30,
       head: [["Item", "Value"]],
       body: tableBody,
-      theme: "plain",
+      theme: "grid",
       styles: {
-        fontSize: 11,
-        cellPadding: { top: 1, bottom: 1, left: 2, right: 2 },
-        lineWidth: 0.1,
+        fontSize: 12,
+        cellPadding: 3,
       },
       headStyles: {
         fillColor: [0, 0, 0],
         textColor: [255, 255, 255],
-        fontSize: 11,
       },
-      tableLineColor: [200, 200, 200],
-      tableLineWidth: 0.1,
-      didDrawPage: () => {
-        const pageHeight = doc.internal.pageSize.getHeight();
-        doc.setFontSize(9);
-        doc.setFont("helvetica", "normal");
-        doc.text(
-          `Generated from www.dutycalc.ng | ${new Date().toLocaleDateString()}`,
-          doc.internal.pageSize.getWidth() / 2,
-          pageHeight - 10,
-          { align: "center" }
-        );
+      alternateRowStyles: {
+        fillColor: [245, 245, 245],
       },
     });
 
@@ -250,7 +232,7 @@ ${getCalculationLabel()}: ${formatCurrency(getFinalTotal())}
             <CardTitle>Input Values</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Calculation Mode */}
+            {/* Calculation Mode at top */}
             <div>
               <Label>Calculation Mode</Label>
               <Select onValueChange={setCalculationType} defaultValue="withVAT">
@@ -258,9 +240,24 @@ ${getCalculationLabel()}: ${formatCurrency(getFinalTotal())}
                   <SelectValue placeholder="Select Mode" />
                 </SelectTrigger>
                 <SelectContent className="bg-black text-white">
-                  <SelectItem value="withVAT">WITH VAT</SelectItem>
-                  <SelectItem value="noVAT">NO VAT</SelectItem>
-                  <SelectItem value="idec">IDEC</SelectItem>
+                  <SelectItem
+                    value="withVAT"
+                    className="hover:bg-[#F7D234] hover:text-black data-[state=checked]:bg-[#F7D234] data-[state=checked]:text-black"
+                  >
+                    WITH VAT
+                  </SelectItem>
+                  <SelectItem
+                    value="noVAT"
+                    className="hover:bg-[#F7D234] hover:text-black data-[state=checked]:bg-[#F7D234] data-[state=checked]:text-black"
+                  >
+                    NO VAT
+                  </SelectItem>
+                  <SelectItem
+                    value="idec"
+                    className="hover:bg-[#F7D234] hover:text-black data-[state=checked]:bg-[#F7D234] data-[state=checked]:text-black"
+                  >
+                    IDEC
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -297,7 +294,11 @@ ${getCalculationLabel()}: ${formatCurrency(getFinalTotal())}
                 </SelectTrigger>
                 <SelectContent className="bg-black text-white">
                   {Object.keys(exchangeRates).map((curr) => (
-                    <SelectItem key={curr} value={curr}>
+                    <SelectItem
+                      key={curr}
+                      value={curr}
+                      className="hover:bg-[#F7D234] hover:text-black data-[state=checked]:bg-[#F7D234] data-[state=checked]:text-black"
+                    >
                       {curr}
                     </SelectItem>
                   ))}
@@ -365,13 +366,13 @@ ${getCalculationLabel()}: ${formatCurrency(getFinalTotal())}
               <span>Calculation Results</span>
               <div className="flex gap-2">
                 <Button onClick={copyBreakdown} size="sm" variant="outline" 
-                  className="bg-[#036336] hover:bg-[#063064] hover:text-white transition-colors">
-                  <Copy />
+                className="bg-[#036336] hover:bg-[#063064] hover:text-white transition-colors">
+                  <Copy  />
                   Copy
                 </Button>
                 <Button onClick={downloadPDF} size="sm" variant="outline" 
-                  className="bg-[#c4683e] hover:bg-[#990909] hover:text-white transition-colors">
-                  <Download />
+                className="bg-[#c4683e] hover:bg-[#990909] hover:text-white transition-colors">
+                  <Download  />
                   PDF
                 </Button>
               </div>
@@ -384,7 +385,7 @@ ${getCalculationLabel()}: ${formatCurrency(getFinalTotal())}
                 <span>{formatCurrency(cif)}</span>
               </div>
 
-              {/* Conditional breakdown */}
+              {/* Conditionally show based on calc type */}
               <div className="space-y-1 pt-2">
                 {calculationType === "idec" ? (
                   <>
