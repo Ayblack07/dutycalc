@@ -1,61 +1,24 @@
-import Link from "next/link";
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
-export default async function NewsPage() {
-  const { data: articles, error } = await supabase
-    .from("news")
-    .select("*")
-    .order("date", { ascending: false });
-
-  if (error) {
-    return (
-      <main className="min-h-screen flex items-center justify-center bg-[#0D0E10]">
-        <p className="text-red-500">Failed to load news.</p>
-      </main>
-    );
-  }
-
+export default function LoadingNewsList() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-[#090A0B] to-[#0D0E10] px-6 py-16">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-[#F7D234] mb-8">Latest News</h1>
 
-        <div className="space-y-8">
-          {articles && articles.length > 0 ? (
-            articles.map((article) => (
-              <div
-                key={article.id}
-                className="bg-[#1E293B] p-6 rounded-xl shadow-md border border-[#063064]"
-              >
-                <p className="text-sm text-gray-400 mb-2">
-                  {new Date(article.date).toLocaleDateString()}
-                </p>
-                <h2 className="text-2xl font-semibold text-white mb-4">
-                  <Link href={`/news/${article.id}`} className="hover:underline">
-                    {article.title}
-                  </Link>
-                </h2>
-                <p className="text-gray-300 line-clamp-3">
-                  {article.content.length > 200
-                    ? article.content.slice(0, 200) + "..."
-                    : article.content}
-                </p>
-                <Link
-                  href={`/news/${article.id}`}
-                  className="inline-block mt-4 text-[#F7D234] hover:underline"
-                >
-                  Read More →
-                </Link>
+        <div className="space-y-8 animate-pulse">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div
+              key={i}
+              className="bg-[#1E293B] p-6 rounded-xl shadow-md border border-[#063064]"
+            >
+              <div className="h-4 w-1/4 bg-gray-700 rounded mb-2"></div>
+              <div className="h-6 w-2/3 bg-gray-600 rounded mb-4"></div>
+              <div className="space-y-2">
+                <div className="h-4 w-full bg-gray-700 rounded"></div>
+                <div className="h-4 w-5/6 bg-gray-700 rounded"></div>
               </div>
-            ))
-          ) : (
-            <p className="text-gray-400">No news articles available yet.</p>
-          )}
+              <div className="h-4 w-24 bg-gray-600 rounded mt-4"></div>
+            </div>
+          ))}
         </div>
       </div>
     </main>
