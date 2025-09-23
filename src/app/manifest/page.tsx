@@ -19,14 +19,14 @@ import { supabase } from "@/lib/supabaseClient";
 
 export type ManifestRow = {
   sno: number;
-  manifest_no: string;
+  manifest: string;
   destination: string;
   command: string;
   origin: string;
-  air_shipping_line: string;
-  voyage_flight_no?: string;
-  date_of_registration: string;
-  date_of_arrival: string;
+  airline: string;
+  voyageNo?: string;
+  dateReg: string;
+  dateArrival: string;
 };
 
 export default function ManifestPage() {
@@ -36,6 +36,10 @@ export default function ManifestPage() {
   const [dateRegTo, setDateRegTo] = useState<Date | null>(null);
   const [dateArrivalFrom, setDateArrivalFrom] = useState<Date | null>(null);
   const [dateArrivalTo, setDateArrivalTo] = useState<Date | null>(null);
+
+  // pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   // 🔹 Fetch from Supabase
   useEffect(() => {
@@ -56,13 +60,13 @@ export default function ManifestPage() {
       const kw = keyword.toLowerCase();
       const matchKeyword =
         !kw ||
-        row.manifest_no?.toLowerCase().includes(kw) ||
+        row.manifest?.toLowerCase().includes(kw) ||
         row.destination?.toLowerCase().includes(kw) ||
         row.command?.toLowerCase().includes(kw) ||
-        row.air_shipping_line?.toLowerCase().includes(kw);
+        row.airline?.toLowerCase().includes(kw);
 
-      const regDate = row.date_of_registration ? new Date(row.date_of_registration) : null;
-      const arrivalDate = row.date_of_arrival ? new Date(row.date_of_arrival) : null;
+      const regDate = row.dateReg ? new Date(row.dateReg) : null;
+      const arrivalDate = row.dateArrival ? new Date(row.dateArrival) : null;
 
       const matchReg =
         (!dateRegFrom && !dateRegTo) ||
@@ -95,6 +99,14 @@ export default function ManifestPage() {
       return matchKeyword && matchReg && matchArrival;
     });
   }, [manifests, keyword, dateRegFrom, dateRegTo, dateArrivalFrom, dateArrivalTo]);
+
+  // 🔹 Pagination logic
+  const totalPages = Math.ceil(filtered.length / rowsPerPage);
+  const paginated = useMemo(() => {
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    return filtered.slice(start, end);
+  }, [filtered, currentPage, rowsPerPage]);
 
   // 🔹 Quick filters
   const today = () => {
@@ -197,39 +209,35 @@ export default function ManifestPage() {
       {/* 🔹 Table */}
       <div className="overflow-x-auto border rounded-lg">
         <table className="w-full border-collapse">
-          <thead className="bg-gray-800 text-white">
+          <thead className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
             <tr>
               <th className="p-2">S/N</th>
-              <th className="p-2">Manifest No</th>
+              <th className="p-2">Manifest</th>
               <th className="p-2">Destination</th>
               <th className="p-2">Command</th>
               <th className="p-2">Origin</th>
-              <th className="p-2">Air/Shipping Line</th>
-              <th className="p-2">Voyage/Flight No</th>
-              <th className="p-2">Date Registered</th>
-              <th className="p-2">Arrival Date</th>
+              <th className="p-2">Airline</th>
+              <th className="p-2">Voyage No</th>
+              <th className="p-2">Date Reg</th>
+              <th className="p-2">Date Arrival</th>
             </tr>
           </thead>
           <tbody>
-            {filtered.length > 0 ? (
-              filtered.map((row) => (
+            {paginated.length > 0 ? (
+              paginated.map((row) => (
                 <tr key={row.sno} className="border-t hover:bg-gray-50">
                   <td className="p-2">{row.sno}</td>
-                  <td className="p-2">{row.manifest_no}</td>
+                  <td className="p-2">{row.manifest}</td>
                   <td className="p-2">{row.destination}</td>
                   <td className="p-2">{row.command}</td>
                   <td className="p-2">{row.origin}</td>
-                  <td className="p-2">{row.air_shipping_line}</td>
-                  <td className="p-2">{row.voyage_flight_no || "-"}</td>
+                  <td className="p-2">{row.airline}</td>
+                  <td className="p-2">{row.voyageNo || "-"}</td>
                   <td className="p-2">
-                    {row.date_of_registration
-                      ? format(new Date(row.date_of_registration), "yyyy-MM-dd")
-                      : "-"}
+                    {row.dateReg ? format(new Date(row.dateReg), "yyyy-MM-dd") : "-"}
                   </td>
                   <td className="p-2">
-                    {row.date_of_arrival
-                      ? format(new Date(row.date_of_arrival), "yyyy-MM-dd")
-                      : "-"}
+                    {row.dateArrival ? format(new Date(row.dateArrival), "yyyy-MM-dd") : "-"}
                   </td>
                 </tr>
               ))
@@ -242,6 +250,45 @@ export default function ManifestPage() {
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* 🔹 Pagination controls */}
+      <div className="flex items-center justify-between mt-4">
+        <div className="flex items-center gap-2">
+          <Label>Rows per page:</Label>
+          <select
+            className="border rounded p-1"
+            value={rowsPerPage}
+            onChange={(e) => {
+              setRowsPerPage(Number(e.target.value));
+              setCurrentPage(1);
+            }}
+          >
+            <option value={10}>10</option>
+            <option value={25}>25</option>
+            <option value={50}>50</option>
+          </select>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            Prev
+          </Button>
+          <span>
+            Page {currentPage} of {totalPages || 1}
+          </span>
+          <Button
+            variant="outline"
+            onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+            disabled={currentPage === totalPages || totalPages === 0}
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </div>
   );
