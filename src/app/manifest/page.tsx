@@ -4,12 +4,7 @@ import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Link from "next/link";
-import {
-  FileDown,
-  FileSpreadsheet,
-  RotateCcw,
-} from "lucide-react";
+import { RotateCcw } from "lucide-react";
 import {
   format,
   isWithinInterval,
@@ -42,6 +37,7 @@ export default function ManifestPage() {
   const [dateArrivalFrom, setDateArrivalFrom] = useState<Date | null>(null);
   const [dateArrivalTo, setDateArrivalTo] = useState<Date | null>(null);
 
+  // 🔹 Fetch from Supabase
   useEffect(() => {
     const fetchData = async () => {
       const { data, error } = await supabase.from("manifest").select("*");
@@ -54,15 +50,16 @@ export default function ManifestPage() {
     fetchData();
   }, []);
 
+  // 🔹 Filtering
   const filtered = useMemo(() => {
     return manifests.filter((row) => {
       const kw = keyword.toLowerCase();
       const matchKeyword =
         !kw ||
-        row.manifest.toLowerCase().includes(kw) ||
-        row.destination.toLowerCase().includes(kw) ||
-        row.command.toLowerCase().includes(kw) ||
-        row.airline.toLowerCase().includes(kw);
+        row.manifest?.toLowerCase().includes(kw) ||
+        row.destination?.toLowerCase().includes(kw) ||
+        row.command?.toLowerCase().includes(kw) ||
+        row.airline?.toLowerCase().includes(kw);
 
       const regDate = row.dateReg ? new Date(row.dateReg) : null;
       const arrivalDate = row.dateArrival ? new Date(row.dateArrival) : null;
@@ -99,25 +96,22 @@ export default function ManifestPage() {
     });
   }, [manifests, keyword, dateRegFrom, dateRegTo, dateArrivalFrom, dateArrivalTo]);
 
-  // 👇 Quick filters
+  // 🔹 Quick filters
   const today = () => {
     const now = new Date();
     setDateRegFrom(startOfDay(now));
     setDateRegTo(endOfDay(now));
   };
-
   const thisWeek = () => {
     const now = new Date();
     setDateRegFrom(startOfWeek(now));
     setDateRegTo(endOfWeek(now));
   };
-
   const thisMonth = () => {
     const now = new Date();
     setDateRegFrom(startOfMonth(now));
     setDateRegTo(endOfMonth(now));
   };
-
   const resetFilters = () => {
     setKeyword("");
     setDateRegFrom(null);
@@ -128,31 +122,123 @@ export default function ManifestPage() {
 
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-8">
-      <div className="flex flex-wrap items-center gap-3">
+      {/* 🔹 Filters */}
+      <div className="space-y-4">
         <Input
           placeholder="Search manifests..."
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
           className="w-64"
         />
-        <Button variant="outline" onClick={today}>
-          Today
-        </Button>
-        <Button variant="outline" onClick={thisWeek}>
-          This Week
-        </Button>
-        <Button variant="outline" onClick={thisMonth}>
-          This Month
-        </Button>
-        <Button
-          className="bg-red-600 text-white hover:bg-red-700"
-          onClick={resetFilters}
-        >
-          <RotateCcw className="w-4 h-4 mr-2" /> Reset
-        </Button>
+
+        <div className="flex flex-wrap gap-4">
+          <div>
+            <Label>Reg From</Label>
+            <Input
+              type="date"
+              onChange={(e) =>
+                setDateRegFrom(e.target.value ? new Date(e.target.value) : null)
+              }
+            />
+          </div>
+          <div>
+            <Label>Reg To</Label>
+            <Input
+              type="date"
+              onChange={(e) =>
+                setDateRegTo(e.target.value ? new Date(e.target.value) : null)
+              }
+            />
+          </div>
+          <div>
+            <Label>Arrival From</Label>
+            <Input
+              type="date"
+              onChange={(e) =>
+                setDateArrivalFrom(
+                  e.target.value ? new Date(e.target.value) : null
+                )
+              }
+            />
+          </div>
+          <div>
+            <Label>Arrival To</Label>
+            <Input
+              type="date"
+              onChange={(e) =>
+                setDateArrivalTo(
+                  e.target.value ? new Date(e.target.value) : null
+                )
+              }
+            />
+          </div>
+        </div>
+
+        {/* 🔹 Quick Filter Buttons */}
+        <div className="flex flex-wrap gap-3">
+          <Button variant="outline" onClick={today}>
+            Today
+          </Button>
+          <Button variant="outline" onClick={thisWeek}>
+            This Week
+          </Button>
+          <Button variant="outline" onClick={thisMonth}>
+            This Month
+          </Button>
+          <Button
+            className="bg-red-600 text-white hover:bg-red-700"
+            onClick={resetFilters}
+          >
+            <RotateCcw className="w-4 h-4 mr-2" /> Reset
+          </Button>
+        </div>
       </div>
 
-      {/* 🚀 Render table here with {filtered} */}
+      {/* 🔹 Table */}
+      <div className="overflow-x-auto border rounded-lg">
+        <table className="w-full border-collapse">
+          <thead className="bg-gray-800 text-white">
+            <tr>
+              <th className="p-2">S/N</th>
+              <th className="p-2">Manifest</th>
+              <th className="p-2">Destination</th>
+              <th className="p-2">Command</th>
+              <th className="p-2">Origin</th>
+              <th className="p-2">Airline</th>
+              <th className="p-2">Voyage No</th>
+              <th className="p-2">Date Reg</th>
+              <th className="p-2">Date Arrival</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.length > 0 ? (
+              filtered.map((row) => (
+                <tr key={row.sno} className="border-t hover:bg-gray-50">
+                  <td className="p-2">{row.sno}</td>
+                  <td className="p-2">{row.manifest}</td>
+                  <td className="p-2">{row.destination}</td>
+                  <td className="p-2">{row.command}</td>
+                  <td className="p-2">{row.origin}</td>
+                  <td className="p-2">{row.airline}</td>
+                  <td className="p-2">{row.voyageNo || "-"}</td>
+                  <td className="p-2">
+                    {row.dateReg ? format(new Date(row.dateReg), "yyyy-MM-dd") : "-"}
+                  </td>
+                  <td className="p-2">
+                    {row.dateArrival ? format(new Date(row.dateArrival), "yyyy-MM-dd") : "-"}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td className="p-4 text-center text-gray-500" colSpan={9}>
+                  No manifests found
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
