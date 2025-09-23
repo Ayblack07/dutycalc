@@ -1,19 +1,31 @@
-# Handle line endings automatically for all text files
+# Handle line endings consistently
 * text=auto eol=lf
 
-# Specific overrides (optional but useful)
-*.js text eol=lf
-*.ts text eol=lf
-*.tsx text eol=lf
-*.json text eol=lf
-*.md text eol=lf
-*.css text eol=lf
-*.html text eol=lf
+# Windows batch files should keep CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
 
-# Keep binaries untouched
+# Shell scripts must use LF
+*.sh text eol=lf
+
+# Ensure JSON, JS, TS, TSX, JSX always use LF
+*.json text eol=lf
+*.js   text eol=lf
+*.ts   text eol=lf
+*.tsx  text eol=lf
+*.jsx  text eol=lf
+
+# Markdown & config files
+*.md   text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+
+# Binary files - never modify line endings
 *.png binary
 *.jpg binary
 *.jpeg binary
 *.gif binary
 *.ico binary
 *.pdf binary
+*.zip binary
+*.gz  binary
