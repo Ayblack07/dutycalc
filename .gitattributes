@@ -28,7 +28,7 @@
 *.ico binary
 *.pdf binary
 *.zip binary
-*.gz  binary
+*.gz binary
 # Always use LF in source code
 * text=auto eol=lf
 
