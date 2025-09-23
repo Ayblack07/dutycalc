@@ -41,7 +41,7 @@ export default function ManifestPage() {
   // Fetch data from Supabase on load
   useEffect(() => {
     const fetchData = async () => {
-      const { data, error } = await supabase.from("manifest").select("*");
+      const { data, error } = await supabase.from("manifests").select("*");
       if (error) {
         console.error("Supabase error:", error);
       } else {
