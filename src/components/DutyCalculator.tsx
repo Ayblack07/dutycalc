@@ -24,7 +24,7 @@ import autoTable from "jspdf-autotable";
 import Link from "next/link";
 import { exchangeRatesData } from "@/data/exchangeRates";
 
-// Convert array to map for easier lookup
+// Convert array to map for easy lookup
 const exchangeRates: Record<string, number> = exchangeRatesData.reduce(
   (acc, curr) => {
     acc[curr.code] = curr.value;
@@ -48,27 +48,22 @@ export default function DutyCalculator() {
   const [manualInsurance, setManualInsurance] = useState<boolean>(false);
   const [calculationType, setCalculationType] = useState<string>("withVAT");
 
-  // Auto-update exchange rate
+  // Auto update exchange rate when currency changes
   useEffect(() => {
-    if (
-      !manualExchangeRate &&
-      exchangeRates[currency as keyof typeof exchangeRates]
-    ) {
-      setExchangeRate(exchangeRates[currency as keyof typeof exchangeRates]);
+    if (!manualExchangeRate && exchangeRates[currency]) {
+      setExchangeRate(exchangeRates[currency]);
     }
   }, [currency, manualExchangeRate]);
 
-  // Convert invoice/freight into NGN
+  // NGN values
   const invoiceNGN = invoice * exchangeRate;
   const freightNGN = freight * exchangeRate;
 
-  // Insurance calculation
-  const calculatedInsurance = manualInsurance
-    ? insurance
-    : (invoiceNGN + freightNGN) * 0.015;
+  // Insurance
+  const calculatedInsurance = (invoiceNGN + freightNGN) * 0.015;
   const finalInsurance = manualInsurance ? insurance : calculatedInsurance;
 
-  // Main calculations
+  // Calculations
   const cif = invoiceNGN + freightNGN + finalInsurance;
   const fcs = invoiceNGN * 0.04;
   const duty = cif * (dutyRate / 100);
@@ -81,7 +76,7 @@ export default function DutyCalculator() {
   const noVat = fcs + surcharge + etls + duty + levy;
   const withIdec = fcs + etls;
 
-  // Pick calculation mode
+  // Pick mode
   const getFinalTotal = () => {
     switch (calculationType) {
       case "noVAT":
@@ -111,57 +106,56 @@ export default function DutyCalculator() {
       minimumFractionDigits: 2,
     }).format(amount);
 
-  // Copy breakdown (matches calculation type)
+  // Copy breakdown
   const copyBreakdown = () => {
-    let breakdown = `
-DUTY CALC - CUSTOMS DUTY CALCULATION
-====================================
-Invoice: ${currency} ${invoice.toLocaleString()} → ${formatCurrency(invoiceNGN)}
-Freight: ${currency} ${freight.toLocaleString()} → ${formatCurrency(freightNGN)}
+    let breakdown = `DUTY CALC - CUSTOMS DUTY CALCULATION
+==================================================
+Invoice: ${currency} ${invoice} → ${formatCurrency(invoiceNGN)}
+Freight: ${currency} ${freight} → ${formatCurrency(freightNGN)}
 Exchange Rate: ${exchangeRate}
 Insurance: ${formatCurrency(finalInsurance)}
 
-RESULTS:
 CIF: ${formatCurrency(cif)}
 `;
 
     if (calculationType === "idec") {
-      breakdown += `
-FCS (4%): ${formatCurrency(fcs)}
+      breakdown += `FCS (4%): ${formatCurrency(fcs)}
 ETLS (0.5%): ${formatCurrency(etls)}
 `;
     } else {
-      breakdown += `
-FCS (4%): ${formatCurrency(fcs)}
+      breakdown += `FCS (4%): ${formatCurrency(fcs)}
 Duty (${dutyRate}%): ${formatCurrency(duty)}
 Levy (${levyRate}%): ${formatCurrency(levy)}
 Surcharge (7%): ${formatCurrency(surcharge)}
 ETLS (0.5%): ${formatCurrency(etls)}
 `;
-
       if (calculationType === "withVAT") {
         breakdown += `VAT (7.5%): ${formatCurrency(vat)}\n`;
       }
     }
 
-    breakdown += `
-TOTAL:
-${getCalculationLabel()}: ${formatCurrency(getFinalTotal())}
-    `;
+    breakdown += `\n${getCalculationLabel()}: ${formatCurrency(getFinalTotal())}`;
 
     navigator.clipboard.writeText(breakdown);
     toast({
-      title: "Breakdown Copied!",
-      description: "Calculation breakdown copied to clipboard.",
+      title: "Copied!",
+      description: "Breakdown copied to clipboard.",
     });
   };
 
-  // Download PDF (matches calculation type)
+  // Download PDF
   const downloadPDF = () => {
     const doc = new jsPDF();
-    doc.setFontSize(16);
-    doc.text("Duty Calc - Customs Duty Calculation", 14, 20);
 
+    // Header
+    doc.setFontSize(16);
+    doc.text("Dutycalc", 14, 12);
+
+    // Title
+    doc.setFontSize(14);
+    doc.text("Customs Duty Calculation", 14, 22);
+
+    // Build table body
     const tableBody: (string | number)[][] = [
       ["Invoice", `${currency} ${invoice} → ${formatCurrency(invoiceNGN)}`],
       ["Freight", `${currency} ${freight} → ${formatCurrency(freightNGN)}`],
@@ -183,7 +177,6 @@ ${getCalculationLabel()}: ${formatCurrency(getFinalTotal())}
         ["Surcharge (7%)", formatCurrency(surcharge)],
         ["ETLS (0.5%)", formatCurrency(etls)]
       );
-
       if (calculationType === "withVAT") {
         tableBody.push(["VAT (7.5%)", formatCurrency(vat)]);
       }
@@ -191,48 +184,44 @@ ${getCalculationLabel()}: ${formatCurrency(getFinalTotal())}
 
     tableBody.push([getCalculationLabel(), formatCurrency(getFinalTotal())]);
 
+    // Table
     autoTable(doc, {
-      startY: 30,
+      startY: 28,
       head: [["Item", "Value"]],
       body: tableBody,
       theme: "grid",
-      styles: {
-        fontSize: 12,
-        cellPadding: 3,
-      },
-      headStyles: {
-        fillColor: [0, 0, 0],
-        textColor: [255, 255, 255],
-      },
-      alternateRowStyles: {
-        fillColor: [245, 245, 245],
-      },
+      styles: { fontSize: 11, cellPadding: 2 },
+      headStyles: { fillColor: [40, 40, 40], textColor: 255 },
+      alternateRowStyles: { fillColor: [245, 245, 245] },
     });
+
+    // Footer
+    const pageHeight = doc.internal.pageSize.height;
+    doc.setFontSize(10);
+    doc.text("generated from dutycalc.ng", 14, pageHeight - 10);
 
     doc.save("duty-calculation.pdf");
+
     toast({
       title: "PDF Downloaded",
-      description: "Your duty calculation has been saved as PDF.",
+      description: "Your duty calculation PDF is ready.",
     });
   };
-
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold mb-2">Customs Duty Calculator</h1>
-        <p className="text-gray-300">
-          Calculate accurate import duties and taxes for Nigeria
-        </p>
+      <div className="text-center">
+        <h1 className="text-3xl font-bold">Customs Duty Calculator</h1>
+        <p className="text-gray-400">Calculate import duties & taxes for Nigeria</p>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Input Section */}
-        <Card className="bg-gradient-to-b from-[#3f3f3f] to-black text-white border border-blue-900 rounded-lg shadow-md">
+        <Card className="bg-black/90 text-white border border-blue-900 rounded-lg shadow-md">
           <CardHeader>
             <CardTitle>Input Values</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Calculation Mode at top */}
+            {/* Mode */}
             <div>
               <Label>Calculation Mode</Label>
               <Select onValueChange={setCalculationType} defaultValue="withVAT">
@@ -240,24 +229,9 @@ ${getCalculationLabel()}: ${formatCurrency(getFinalTotal())}
                   <SelectValue placeholder="Select Mode" />
                 </SelectTrigger>
                 <SelectContent className="bg-black text-white">
-                  <SelectItem
-                    value="withVAT"
-                    className="hover:bg-[#F7D234] hover:text-black data-[state=checked]:bg-[#F7D234] data-[state=checked]:text-black"
-                  >
-                    WITH VAT
-                  </SelectItem>
-                  <SelectItem
-                    value="noVAT"
-                    className="hover:bg-[#F7D234] hover:text-black data-[state=checked]:bg-[#F7D234] data-[state=checked]:text-black"
-                  >
-                    NO VAT
-                  </SelectItem>
-                  <SelectItem
-                    value="idec"
-                    className="hover:bg-[#F7D234] hover:text-black data-[state=checked]:bg-[#F7D234] data-[state=checked]:text-black"
-                  >
-                    IDEC
-                  </SelectItem>
+                  <SelectItem value="withVAT">WITH VAT</SelectItem>
+                  <SelectItem value="noVAT">NO VAT</SelectItem>
+                  <SelectItem value="idec">IDEC</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -294,11 +268,7 @@ ${getCalculationLabel()}: ${formatCurrency(getFinalTotal())}
                 </SelectTrigger>
                 <SelectContent className="bg-black text-white">
                   {Object.keys(exchangeRates).map((curr) => (
-                    <SelectItem
-                      key={curr}
-                      value={curr}
-                      className="hover:bg-[#F7D234] hover:text-black data-[state=checked]:bg-[#F7D234] data-[state=checked]:text-black"
-                    >
+                    <SelectItem key={curr} value={curr}>
                       {curr}
                     </SelectItem>
                   ))}
@@ -316,9 +286,6 @@ ${getCalculationLabel()}: ${formatCurrency(getFinalTotal())}
                   setManualExchangeRate(true);
                 }}
               />
-              <p className="text-xs text-gray-400">
-                You can enter your desired exchange rate value
-              </p>
             </div>
 
             <div>
@@ -360,84 +327,75 @@ ${getCalculationLabel()}: ${formatCurrency(getFinalTotal())}
         </Card>
 
         {/* Results Section */}
-        <Card className="bg-gradient-to-b from-[#3f3f3f] to-black text-white border border-blue-900 rounded-lg shadow-md">
+        <Card className="bg-black/90 text-white border border-blue-900 rounded-lg shadow-md">
           <CardHeader>
             <CardTitle className="flex items-center justify-between border-b border-gray-700 pb-2">
-              <span>Calculation Results</span>
+              <span>Results</span>
               <div className="flex gap-2">
-                <Button onClick={copyBreakdown} size="sm" variant="outline" 
-                className="bg-[#036336] hover:bg-[#063064] hover:text-white transition-colors">
-                  <Copy  />
-                  Copy
+                <Button size="sm" onClick={copyBreakdown}>
+                  <Copy className="w-4 h-4 mr-1" /> Copy
                 </Button>
-                <Button onClick={downloadPDF} size="sm" variant="outline" 
-                className="bg-[#c4683e] hover:bg-[#990909] hover:text-white transition-colors">
-                  <Download  />
-                  PDF
+                <Button size="sm" onClick={downloadPDF}>
+                  <Download className="w-4 h-4 mr-1" /> PDF
                 </Button>
               </div>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              <div className="flex justify-between border-b border-gray-700 pb-1">
+              <div className="flex justify-between">
                 <span>CIF:</span>
                 <span>{formatCurrency(cif)}</span>
               </div>
 
-              {/* Conditionally show based on calc type */}
-              <div className="space-y-1 pt-2">
-                {calculationType === "idec" ? (
-                  <>
+              {calculationType === "idec" ? (
+                <>
+                  <div className="flex justify-between">
+                    <span>FCS (4%):</span>
+                    <span>{formatCurrency(fcs)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>ETLS (0.5%):</span>
+                    <span>{formatCurrency(etls)}</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex justify-between">
+                    <span>FCS (4%):</span>
+                    <span>{formatCurrency(fcs)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Duty:</span>
+                    <span>{formatCurrency(duty)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Levy:</span>
+                    <span>{formatCurrency(levy)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Surcharge (7%):</span>
+                    <span>{formatCurrency(surcharge)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>ETLS (0.5%):</span>
+                    <span>{formatCurrency(etls)}</span>
+                  </div>
+                  {calculationType === "withVAT" && (
                     <div className="flex justify-between">
-                      <span>FCS (4%):</span>
-                      <span>{formatCurrency(fcs)}</span>
+                      <span>VAT (7.5%):</span>
+                      <span>{formatCurrency(vat)}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span>ETLS (0.5%):</span>
-                      <span>{formatCurrency(etls)}</span>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="flex justify-between">
-                      <span>FCS (4%):</span>
-                      <span>{formatCurrency(fcs)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Duty:</span>
-                      <span>{formatCurrency(duty)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Levy:</span>
-                      <span>{formatCurrency(levy)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Surcharge (7%):</span>
-                      <span>{formatCurrency(surcharge)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>ETLS (0.5%):</span>
-                      <span>{formatCurrency(etls)}</span>
-                    </div>
-                    {calculationType === "withVAT" && (
-                      <div className="flex justify-between">
-                        <span>VAT (7.5%):</span>
-                        <span>{formatCurrency(vat)}</span>
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
+                  )}
+                </>
+              )}
 
-              {/* Total */}
               <div className="flex justify-between font-bold border-t border-gray-700 pt-2 mt-2">
                 <span>{getCalculationLabel()}:</span>
                 <span>{formatCurrency(getFinalTotal())}</span>
               </div>
             </div>
 
-            {/* Check exchange rate */}
             <div className="mt-6 text-center">
               <Link href="/exchange-rate">
                 <Button className="bg-[#F7D234] text-black hover:bg-yellow-400">
