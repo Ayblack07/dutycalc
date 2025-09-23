@@ -212,7 +212,7 @@ export default function ManifestPage() {
       {/* Table */}
       <div className="overflow-x-auto border rounded-lg">
         <table className="w-full border-collapse">
-          <thead className="bg-gradient-to-r from-gray-800 to-gray-700 text-white">
+          <thead className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white">
             <tr>
               <th className="p-2">S/N</th>
               <th className="p-2">Manifest</th>
@@ -226,36 +226,41 @@ export default function ManifestPage() {
             </tr>
           </thead>
           <tbody>
-            {paginated.length > 0 ? (
-              paginated.map((row) => (
-                <tr key={row.sno} className="border-t hover:bg-gray-50">
-                  <td className="p-2">{row.sno}</td>
-                  <td className="p-2">{row.manifest_no}</td>
-                  <td className="p-2">{row.destination}</td>
-                  <td className="p-2">{row.command}</td>
-                  <td className="p-2">{row.origin}</td>
-                  <td className="p-2">{row.air_shipping_line}</td>
-                  <td className="p-2">{row.voyage_flight_no || "-"}</td>
-                  <td className="p-2">
-                    {row.date_of_registration
-                      ? format(new Date(row.date_of_registration), "yyyy-MM-dd")
-                      : "-"}
-                  </td>
-                  <td className="p-2">
-                    {row.date_of_arrival
-                      ? format(new Date(row.date_of_arrival), "yyyy-MM-dd")
-                      : "-"}
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td className="p-4 text-center text-gray-500" colSpan={9}>
-                  No manifests found
-                </td>
-              </tr>
-            )}
-          </tbody>
+  {paginated.length > 0 ? (
+    paginated.map((row, idx) => (
+      <tr
+        key={row.sno}
+        className={`border-t transition-all duration-200 ${
+          idx % 2 === 0 ? "bg-white" : "bg-gray-50"
+        } hover:bg-gradient-to-r hover:from-blue-50 hover:to-teal-50 hover:shadow-md hover:rounded-md`}
+      >
+        <td className="p-2">{row.sno}</td>
+        <td className="p-2">{row.manifest_no}</td>
+        <td className="p-2">{row.destination}</td>
+        <td className="p-2">{row.command}</td>
+        <td className="p-2">{row.origin}</td>
+        <td className="p-2">{row.air_shipping_line}</td>
+        <td className="p-2">{row.voyage_flight_no || "-"}</td>
+        <td className="p-2">
+          {row.date_of_registration
+            ? format(new Date(row.date_of_registration), "yyyy-MM-dd")
+            : "-"}
+        </td>
+        <td className="p-2">
+          {row.date_of_arrival
+            ? format(new Date(row.date_of_arrival), "yyyy-MM-dd")
+            : "-"}
+        </td>
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td className="p-4 text-center text-gray-500" colSpan={9}>
+        No manifests found
+      </td>
+    </tr>
+  )}
+</tbody>
         </table>
       </div>
 
