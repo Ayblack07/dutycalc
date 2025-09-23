@@ -19,14 +19,14 @@ import { supabase } from "@/lib/supabaseClient";
 
 export type ManifestRow = {
   sno: number;
-  manifest: string;
+  manifest_no: string;
   destination: string;
   command: string;
   origin: string;
-  airline: string;
-  voyageNo?: string;
-  dateReg: string;
-  dateArrival: string;
+  air_shipping_line: string;
+  voyage_flight_no?: string;
+  date_of_registration: string;
+  date_of_arrival: string;
 };
 
 export default function ManifestPage() {
@@ -56,13 +56,13 @@ export default function ManifestPage() {
       const kw = keyword.toLowerCase();
       const matchKeyword =
         !kw ||
-        row.manifest?.toLowerCase().includes(kw) ||
+        row.manifest_no?.toLowerCase().includes(kw) ||
         row.destination?.toLowerCase().includes(kw) ||
         row.command?.toLowerCase().includes(kw) ||
-        row.airline?.toLowerCase().includes(kw);
+        row.air_shipping_line?.toLowerCase().includes(kw);
 
-      const regDate = row.dateReg ? new Date(row.dateReg) : null;
-      const arrivalDate = row.dateArrival ? new Date(row.dateArrival) : null;
+      const regDate = row.date_of_registration ? new Date(row.date_of_registration) : null;
+      const arrivalDate = row.date_of_arrival ? new Date(row.date_of_arrival) : null;
 
       const matchReg =
         (!dateRegFrom && !dateRegTo) ||
@@ -200,14 +200,14 @@ export default function ManifestPage() {
           <thead className="bg-gray-800 text-white">
             <tr>
               <th className="p-2">S/N</th>
-              <th className="p-2">Manifest</th>
+              <th className="p-2">Manifest No</th>
               <th className="p-2">Destination</th>
               <th className="p-2">Command</th>
               <th className="p-2">Origin</th>
-              <th className="p-2">Airline</th>
-              <th className="p-2">Voyage No</th>
-              <th className="p-2">Date Reg</th>
-              <th className="p-2">Date Arrival</th>
+              <th className="p-2">Air/Shipping Line</th>
+              <th className="p-2">Voyage/Flight No</th>
+              <th className="p-2">Date Registered</th>
+              <th className="p-2">Arrival Date</th>
             </tr>
           </thead>
           <tbody>
@@ -215,17 +215,21 @@ export default function ManifestPage() {
               filtered.map((row) => (
                 <tr key={row.sno} className="border-t hover:bg-gray-50">
                   <td className="p-2">{row.sno}</td>
-                  <td className="p-2">{row.manifest}</td>
+                  <td className="p-2">{row.manifest_no}</td>
                   <td className="p-2">{row.destination}</td>
                   <td className="p-2">{row.command}</td>
                   <td className="p-2">{row.origin}</td>
-                  <td className="p-2">{row.airline}</td>
-                  <td className="p-2">{row.voyageNo || "-"}</td>
+                  <td className="p-2">{row.air_shipping_line}</td>
+                  <td className="p-2">{row.voyage_flight_no || "-"}</td>
                   <td className="p-2">
-                    {row.dateReg ? format(new Date(row.dateReg), "yyyy-MM-dd") : "-"}
+                    {row.date_of_registration
+                      ? format(new Date(row.date_of_registration), "yyyy-MM-dd")
+                      : "-"}
                   </td>
                   <td className="p-2">
-                    {row.dateArrival ? format(new Date(row.dateArrival), "yyyy-MM-dd") : "-"}
+                    {row.date_of_arrival
+                      ? format(new Date(row.date_of_arrival), "yyyy-MM-dd")
+                      : "-"}
                   </td>
                 </tr>
               ))
