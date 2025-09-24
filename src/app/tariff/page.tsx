@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FileDown, FileSpreadsheet } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
-import { jsPDF } from "jspdf";
+import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import * as XLSX from "xlsx";
 
@@ -74,7 +74,11 @@ export default function TariffPage() {
   // 📄 Export current page to PDF
   const exportPDF = () => {
     const doc = new jsPDF();
+    doc.setFontSize(14);
+    doc.text("Customs Tariff - Current Page", 14, 15);
+
     autoTable(doc, {
+      startY: 22,
       head: [["S/No", "HS Code", "Description", "Duty %", "VAT %", "Levy %", "Date"]],
       body: filtered.map((row) => [
         row.id,
@@ -85,7 +89,11 @@ export default function TariffPage() {
         row.levy ?? "-",
         row.date,
       ]),
+      theme: "grid",
+      styles: { fontSize: 10 },
+      headStyles: { fillColor: [6, 48, 100] },
     });
+
     doc.save("tariff.pdf");
   };
 
@@ -128,18 +136,18 @@ export default function TariffPage() {
             setPage(1); // reset page on new search
           }}
           placeholder="Search by HS code or description"
-          className="bg-white text-black border border-[#063064] w-full md:w-1/2"
+          className="bg-gradient-to-r from-[#ffffff] to-[#e0e0e0] text-black border border-[#063064] w-full md:w-1/2"
         />
         <div className="flex flex-wrap gap-3 w-full md:w-auto">
           <Button
             onClick={exportPDF}
-            className="bg-green-600 hover:bg-green-700 w-full sm:w-auto"
+            className="bg-[#FF0000] hover:bg-[#CC0000] w-full sm:w-auto text-white"
           >
             <FileDown className="w-4 h-4 mr-2" /> PDF
           </Button>
           <Button
             onClick={exportExcel}
-            className="bg-yellow-500 hover:bg-yellow-600 text-black w-full sm:w-auto"
+            className="bg-green-600 hover:bg-green-700 w-full sm:w-auto text-white"
           >
             <FileSpreadsheet className="w-4 h-4 mr-2" /> Excel
           </Button>
@@ -147,7 +155,7 @@ export default function TariffPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-[#0D0E10] p-4 md:p-6 rounded-xl border border-[#063064] text-white">
+      <div className="bg-gradient-to-br from-[#0D0E10] via-[#1b2a4a] to-[#063064] p-4 md:p-6 rounded-xl border border-[#063064] text-white">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[800px] shadow-lg">
             <thead>

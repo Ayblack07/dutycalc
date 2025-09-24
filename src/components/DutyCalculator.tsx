@@ -218,7 +218,8 @@ const downloadPDF = () => {
 
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Input Section */}
-        <Card className="bg-black/90 text-white border border-blue-900 rounded-lg shadow-md">
+        <Card className="bg-gradient-to-br from-[#0D0E10] via-[#1b2a4a] to-[#063064] text-white border border-blue-900
+        rounded-lg shadow-md">
           <CardHeader>
             <CardTitle>Input Values</CardTitle>
           </CardHeader>
@@ -365,15 +366,19 @@ const downloadPDF = () => {
         </Card>
 
         {/* Results Section */}
-        <Card className="bg-black/90 text-white border border-blue-900 rounded-lg shadow-md">
+        <Card className="bg-gradient-to-br from-[#0D0E10] via-[#1b2a4a] to-[#063064] text-white border border-blue-900
+        rounded-lg shadow-md">
           <CardHeader>
             <CardTitle className="flex items-center justify-between border-b border-gray-700 pb-2">
               <span>Results</span>
               <div className="flex gap-2">
-                <Button size="sm" onClick={copyBreakdown}>
+                <Button size="sm" onClick={copyBreakdown}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                  >
                   <Copy className="w-4 h-4 mr-1" /> Copy
                 </Button>
-                <Button size="sm" onClick={downloadPDF}>
+                <Button size="sm" onClick={downloadPDF}
+                className="bg-[#ff0000] hover:bg-[#cc0000] text-white">
                   <Download className="w-4 h-4 mr-1" /> PDF
                 </Button>
               </div>
