@@ -1,160 +1,288 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { FileDown, FileSpreadsheet } from "lucide-react";
-import { createClient } from "@supabase/supabase-js";
+import { Label } from "@/components/ui/label";
+import { RotateCcw } from "lucide-react";
+import {
+  format,
+  isWithinInterval,
+  startOfDay,
+  endOfDay,
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+} from "date-fns";
+import { supabase } from "@/lib/supabaseClient";
 
-// Supabase client
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
-type TariffRow = {
-  id: number;
-  hscode: string;
-  description: string;
-  duty_rate: number | null;
-  vat: number | null;
-  levy: number | null;
-  date: string;
+export type ManifestRow = {
+  sno: number;
+  manifest_no: string;
+  destination: string;
+  command: string;
+  origin: string;
+  air_shipping_line: string;
+  voyage_flight_no?: string;
+  date_of_registration: string;
+  date_of_arrival: string;
 };
 
-export default function TariffPage() {
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const [rowsPerPage] = useState(20); // show 20 per page
-  const [tariffData, setTariffData] = useState<TariffRow[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function ManifestPage() {
+  const [manifests, setManifests] = useState<ManifestRow[]>([]);
+  const [keyword, setKeyword] = useState("");
+  const [dateRegFrom, setDateRegFrom] = useState<Date | null>(null);
+  const [dateRegTo, setDateRegTo] = useState<Date | null>(null);
+  const [dateArrivalFrom, setDateArrivalFrom] = useState<Date | null>(null);
+  const [dateArrivalTo, setDateArrivalTo] = useState<Date | null>(null);
 
-  // Fetch all rows from Supabase
+  // Pagination
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
+
+  // Fetch from Supabase
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("tariff")
-        .select("*")
-        .order("id", { ascending: true });
-
-      if (error) console.error(error);
-      else setTariffData(data || []);
-      setLoading(false);
+      const { data, error } = await supabase.from("manifest").select("*");
+      if (error) {
+        console.error("Supabase error:", error);
+      } else {
+        setManifests(data || []);
+      }
     };
-
     fetchData();
   }, []);
 
-  // 🔎 Filter first (on ALL rows)
-  const filtered = tariffData.filter(
-    (row) =>
-      row.hscode?.toLowerCase().includes(search.toLowerCase()) ||
-      row.description?.toLowerCase().includes(search.toLowerCase())
-  );
+  // Filtering
+  const filtered = useMemo(() => {
+    return manifests.filter((row) => {
+      const kw = keyword.toLowerCase();
+      const matchKeyword =
+        !kw ||
+        row.manifest_no?.toLowerCase().includes(kw) ||
+        row.destination?.toLowerCase().includes(kw) ||
+        row.command?.toLowerCase().includes(kw) ||
+        row.air_shipping_line?.toLowerCase().includes(kw);
 
-  // 📄 Then paginate
-  const totalPages = Math.ceil(filtered.length / rowsPerPage);
-  const startIndex = (page - 1) * rowsPerPage;
-  const currentRows = filtered.slice(startIndex, startIndex + rowsPerPage);
+      const regDate = row.date_of_registration
+        ? new Date(row.date_of_registration)
+        : null;
+      const arrivalDate = row.date_of_arrival
+        ? new Date(row.date_of_arrival)
+        : null;
 
-  // Handlers
-  const nextPage = () => setPage((p) => Math.min(p + 1, totalPages));
-  const prevPage = () => setPage((p) => Math.max(p - 1, 1));
+      const matchReg =
+        (!dateRegFrom && !dateRegTo) ||
+        (regDate &&
+          ((dateRegFrom &&
+            dateRegTo &&
+            isWithinInterval(regDate, {
+              start: startOfDay(dateRegFrom),
+              end: endOfDay(dateRegTo),
+            })) ||
+            (dateRegFrom && !dateRegTo && regDate >= startOfDay(dateRegFrom)) ||
+            (!dateRegFrom && dateRegTo && regDate <= endOfDay(dateRegTo))));
+
+      const matchArrival =
+        (!dateArrivalFrom && !dateArrivalTo) ||
+        (arrivalDate &&
+          ((dateArrivalFrom &&
+            dateArrivalTo &&
+            isWithinInterval(arrivalDate, {
+              start: startOfDay(dateArrivalFrom),
+              end: endOfDay(dateArrivalTo),
+            })) ||
+            (dateArrivalFrom &&
+              !dateArrivalTo &&
+              arrivalDate >= startOfDay(dateArrivalFrom)) ||
+            (!dateArrivalFrom &&
+              dateArrivalTo &&
+              arrivalDate <= endOfDay(dateArrivalTo))));
+
+      return matchKeyword && matchReg && matchArrival;
+    });
+  }, [manifests, keyword, dateRegFrom, dateRegTo, dateArrivalFrom, dateArrivalTo]);
+
+  // Pagination slice
+  const paginated = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return filtered.slice(start, start + pageSize);
+  }, [filtered, page]);
+
+  // Quick filters
+  const today = () => {
+    const now = new Date();
+    setDateRegFrom(startOfDay(now));
+    setDateRegTo(endOfDay(now));
+  };
+  const thisWeek = () => {
+    const now = new Date();
+    setDateRegFrom(startOfWeek(now));
+    setDateRegTo(endOfWeek(now));
+  };
+  const thisMonth = () => {
+    const now = new Date();
+    setDateRegFrom(startOfMonth(now));
+    setDateRegTo(endOfMonth(now));
+  };
+  const resetFilters = () => {
+    setKeyword("");
+    setDateRegFrom(null);
+    setDateRegTo(null);
+    setDateArrivalFrom(null);
+    setDateArrivalTo(null);
+    setPage(1);
+  };
 
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-8">
-      {/* Header */}
-      <div className="text-center">
-        <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
-          Customs Tariff
-        </h1>
-        <p className="text-gray-300">
-          Search through {tariffData.length} tariff records
-        </p>
-      </div>
-
-      {/* Search + Export */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+      {/* Filters */}
+      <div className="space-y-4">
         <Input
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setPage(1); // reset to first page on new search
-          }}
-          placeholder="Search by HS code or description"
-          className="bg-white text-black border border-[#063064] w-full md:w-1/2"
+          placeholder="Search manifests..."
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+          className="w-64"
         />
-        <div className="flex flex-wrap gap-3 w-full md:w-auto">
-          <Button className="bg-green-600 hover:bg-green-700 w-full sm:w-auto">
-            <FileDown className="w-4 h-4 mr-2" /> PDF
+
+        <div className="flex flex-wrap gap-4">
+          <div>
+            <Label>Reg From</Label>
+            <Input
+              type="date"
+              onChange={(e) =>
+                setDateRegFrom(e.target.value ? new Date(e.target.value) : null)
+              }
+            />
+          </div>
+          <div>
+            <Label>Reg To</Label>
+            <Input
+              type="date"
+              onChange={(e) =>
+                setDateRegTo(e.target.value ? new Date(e.target.value) : null)
+              }
+            />
+          </div>
+          <div>
+            <Label>Arrival From</Label>
+            <Input
+              type="date"
+              onChange={(e) =>
+                setDateArrivalFrom(
+                  e.target.value ? new Date(e.target.value) : null
+                )
+              }
+            />
+          </div>
+          <div>
+            <Label>Arrival To</Label>
+            <Input
+              type="date"
+              onChange={(e) =>
+                setDateArrivalTo(
+                  e.target.value ? new Date(e.target.value) : null
+                )
+              }
+            />
+          </div>
+        </div>
+
+        {/* Quick Filter Buttons */}
+        <div className="flex flex-wrap gap-3">
+          <Button variant="outline" onClick={today}>
+            Today
           </Button>
-          <Button className="bg-yellow-500 hover:bg-yellow-600 text-black w-full sm:w-auto">
-            <FileSpreadsheet className="w-4 h-4 mr-2" /> Excel
+          <Button variant="outline" onClick={thisWeek}>
+            This Week
+          </Button>
+          <Button variant="outline" onClick={thisMonth}>
+            This Month
+          </Button>
+          <Button
+            className="bg-red-600 text-white hover:bg-red-700"
+            onClick={resetFilters}
+          >
+            <RotateCcw className="w-4 h-4 mr-2" /> Reset
           </Button>
         </div>
       </div>
 
       {/* Table */}
-      <div className="bg-[#0D0E10] p-4 md:p-6 rounded-xl border border-[#063064] text-white">
-        {loading ? (
-          <p className="text-center text-gray-400">Loading...</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[800px]">
-              <thead>
-                <tr className="bg-gradient-to-r from-[#063064] to-[#00509E] text-white">
-                  <th className="p-2">HS Code</th>
-                  <th className="p-2">Description</th>
-                  <th className="p-2">Duty %</th>
-                  <th className="p-2">VAT %</th>
-                  <th className="p-2">Levy %</th>
-                  <th className="p-2">Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentRows.map((row, i) => (
-                  <tr
-                    key={row.id}
-                    className={`hover:bg-[#2c3446] ${
-                      i % 2 === 0 ? "bg-[#1a237e]/40" : "bg-[#004d40]/40"
-                    }`}
-                  >
-                    <td className="p-2">{row.hscode}</td>
-                    <td className="p-2">{row.description}</td>
-                    <td className="p-2">{row.duty_rate ?? "-"}</td>
-                    <td className="p-2">{row.vat ?? "-"}</td>
-                    <td className="p-2">{row.levy ?? "-"}</td>
-                    <td className="p-2">{row.date}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+      <div className="overflow-x-auto border rounded-lg">
+        <table className="w-full border-collapse">
+          <thead className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white">
+            <tr>
+              <th className="p-2">S/N</th>
+              <th className="p-2">Manifest</th>
+              <th className="p-2">Destination</th>
+              <th className="p-2">Command</th>
+              <th className="p-2">Origin</th>
+              <th className="p-2">Air/Shipping Line</th>
+              <th className="p-2">Voyage/Flight</th>
+              <th className="p-2">Date Reg</th>
+              <th className="p-2">Date Arrival</th>
+            </tr>
+          </thead>
+          <tbody>
+  {paginated.length > 0 ? (
+    paginated.map((row, idx) => (
+      <tr
+        key={row.sno}
+        className={`border-t transition-all duration-200 ${
+          idx % 2 === 0 ? "bg-black" : "bg-black"
+        } hover:bg-gradient-to-r hover:from-indigo-600 hover:to-indigo-500 hover:shadow-md hover:rounded-md`}
+      >
+        <td className="p-2">{row.sno}</td>
+        <td className="p-2">{row.manifest_no}</td>
+        <td className="p-2">{row.destination}</td>
+        <td className="p-2">{row.command}</td>
+        <td className="p-2">{row.origin}</td>
+        <td className="p-2">{row.air_shipping_line}</td>
+        <td className="p-2">{row.voyage_flight_no || "-"}</td>
+        <td className="p-2">
+          {row.date_of_registration
+            ? format(new Date(row.date_of_registration), "yyyy-MM-dd")
+            : "-"}
+        </td>
+        <td className="p-2">
+          {row.date_of_arrival
+            ? format(new Date(row.date_of_arrival), "yyyy-MM-dd")
+            : "-"}
+        </td>
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td className="p-4 text-center text-gray-500" colSpan={9}>
+        No manifests found
+      </td>
+    </tr>
+  )}
+</tbody>
+        </table>
+      </div>
 
-        {/* Pagination Controls */}
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-3 mt-4">
-          <span className="text-sm text-gray-400">
-            Page {page} of {totalPages || 1}
-          </span>
-          <div className="flex gap-2">
-            <Button
-              onClick={prevPage}
-              disabled={page === 1}
-              className="bg-[#063064] text-white disabled:opacity-50"
-            >
-              Prev
-            </Button>
-            <Button
-              onClick={nextPage}
-              disabled={page === totalPages || totalPages === 0}
-              className="bg-[#063064] text-white disabled:opacity-50"
-            >
-              Next
-            </Button>
-          </div>
-        </div>
+      {/* Pagination Controls */}
+      <div className="flex justify-between items-center mt-4">
+        <Button
+          variant="outline"
+          disabled={page === 1}
+          onClick={() => setPage((p) => p - 1)}
+        >
+          Previous
+        </Button>
+        <span>
+          Page {page} of {Math.ceil(filtered.length / pageSize)}
+        </span>
+        <Button
+          variant="outline"
+          disabled={page >= Math.ceil(filtered.length / pageSize)}
+          onClick={() => setPage((p) => p + 1)}
+        >
+          Next
+        </Button>
       </div>
     </div>
   );

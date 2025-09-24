@@ -1,12 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FileDown, FileSpreadsheet } from "lucide-react";
-import { supabase } from "@/lib/supabaseClient";
+import { createClient } from "@supabase/supabase-js";
 
-// Row type
+// Supabase client
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
 type TariffRow = {
   id: number;
   hscode: string;
@@ -19,50 +24,39 @@ type TariffRow = {
 
 export default function TariffPage() {
   const [search, setSearch] = useState("");
-  const [rows, setRows] = useState<TariffRow[]>([]);
   const [page, setPage] = useState(1);
-  const rowsPerPage = 50; // ✅ fetch 50 per page
-  const [totalPages, setTotalPages] = useState(1);
+  const [rowsPerPage] = useState(20); // show 20 per page
+  const [tariffData, setTariffData] = useState<TariffRow[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // 🔎 Fetch data from Supabase
+  // Fetch all rows from Supabase
   useEffect(() => {
     const fetchData = async () => {
-      const start = (page - 1) * rowsPerPage;
-      const end = start + rowsPerPage - 1;
-
-      // Get current page
+      setLoading(true);
       const { data, error } = await supabase
         .from("tariff")
-        .select("*", { count: "exact" }) // ✅ get count too
-        .range(start, end);
+        .select("*")
+        .order("id", { ascending: true });
 
-      if (error) {
-        console.error("Supabase error:", error);
-        return;
-      }
-
-      setRows(data || []);
-      if (data && data.length > 0) {
-        // Get total rows from count
-        const { count } = await supabase
-          .from("tariff")
-          .select("*", { count: "exact", head: true });
-
-        if (count) {
-          setTotalPages(Math.ceil(count / rowsPerPage));
-        }
-      }
+      if (error) console.error(error);
+      else setTariffData(data || []);
+      setLoading(false);
     };
 
     fetchData();
-  }, [page]);
+  }, []);
 
-  // 🔎 Search filter (applied client-side on current page only)
-  const filtered = rows.filter(
+  // 🔎 Filter first (on ALL rows)
+  const filtered = tariffData.filter(
     (row) =>
-      row.hscode?.includes(search) ||
+      row.hscode?.toLowerCase().includes(search.toLowerCase()) ||
       row.description?.toLowerCase().includes(search.toLowerCase())
   );
+
+  // 📄 Then paginate
+  const totalPages = Math.ceil(filtered.length / rowsPerPage);
+  const startIndex = (page - 1) * rowsPerPage;
+  const currentRows = filtered.slice(startIndex, startIndex + rowsPerPage);
 
   // Handlers
   const nextPage = () => setPage((p) => Math.min(p + 1, totalPages));
@@ -76,7 +70,7 @@ export default function TariffPage() {
           Customs Tariff
         </h1>
         <p className="text-gray-300">
-          Check applicable duty, VAT & levy for import items
+          Search through {tariffData.length} tariff records
         </p>
       </div>
 
@@ -86,7 +80,7 @@ export default function TariffPage() {
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
-            setPage(1); // reset page on new search
+            setPage(1); // reset to first page on new search
           }}
           placeholder="Search by HS code or description"
           className="bg-white text-black border border-[#063064] w-full md:w-1/2"
@@ -103,39 +97,41 @@ export default function TariffPage() {
 
       {/* Table */}
       <div className="bg-[#0D0E10] p-4 md:p-6 rounded-xl border border-[#063064] text-white">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[800px] shadow-lg">
-            <thead>
-              <tr className="bg-gradient-to-r from-[#063064] to-[#0d47a1] text-white">
-                <th className="p-2">S/No</th>
-                <th className="p-2">HS Code</th>
-                <th className="p-2">Description</th>
-                <th className="p-2">Duty %</th>
-                <th className="p-2">VAT %</th>
-                <th className="p-2">Levy %</th>
-                <th className="p-2">Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((row, i) => (
-                <tr
-                  key={row.id}
-                  className={`hover:bg-[#2c3446] ${
-                    i % 2 === 0 ? "bg-[#1a237e]/40" : "bg-[#004d40]/40"
-                  }`}
-                >
-                  <td className="p-2">{row.id}</td>
-                  <td className="p-2">{row.hscode}</td>
-                  <td className="p-2">{row.description}</td>
-                  <td className="p-2">{row.duty_rate ?? "-"}</td>
-                  <td className="p-2">{row.vat ?? "-"}</td>
-                  <td className="p-2">{row.levy ?? "-"}</td>
-                  <td className="p-2">{row.date}</td>
+        {loading ? (
+          <p className="text-center text-gray-400">Loading...</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse min-w-[800px]">
+              <thead>
+                <tr className="bg-gradient-to-r from-[#063064] to-[#00509E] text-white">
+                  <th className="p-2">HS Code</th>
+                  <th className="p-2">Description</th>
+                  <th className="p-2">Duty %</th>
+                  <th className="p-2">VAT %</th>
+                  <th className="p-2">Levy %</th>
+                  <th className="p-2">Date</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {currentRows.map((row, i) => (
+                  <tr
+                    key={row.id}
+                    className={`hover:bg-[#2c3446] ${
+                      i % 2 === 0 ? "bg-[#1a237e]/40" : "bg-[#004d40]/40"
+                    }`}
+                  >
+                    <td className="p-2">{row.hscode}</td>
+                    <td className="p-2">{row.description}</td>
+                    <td className="p-2">{row.duty_rate ?? "-"}</td>
+                    <td className="p-2">{row.vat ?? "-"}</td>
+                    <td className="p-2">{row.levy ?? "-"}</td>
+                    <td className="p-2">{row.date}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
         {/* Pagination Controls */}
         <div className="flex flex-col sm:flex-row justify-between items-center gap-3 mt-4">
