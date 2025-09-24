@@ -1,54 +1,68 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FileDown, FileSpreadsheet } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
 
-// Tariff row type
+// Row type
 type TariffRow = {
   id: number;
   hscode: string;
   description: string;
   duty_rate: number | null;
-  levy: number | null;
   vat: number | null;
+  levy: number | null;
   date: string;
 };
 
 export default function TariffPage() {
   const [search, setSearch] = useState("");
-  const [tariffs, setTariffs] = useState<TariffRow[]>([]);
+  const [rows, setRows] = useState<TariffRow[]>([]);
   const [page, setPage] = useState(1);
-  const rowsPerPage = 10;
+  const rowsPerPage = 50; // ✅ fetch 50 per page
+  const [totalPages, setTotalPages] = useState(1);
 
-  // 🔄 Fetch data from Supabase
+  // 🔎 Fetch data from Supabase
   useEffect(() => {
-    const fetchTariffs = async () => {
-      const { data, error } = await supabase.from("tariff").select("*");
+    const fetchData = async () => {
+      const start = (page - 1) * rowsPerPage;
+      const end = start + rowsPerPage - 1;
+
+      // Get current page
+      const { data, error } = await supabase
+        .from("tariff")
+        .select("*", { count: "exact" }) // ✅ get count too
+        .range(start, end);
+
       if (error) {
         console.error("Supabase error:", error);
-      } else {
-        setTariffs(data || []);
+        return;
+      }
+
+      setRows(data || []);
+      if (data && data.length > 0) {
+        // Get total rows from count
+        const { count } = await supabase
+          .from("tariff")
+          .select("*", { count: "exact", head: true });
+
+        if (count) {
+          setTotalPages(Math.ceil(count / rowsPerPage));
+        }
       }
     };
-    fetchTariffs();
-  }, []);
 
-  // 🔎 Filter data
-  const filtered = useMemo(() => {
-    return tariffs.filter(
-      (row) =>
-        row.hscode?.toString().includes(search) ||
-        row.description?.toLowerCase().includes(search.toLowerCase())
-    );
-  }, [tariffs, search]);
+    fetchData();
+  }, [page]);
 
-  // 📄 Pagination logic
-  const totalPages = Math.ceil(filtered.length / rowsPerPage);
-  const startIndex = (page - 1) * rowsPerPage;
-  const currentRows = filtered.slice(startIndex, startIndex + rowsPerPage);
+  // 🔎 Search filter (applied client-side on current page only)
+  const filtered = rows.filter(
+    (row) =>
+      row.hscode?.includes(search) ||
+      row.description?.toLowerCase().includes(search.toLowerCase())
+  );
 
   // Handlers
   const nextPage = () => setPage((p) => Math.min(p + 1, totalPages));
@@ -90,9 +104,9 @@ export default function TariffPage() {
       {/* Table */}
       <div className="bg-[#0D0E10] p-4 md:p-6 rounded-xl border border-[#063064] text-white">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[800px]">
+          <table className="w-full text-left border-collapse min-w-[800px] shadow-lg">
             <thead>
-              <tr className="bg-[#063064] text-white">
+              <tr className="bg-gradient-to-r from-[#063064] to-[#0d47a1] text-white">
                 <th className="p-2">S/No</th>
                 <th className="p-2">HS Code</th>
                 <th className="p-2">Description</th>
@@ -103,31 +117,22 @@ export default function TariffPage() {
               </tr>
             </thead>
             <tbody>
-              {currentRows.length > 0 ? (
-                currentRows.map((row) => (
-                  <tr
-                    key={row.id}
-                    className="hover:bg-[#2c3446] odd:bg-[#1a237e]/40 even:bg-[#004d40]/40"
-                  >
-                    <td className="p-2">{row.id}</td>
-                    <td className="p-2">{row.hscode}</td>
-                    <td className="p-2">{row.description}</td>
-                    <td className="p-2">{row.duty_rate ?? "-"}</td>
-                    <td className="p-2">{row.vat ?? "-"}</td>
-                    <td className="p-2">{row.levy ?? "-"}</td>
-                    <td className="p-2">{row.date}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    className="p-4 text-center text-gray-400"
-                    colSpan={7}
-                  >
-                    No tariff data found
-                  </td>
+              {filtered.map((row, i) => (
+                <tr
+                  key={row.id}
+                  className={`hover:bg-[#2c3446] ${
+                    i % 2 === 0 ? "bg-[#1a237e]/40" : "bg-[#004d40]/40"
+                  }`}
+                >
+                  <td className="p-2">{row.id}</td>
+                  <td className="p-2">{row.hscode}</td>
+                  <td className="p-2">{row.description}</td>
+                  <td className="p-2">{row.duty_rate ?? "-"}</td>
+                  <td className="p-2">{row.vat ?? "-"}</td>
+                  <td className="p-2">{row.levy ?? "-"}</td>
+                  <td className="p-2">{row.date}</td>
                 </tr>
-              )}
+              ))}
             </tbody>
           </table>
         </div>
