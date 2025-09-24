@@ -160,8 +160,8 @@ export default function HomePage() {
           Ready to Streamline Your Operations?
         </h2>
         <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
-          Join thousands of customs professionals who trust DutyCalc Pro for
-          accurate calculations and comprehensive trade support.
+          Join thousands of freight forwarders who trust DutyCalc Pro for
+          accurate calculations and clearing assistance.
         </p>
         <Link
           href="/contact" // ✅ updated to contact page
