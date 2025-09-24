@@ -217,10 +217,10 @@ export default function ManifestPage() {
               <th className="p-2">S/N</th>
               <th className="p-2">Manifest</th>
               <th className="p-2">Destination</th>
-              <th className="p-2">Command</th>
-              <th className="p-2">Origin</th>
+              <th className="p-2">Customs command</th>
+              <th className="p-2">Place of departure</th>
               <th className="p-2">Air/Shipping Line</th>
-              <th className="p-2">Voyage/Flight</th>
+              <th className="p-2">Voyage/Flight No</th>
               <th className="p-2">Date Reg</th>
               <th className="p-2">Date Arrival</th>
             </tr>
