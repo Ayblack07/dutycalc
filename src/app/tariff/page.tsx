@@ -8,11 +8,11 @@ import { supabase } from "@/lib/supabaseClient";
 
 // Tariff row type
 type TariffRow = {
-  sno: number;
-  hs_code: string;
+  id: number;
+  hscode: string;
   description: string;
   duty_rate: number | null;
-  levy_rate: number | null;
+  levy: number | null;
   vat: number | null;
   date: string;
 };
@@ -40,7 +40,7 @@ export default function TariffPage() {
   const filtered = useMemo(() => {
     return tariffs.filter(
       (row) =>
-        row.hs_code?.toString().includes(search) ||
+        row.hscode?.toString().includes(search) ||
         row.description?.toLowerCase().includes(search.toLowerCase())
     );
   }, [tariffs, search]);
@@ -106,15 +106,15 @@ export default function TariffPage() {
               {currentRows.length > 0 ? (
                 currentRows.map((row) => (
                   <tr
-                    key={row.sno}
+                    key={row.id}
                     className="hover:bg-[#2c3446] odd:bg-[#1a237e]/40 even:bg-[#004d40]/40"
                   >
-                    <td className="p-2">{row.sno}</td>
-                    <td className="p-2">{row.hs_code}</td>
+                    <td className="p-2">{row.id}</td>
+                    <td className="p-2">{row.hscode}</td>
                     <td className="p-2">{row.description}</td>
                     <td className="p-2">{row.duty_rate ?? "-"}</td>
                     <td className="p-2">{row.vat ?? "-"}</td>
-                    <td className="p-2">{row.levy_rate ?? "-"}</td>
+                    <td className="p-2">{row.levy ?? "-"}</td>
                     <td className="p-2">{row.date}</td>
                   </tr>
                 ))
