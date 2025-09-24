@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Copy, Download } from "lucide-react";
+import { Copy, Download, Link as LinkIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -39,8 +39,8 @@ export default function DutyCalculator() {
   // States
   const [dutyRate, setDutyRate] = useState<number>(0);
   const [levyRate, setLevyRate] = useState<number>(0);
-  const [invoice, setInvoice] = useState<number>(0);
-  const [freight, setFreight] = useState<number>(0);
+  const [invoice, setInvoice] = useState<number | undefined>(undefined);
+  const [freight, setFreight] = useState<number | undefined>(undefined);
   const [currency, setCurrency] = useState<string>("USD");
   const [exchangeRate, setExchangeRate] = useState<number>(1550);
   const [manualExchangeRate, setManualExchangeRate] = useState<boolean>(false);
@@ -56,8 +56,8 @@ export default function DutyCalculator() {
   }, [currency, manualExchangeRate]);
 
   // NGN values
-  const invoiceNGN = invoice * exchangeRate;
-  const freightNGN = freight * exchangeRate;
+  const invoiceNGN = (invoice || 0) * exchangeRate;
+  const freightNGN = (freight || 0) * exchangeRate;
 
   // Insurance
   const calculatedInsurance = (invoiceNGN + freightNGN) * 0.015;
@@ -110,8 +110,8 @@ export default function DutyCalculator() {
   const copyBreakdown = () => {
     let breakdown = `DUTY CALC - CUSTOMS DUTY CALCULATION
 ==================================================
-Invoice: ${currency} ${invoice} → ${formatCurrency(invoiceNGN)}
-Freight: ${currency} ${freight} → ${formatCurrency(freightNGN)}
+Invoice: ${currency} ${invoice || 0} → ${formatCurrency(invoiceNGN)}
+Freight: ${currency} ${freight || 0} → ${formatCurrency(freightNGN)}
 Exchange Rate: ${exchangeRate}
 Insurance: ${formatCurrency(finalInsurance)}
 
@@ -144,69 +144,71 @@ ETLS (0.5%): ${formatCurrency(etls)}
   };
 
   // Download PDF
-  const downloadPDF = () => {
-    const doc = new jsPDF();
+const downloadPDF = () => {
+  const doc = new jsPDF();
 
-    // Header
-    doc.setFontSize(16);
-    doc.text("Dutycalc", 14, 12);
+  // Header
+  doc.setFontSize(16);
+  doc.text("Dutycalc", 14, 12);
 
-    // Title
-    doc.setFontSize(14);
-    doc.text("Customs Duty Calculation", 14, 22);
+  // Title
+  doc.setFontSize(14);
+  doc.text("Customs Duty Calculation", 14, 20);
 
-    // Build table body
-    const tableBody: (string | number)[][] = [
-      ["Invoice", `${currency} ${invoice} → ${formatCurrency(invoiceNGN)}`],
-      ["Freight", `${currency} ${freight} → ${formatCurrency(freightNGN)}`],
-      ["Exchange Rate", exchangeRate],
-      ["Insurance", formatCurrency(finalInsurance)],
-      ["CIF", formatCurrency(cif)],
-    ];
+  // Build table body
+  const tableBody: (string | number)[][] = [
+    ["Invoice", `${currency} ${invoice || 0} → ${formatCurrency(invoiceNGN)}`],
+    ["Freight", `${currency} ${freight || 0} → ${formatCurrency(freightNGN)}`],
+    ["Exchange Rate", exchangeRate],
+    ["Insurance", formatCurrency(finalInsurance)],
+    ["CIF", formatCurrency(cif)],
+  ];
 
-    if (calculationType === "idec") {
-      tableBody.push(
-        ["FCS (4%)", formatCurrency(fcs)],
-        ["ETLS (0.5%)", formatCurrency(etls)]
-      );
-    } else {
-      tableBody.push(
-        ["FCS (4%)", formatCurrency(fcs)],
-        ["Duty", formatCurrency(duty)],
-        ["Levy", formatCurrency(levy)],
-        ["Surcharge (7%)", formatCurrency(surcharge)],
-        ["ETLS (0.5%)", formatCurrency(etls)]
-      );
-      if (calculationType === "withVAT") {
-        tableBody.push(["VAT (7.5%)", formatCurrency(vat)]);
-      }
+  if (calculationType === "idec") {
+    tableBody.push(
+      ["FCS (4%)", formatCurrency(fcs)],
+      ["ETLS (0.5%)", formatCurrency(etls)]
+    );
+  } else {
+    tableBody.push(
+      ["FCS (4%)", formatCurrency(fcs)],
+      ["Duty", formatCurrency(duty)],
+      ["Levy", formatCurrency(levy)],
+      ["Surcharge (7%)", formatCurrency(surcharge)],
+      ["ETLS (0.5%)", formatCurrency(etls)]
+    );
+    if (calculationType === "withVAT") {
+      tableBody.push(["VAT (7.5%)", formatCurrency(vat)]);
     }
+  }
 
-    tableBody.push([getCalculationLabel(), formatCurrency(getFinalTotal())]);
+  tableBody.push([getCalculationLabel(), formatCurrency(getFinalTotal())]);
 
-    // Table
-    autoTable(doc, {
-      startY: 28,
-      head: [["Item", "Value"]],
-      body: tableBody,
-      theme: "grid",
-      styles: { fontSize: 11, cellPadding: 2 },
-      headStyles: { fillColor: [40, 40, 40], textColor: 255 },
-      alternateRowStyles: { fillColor: [245, 245, 245] },
-    });
+  // Table
+  autoTable(doc, {
+    startY: 26, // tighter start
+    head: [["Item", "Value"]],
+    body: tableBody,
+    theme: "grid",
+    styles: { fontSize: 11, cellPadding: { top: 1.5, right: 2, bottom: 1.5, left: 2 } },
+    headStyles: { fillColor: [40, 40, 40], textColor: 255 },
+    alternateRowStyles: { fillColor: [245, 245, 245] },
+    margin: { left: 14, right: 14 }, // balanced margins
+  });
 
-    // Footer
-    const pageHeight = doc.internal.pageSize.height;
-    doc.setFontSize(10);
-    doc.text("generated from dutycalc.ng", 14, pageHeight - 10);
+  // Footer
+  const pageHeight = doc.internal.pageSize.height;
+  doc.setFontSize(9);
+  doc.text("Generated from dutycalc.ng", 14, pageHeight - 8);
 
-    doc.save("duty-calculation.pdf");
+  doc.save("duty-calculation.pdf");
 
-    toast({
-      title: "PDF Downloaded",
-      description: "Your duty calculation PDF is ready.",
-    });
-  };
+  toast({
+    title: "PDF Downloaded",
+    description: "Your duty calculation PDF is ready.",
+  });
+};
+
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
       <div className="text-center">
@@ -222,42 +224,62 @@ ETLS (0.5%): ${formatCurrency(etls)}
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Mode */}
-            <div>
-              <Label>Calculation Mode</Label>
-              <Select onValueChange={setCalculationType} defaultValue="withVAT">
-                <SelectTrigger>
-                  <SelectValue placeholder="Select Mode" />
-                </SelectTrigger>
-                <SelectContent className="bg-black text-white">
-                  <SelectItem value="withVAT">WITH VAT</SelectItem>
-                  <SelectItem value="noVAT">NO VAT</SelectItem>
-                  <SelectItem value="idec">IDEC</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="flex items-center justify-between">
+              <div className="w-full">
+                <Label>Calculation Mode</Label>
+                <Select onValueChange={setCalculationType} defaultValue="withVAT">
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Mode" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-black text-white">
+                    <SelectItem value="withVAT">WITH VAT</SelectItem>
+                    <SelectItem value="noVAT">NO VAT</SelectItem>
+                    <SelectItem value="idec">IDEC</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Link href="/tariff" className="ml-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-xs px-2 py-1 flex items-center"
+                >
+                  <LinkIcon className="w-3 h-3 mr-1" />
+                  Tariff
+                </Button>
+              </Link>
             </div>
 
             <div>
               <Label>Invoice ({currency})</Label>
               <Input
                 type="number"
-                value={invoice}
-                onChange={(e) => setInvoice(parseFloat(e.target.value) || 0)}
+                value={invoice ?? ""}
+                onChange={(e) =>
+                  setInvoice(e.target.value ? parseFloat(e.target.value) : undefined)
+                }
               />
-              <p className="text-sm text-gray-400">
-                = {formatCurrency(invoiceNGN)}
-              </p>
+              {invoice !== undefined && (
+                <p className="text-sm text-gray-400">
+                  = {formatCurrency(invoiceNGN)}
+                </p>
+              )}
             </div>
 
             <div>
               <Label>Freight ({currency})</Label>
               <Input
                 type="number"
-                value={freight}
-                onChange={(e) => setFreight(parseFloat(e.target.value) || 0)}
+                value={freight ?? ""}
+                onChange={(e) =>
+                  setFreight(e.target.value ? parseFloat(e.target.value) : undefined)
+                }
               />
-              <p className="text-sm text-gray-400">
-                = {formatCurrency(freightNGN)}
-              </p>
+              {freight !== undefined && (
+                <p className="text-sm text-gray-400">
+                  = {formatCurrency(freightNGN)}
+                </p>
+              )}
             </div>
 
             <div>
@@ -305,22 +327,38 @@ ETLS (0.5%): ${formatCurrency(etls)}
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 items-end">
               <div>
                 <Label>Duty Rate (%)</Label>
                 <Input
                   type="number"
-                  value={dutyRate}
-                  onChange={(e) => setDutyRate(parseFloat(e.target.value) || 0)}
+                  value={dutyRate || ""}
+                  onChange={(e) =>
+                    setDutyRate(parseFloat(e.target.value) || 0)
+                  }
                 />
               </div>
-              <div>
-                <Label>Levy Rate (%)</Label>
-                <Input
-                  type="number"
-                  value={levyRate}
-                  onChange={(e) => setLevyRate(parseFloat(e.target.value) || 0)}
-                />
+              <div className="flex items-center gap-2">
+                <div className="w-full">
+                  <Label>Levy Rate (%)</Label>
+                  <Input
+                    type="number"
+                    value={levyRate || ""}
+                    onChange={(e) =>
+                      setLevyRate(parseFloat(e.target.value) || 0)
+                    }
+                  />
+                </div>
+                <Link href="/exchange-rate">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-xs px-2 py-1 flex items-center"
+                  >
+                    <LinkIcon className="w-3 h-3 mr-1" />
+                    Rates
+                  </Button>
+                </Link>
               </div>
             </div>
           </CardContent>
@@ -394,14 +432,6 @@ ETLS (0.5%): ${formatCurrency(etls)}
                 <span>{getCalculationLabel()}:</span>
                 <span>{formatCurrency(getFinalTotal())}</span>
               </div>
-            </div>
-
-            <div className="mt-6 text-center">
-              <Link href="/exchange-rate">
-                <Button className="bg-[#F7D234] text-black hover:bg-yellow-400">
-                  Check Exchange Rates
-                </Button>
-              </Link>
             </div>
           </CardContent>
         </Card>

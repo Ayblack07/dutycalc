@@ -93,7 +93,6 @@ export default function TariffPage() {
           <table className="w-full text-left border-collapse min-w-[800px]">
             <thead>
               <tr className="bg-[#063064] text-white">
-                <th className="p-2">S/No</th>
                 <th className="p-2">HS Code</th>
                 <th className="p-2">Description</th>
                 <th className="p-2">Duty %</th>
