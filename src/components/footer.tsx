@@ -40,7 +40,7 @@ export default function Footer() {
           <h4 className="font-semibold text-white mb-3">Community</h4>
           <ul className="space-y-2 text-sm">
             <li>
-              <Link href="/learning" className="hover:text-[#F7D234]">
+              <Link href="/learning-hub" className="hover:text-[#F7D234]">
                 Learning Hub
               </Link>
             </li>
@@ -71,8 +71,7 @@ export default function Footer() {
       </div>
 
       <div className="mt-8 border-t border-gray-700 pt-6 text-center text-sm text-gray-400">
-        © {new Date().getFullYear()} DutyCalc. Built for Nigerian customs
-        professionals.
+        © {new Date().getFullYear()} DutyCalc. Built for professionals.
       </div>
     </footer>
   );
