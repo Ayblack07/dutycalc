@@ -26,7 +26,7 @@ export type ManifestRow = {
   air_shipping_line: string;
   voyage_flight_no?: string;
   date_of_registration: string;
-  date_of_arrival: string;
+  date_of_departure: string;
 };
 
 export default function ManifestPage() {
@@ -34,8 +34,8 @@ export default function ManifestPage() {
   const [keyword, setKeyword] = useState("");
   const [dateRegFrom, setDateRegFrom] = useState<Date | null>(null);
   const [dateRegTo, setDateRegTo] = useState<Date | null>(null);
-  const [dateArrivalFrom, setDateArrivalFrom] = useState<Date | null>(null);
-  const [dateArrivalTo, setDateArrivalTo] = useState<Date | null>(null);
+  const [dateDepartureFrom, setDateDepartureFrom] = useState<Date | null>(null);
+  const [dateDepartureTo, setDateDepartureTo] = useState<Date | null>(null);
 
   // Pagination
   const [page, setPage] = useState(1);
@@ -68,8 +68,8 @@ export default function ManifestPage() {
       const regDate = row.date_of_registration
         ? new Date(row.date_of_registration)
         : null;
-      const arrivalDate = row.date_of_arrival
-        ? new Date(row.date_of_arrival)
+      const departureDate = row.date_of_departure
+        ? new Date(row.date_of_departure)
         : null;
 
       const matchReg =
@@ -84,25 +84,25 @@ export default function ManifestPage() {
             (dateRegFrom && !dateRegTo && regDate >= startOfDay(dateRegFrom)) ||
             (!dateRegFrom && dateRegTo && regDate <= endOfDay(dateRegTo))));
 
-      const matchArrival =
-        (!dateArrivalFrom && !dateArrivalTo) ||
-        (arrivalDate &&
-          ((dateArrivalFrom &&
-            dateArrivalTo &&
-            isWithinInterval(arrivalDate, {
-              start: startOfDay(dateArrivalFrom),
-              end: endOfDay(dateArrivalTo),
+      const matchDeparture =
+        (!dateDepartureFrom && !dateDepartureTo) ||
+        (departureDate &&
+          ((dateDepartureFrom &&
+            dateDepartureTo &&
+            isWithinInterval(departureDate, {
+              start: startOfDay(dateDepartureFrom),
+              end: endOfDay(dateDepartureTo),
             })) ||
-            (dateArrivalFrom &&
-              !dateArrivalTo &&
-              arrivalDate >= startOfDay(dateArrivalFrom)) ||
-            (!dateArrivalFrom &&
-              dateArrivalTo &&
-              arrivalDate <= endOfDay(dateArrivalTo))));
+            (dateDepartureFrom &&
+              !dateDepartureTo &&
+              departureDate >= startOfDay(dateDepartureFrom)) ||
+            (!dateDepartureFrom &&
+              dateDepartureTo &&
+              departureDate <= endOfDay(dateDepartureTo))));
 
-      return matchKeyword && matchReg && matchArrival;
+      return matchKeyword && matchReg && matchDeparture;
     });
-  }, [manifests, keyword, dateRegFrom, dateRegTo, dateArrivalFrom, dateArrivalTo]);
+  }, [manifests, keyword, dateRegFrom, dateRegTo, dateDepartureFrom, dateDepartureTo]);
 
   // Pagination slice
   const paginated = useMemo(() => {
@@ -130,8 +130,8 @@ export default function ManifestPage() {
     setKeyword("");
     setDateRegFrom(null);
     setDateRegTo(null);
-    setDateArrivalFrom(null);
-    setDateArrivalTo(null);
+    setDateDepartureFrom(null);
+    setDateDepartureTo(null);
     setPage(1);
   };
 
@@ -166,22 +166,22 @@ export default function ManifestPage() {
             />
           </div>
           <div>
-            <Label>Arrival From</Label>
+            <Label>Departure From</Label>
             <Input
               type="date"
               onChange={(e) =>
-                setDateArrivalFrom(
+                setDateDepartureFrom(
                   e.target.value ? new Date(e.target.value) : null
                 )
               }
             />
           </div>
           <div>
-            <Label>Arrival To</Label>
+            <Label>Departure To</Label>
             <Input
               type="date"
               onChange={(e) =>
-                setDateArrivalTo(
+                setDateDepartureTo(
                   e.target.value ? new Date(e.target.value) : null
                 )
               }
@@ -217,12 +217,12 @@ export default function ManifestPage() {
               <th className="p-2">S/N</th>
               <th className="p-2">Manifest</th>
               <th className="p-2">Destination</th>
-              <th className="p-2">Customs command</th>
+              <th className="p-2">Command</th>
               <th className="p-2">Place of departure</th>
               <th className="p-2">Air/Shipping Line</th>
               <th className="p-2">Voyage/Flight No</th>
               <th className="p-2">Date Reg</th>
-              <th className="p-2">Date Arrival</th>
+              <th className="p-2">Date dep</th>
             </tr>
           </thead>
           <tbody>
@@ -247,8 +247,8 @@ export default function ManifestPage() {
             : "-"}
         </td>
         <td className="p-2">
-          {row.date_of_arrival
-            ? format(new Date(row.date_of_arrival), "yyyy-MM-dd")
+          {row.date_of_departure
+            ? format(new Date(row.date_of_departure), "yyyy-MM-dd")
             : "-"}
         </td>
       </tr>
