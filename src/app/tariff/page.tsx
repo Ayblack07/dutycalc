@@ -5,6 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FileDown, FileSpreadsheet } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
+import * as XLSX from "xlsx";
 
 // Row type
 type TariffRow = {
@@ -19,41 +22,22 @@ type TariffRow = {
 
 export default function TariffPage() {
   const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState(""); // ✅ debounced
   const [rows, setRows] = useState<TariffRow[]>([]);
   const [page, setPage] = useState(1);
-  const rowsPerPage = 50;
+  const rowsPerPage = 50; // ✅ fetch 50 per page
   const [totalPages, setTotalPages] = useState(1);
 
-  // ⏱️ Debounce effect: wait 400ms after typing
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearch(search);
-    }, 400);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [search]);
-
-  // 🔎 Fetch data from Supabase (with search + pagination)
+  // 🔎 Fetch data from Supabase
   useEffect(() => {
     const fetchData = async () => {
       const start = (page - 1) * rowsPerPage;
       const end = start + rowsPerPage - 1;
 
-      let query = supabase
+      // Get current page
+      const { data, error } = await supabase
         .from("tariff")
         .select("*", { count: "exact" })
         .range(start, end);
-
-      if (debouncedSearch) {
-        query = query.or(
-          `hscode.ilike.%${debouncedSearch}%,description.ilike.%${debouncedSearch}%`
-        );
-      }
-
-      const { data, error, count } = await query;
 
       if (error) {
         console.error("Supabase error:", error);
@@ -61,17 +45,67 @@ export default function TariffPage() {
       }
 
       setRows(data || []);
-      if (count) {
-        setTotalPages(Math.ceil(count / rowsPerPage));
+      if (data && data.length > 0) {
+        // Get total rows from count
+        const { count } = await supabase
+          .from("tariff")
+          .select("*", { count: "exact", head: true });
+
+        if (count) {
+          setTotalPages(Math.ceil(count / rowsPerPage));
+        }
       }
     };
 
     fetchData();
-  }, [page, debouncedSearch]); // ✅ trigger when search or page changes
+  }, [page, search]);
+
+  // 🔎 Search filter (applied client-side on current page only)
+  const filtered = rows.filter(
+    (row) =>
+      row.hscode?.includes(search) ||
+      row.description?.toLowerCase().includes(search.toLowerCase())
+  );
 
   // Handlers
   const nextPage = () => setPage((p) => Math.min(p + 1, totalPages));
   const prevPage = () => setPage((p) => Math.max(p - 1, 1));
+
+  // 📄 Export current page to PDF
+  const exportPDF = () => {
+    const doc = new jsPDF();
+    autoTable(doc, {
+      head: [["S/No", "HS Code", "Description", "Duty %", "VAT %", "Levy %", "Date"]],
+      body: filtered.map((row) => [
+        row.id,
+        row.hscode,
+        row.description,
+        row.duty_rate ?? "-",
+        row.vat ?? "-",
+        row.levy ?? "-",
+        row.date,
+      ]),
+    });
+    doc.save("tariff.pdf");
+  };
+
+  // 📊 Export current page to Excel
+  const exportExcel = () => {
+    const ws = XLSX.utils.json_to_sheet(
+      filtered.map((row) => ({
+        "S/No": row.id,
+        "HS Code": row.hscode,
+        Description: row.description,
+        "Duty %": row.duty_rate ?? "-",
+        "VAT %": row.vat ?? "-",
+        "Levy %": row.levy ?? "-",
+        Date: row.date,
+      }))
+    );
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Tariff");
+    XLSX.writeFile(wb, "tariff.xlsx");
+  };
 
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-8">
@@ -91,16 +125,22 @@ export default function TariffPage() {
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
-            setPage(1); // reset to page 1 when searching
+            setPage(1); // reset page on new search
           }}
           placeholder="Search by HS code or description"
           className="bg-white text-black border border-[#063064] w-full md:w-1/2"
         />
         <div className="flex flex-wrap gap-3 w-full md:w-auto">
-          <Button className="bg-green-600 hover:bg-green-700 w-full sm:w-auto">
+          <Button
+            onClick={exportPDF}
+            className="bg-green-600 hover:bg-green-700 w-full sm:w-auto"
+          >
             <FileDown className="w-4 h-4 mr-2" /> PDF
           </Button>
-          <Button className="bg-yellow-500 hover:bg-yellow-600 text-black w-full sm:w-auto">
+          <Button
+            onClick={exportExcel}
+            className="bg-yellow-500 hover:bg-yellow-600 text-black w-full sm:w-auto"
+          >
             <FileSpreadsheet className="w-4 h-4 mr-2" /> Excel
           </Button>
         </div>
@@ -122,7 +162,7 @@ export default function TariffPage() {
               </tr>
             </thead>
             <tbody>
-              {rows.map((row, i) => (
+              {filtered.map((row, i) => (
                 <tr
                   key={row.id}
                   className={`hover:bg-[#2c3446] ${
