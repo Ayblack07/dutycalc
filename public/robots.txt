@@ -1,4 +1,3 @@
 User-agent: *
 Allow: /
-
-Sitemap: https://dutycalc.ng/Sitemap.xml
+Sitemap: https://dutycalc.ng/sitemap.xml
