@@ -33,11 +33,16 @@ export default function TariffPage() {
       const start = (page - 1) * rowsPerPage;
       const end = start + rowsPerPage - 1;
 
-      // Get current page
-      const { data, error } = await supabase
-        .from("tariff")
-        .select("*", { count: "exact" })
-        .range(start, end);
+      let query = supabase.from("tariff").select("*", { count: "exact" });
+
+      // ✅ Server-side search across all rows
+      if (search.trim() !== "") {
+        query = query.or(
+          `hscode.ilike.%${search}%,description.ilike.%${search}%`
+        );
+      }
+
+      const { data, error, count } = await query.range(start, end);
 
       if (error) {
         console.error("Supabase error:", error);
@@ -45,22 +50,15 @@ export default function TariffPage() {
       }
 
       setRows(data || []);
-      if (data && data.length > 0) {
-        // Get total rows from count
-        const { count } = await supabase
-          .from("tariff")
-          .select("*", { count: "exact", head: true });
-
-        if (count) {
-          setTotalPages(Math.ceil(count / rowsPerPage));
-        }
+      if (count) {
+        setTotalPages(Math.ceil(count / rowsPerPage));
       }
     };
 
     fetchData();
   }, [page, search]);
 
-  // 🔎 Search filter (applied client-side on current page only)
+  // 🔎 Client-side fallback filter
   const filtered = rows.filter(
     (row) =>
       row.hscode?.includes(search) ||

@@ -246,7 +246,7 @@ const downloadPDF = () => {
                   className="text-xs px-2 py-1 flex items-center"
                 >
                   <LinkIcon className="w-3 h-3 mr-1" />
-                  Tariff
+                  Check Tariff
                 </Button>
               </Link>
             </div>
@@ -357,7 +357,7 @@ const downloadPDF = () => {
                     className="text-xs px-2 py-1 flex items-center"
                   >
                     <LinkIcon className="w-3 h-3 mr-1" />
-                    Rates
+                    Exchange Rates
                   </Button>
                 </Link>
               </div>
@@ -386,9 +386,10 @@ const downloadPDF = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              <div className="flex justify-between">
+                  {/* CIF */}
+              <div className="flex justify-between font-semibold">
                 <span>CIF:</span>
-                <span>{formatCurrency(cif)}</span>
+                <span className="text-yellow-200">{formatCurrency(cif)}</span>
               </div>
 
               {calculationType === "idec" ? (
@@ -435,7 +436,9 @@ const downloadPDF = () => {
 
               <div className="flex justify-between font-bold border-t border-gray-700 pt-2 mt-2">
                 <span>{getCalculationLabel()}:</span>
-                <span>{formatCurrency(getFinalTotal())}</span>
+                <span className="text-green-500">{formatCurrency(getFinalTotal())}
+                </span>
+  
               </div>
             </div>
           </CardContent>
