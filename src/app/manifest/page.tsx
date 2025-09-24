@@ -231,8 +231,8 @@ export default function ManifestPage() {
       <tr
         key={row.sno}
         className={`border-t transition-all duration-200 ${
-          idx % 2 === 0 ? "bg-black" : "bg-indigo-600"
-        } hover:bg-gradient-to-r hover:from-green-700 hover:to-green-500 hover:shadow-md hover:rounded-md`}
+          idx % 2 === 0 ? "bg-black" : "bg-black"
+        } hover:bg-gradient-to-r hover:from-indigo-600 hover:to-indigo-500 hover:shadow-md hover:rounded-md`}
       >
         <td className="p-2">{row.sno}</td>
         <td className="p-2">{row.manifest_no}</td>
