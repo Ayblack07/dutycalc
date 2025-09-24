@@ -57,7 +57,7 @@ export default function ExchangeRatePage() {
                   <td className="border border-gray-700 px-4 py-2">
                     {rate.code}
                   </td>
-                  <td className="border border-gray-700 px-4 py-2 font-semibold bg-gradient-to-r from-yellow-400 via-orange-300 to-yellow-500 bg-clip-text text-transparent animate-pulse">
+                  <td className="border border-gray-700 px-4 py-2 font-semibold bg-gradient-to-r from-red-400 via-orange-300 to-green-500 bg-clip-text text-transparent animate-pulse">
                     {rate.value.toLocaleString()}
                   </td>
                 </tr>
