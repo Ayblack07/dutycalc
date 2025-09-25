@@ -22,16 +22,9 @@ import { useToast } from "@/hooks/use-toast";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import Link from "next/link";
-import { exchangeRatesData } from "@/data/exchangeRates";
+import { supabase } from "@/lib/supabaseClient";
 
-// Convert array to map for easy lookup
-const exchangeRates: Record<string, number> = exchangeRatesData.reduce(
-  (acc, curr) => {
-    acc[curr.code] = curr.value;
-    return acc;
-  },
-  {} as Record<string, number>
-);
+// -------------------------------------------------
 
 export default function DutyCalculator() {
   const { toast } = useToast();
@@ -42,17 +35,30 @@ export default function DutyCalculator() {
   const [invoice, setInvoice] = useState<number | undefined>(undefined);
   const [freight, setFreight] = useState<number | undefined>(undefined);
   const [currency, setCurrency] = useState<string>("USD");
-  const [exchangeRate, setExchangeRate] = useState<number>(1550);
+  const [exchangeRate, setExchangeRate] = useState<number>(0); // ✅ no default
   const [manualExchangeRate, setManualExchangeRate] = useState<boolean>(false);
-  const [insurance, setInsurance] = useState<number>(0);
+  const [insurance, setInsurance] = useState<number | undefined>(undefined); // ✅ no default
   const [manualInsurance, setManualInsurance] = useState<boolean>(false);
   const [calculationType, setCalculationType] = useState<string>("withVAT");
 
-  // Auto update exchange rate when currency changes
+  // ✅ Fetch latest exchange rate from Supabase when currency changes
   useEffect(() => {
-    if (!manualExchangeRate && exchangeRates[currency]) {
-      setExchangeRate(exchangeRates[currency]);
-    }
+    const fetchRate = async () => {
+      if (!manualExchangeRate) {
+        const { data, error } = await supabase
+          .from("exchange_rate")
+          .select("value")
+          .eq("code", currency)
+          .order("date", { ascending: false })
+          .limit(1)
+          .single();
+
+        if (!error && data) {
+          setExchangeRate(data.value);
+        }
+      }
+    };
+    fetchRate();
   }, [currency, manualExchangeRate]);
 
   // NGN values
@@ -61,7 +67,9 @@ export default function DutyCalculator() {
 
   // Insurance
   const calculatedInsurance = (invoiceNGN + freightNGN) * 0.015;
-  const finalInsurance = manualInsurance ? insurance : calculatedInsurance;
+  const finalInsurance = manualInsurance
+    ? insurance || 0
+    : calculatedInsurance;
 
   // Calculations
   const cif = invoiceNGN + freightNGN + finalInsurance;
@@ -144,88 +152,91 @@ ETLS (0.5%): ${formatCurrency(etls)}
   };
 
   // Download PDF
-const downloadPDF = () => {
-  const doc = new jsPDF();
+  const downloadPDF = () => {
+    const doc = new jsPDF();
 
-  // Header
-  doc.setFontSize(16);
-  doc.text("Dutycalc", 14, 12);
+    // Header
+    doc.setFontSize(16);
+    doc.text("Dutycalc", 14, 12);
 
-  // Title
-  doc.setFontSize(14);
-  doc.text("Customs Duty Calculation", 14, 20);
+    // Title
+    doc.setFontSize(14);
+    doc.text("Customs Duty Calculation", 14, 20);
 
-  // Build table body
-  const tableBody: (string | number)[][] = [
-    ["Invoice", `${currency} ${invoice || 0} → ${formatCurrency(invoiceNGN)}`],
-    ["Freight", `${currency} ${freight || 0} → ${formatCurrency(freightNGN)}`],
-    ["Exchange Rate", exchangeRate],
-    ["Insurance", formatCurrency(finalInsurance)],
-    ["CIF", formatCurrency(cif)],
-  ];
+    // Build table body
+    const tableBody: (string | number)[][] = [
+      ["Invoice", `${currency} ${invoice || 0} → ${formatCurrency(invoiceNGN)}`],
+      ["Freight", `${currency} ${freight || 0} → ${formatCurrency(freightNGN)}`],
+      ["Exchange Rate", exchangeRate],
+      ["Insurance", formatCurrency(finalInsurance)],
+      ["CIF", formatCurrency(cif)],
+    ];
 
-  if (calculationType === "idec") {
-    tableBody.push(
-      ["FCS (4%)", formatCurrency(fcs)],
-      ["ETLS (0.5%)", formatCurrency(etls)]
-    );
-  } else {
-    tableBody.push(
-      ["FCS (4%)", formatCurrency(fcs)],
-      ["Duty", formatCurrency(duty)],
-      ["Levy", formatCurrency(levy)],
-      ["Surcharge (7%)", formatCurrency(surcharge)],
-      ["ETLS (0.5%)", formatCurrency(etls)]
-    );
-    if (calculationType === "withVAT") {
-      tableBody.push(["VAT (7.5%)", formatCurrency(vat)]);
+    if (calculationType === "idec") {
+      tableBody.push(
+        ["FCS (4%)", formatCurrency(fcs)],
+        ["ETLS (0.5%)", formatCurrency(etls)]
+      );
+    } else {
+      tableBody.push(
+        ["FCS (4%)", formatCurrency(fcs)],
+        ["Duty", formatCurrency(duty)],
+        ["Levy", formatCurrency(levy)],
+        ["Surcharge (7%)", formatCurrency(surcharge)],
+        ["ETLS (0.5%)", formatCurrency(etls)]
+      );
+      if (calculationType === "withVAT") {
+        tableBody.push(["VAT (7.5%)", formatCurrency(vat)]);
+      }
     }
-  }
 
-  tableBody.push([getCalculationLabel(), formatCurrency(getFinalTotal())]);
+    tableBody.push([getCalculationLabel(), formatCurrency(getFinalTotal())]);
 
-  // Table
-  autoTable(doc, {
-    startY: 26, // tighter start
-    head: [["Item", "Value"]],
-    body: tableBody,
-    theme: "grid",
-    styles: { fontSize: 11, cellPadding: { top: 1.5, right: 2, bottom: 1.5, left: 2 } },
-    headStyles: { fillColor: [40, 40, 40], textColor: 255 },
-    alternateRowStyles: { fillColor: [245, 245, 245] },
-    margin: { left: 14, right: 14 }, // balanced margins
-  });
+    // Table
+    autoTable(doc, {
+      startY: 26,
+      head: [["Item", "Value"]],
+      body: tableBody,
+      theme: "grid",
+      styles: { fontSize: 11, cellPadding: 2 },
+      headStyles: { fillColor: [40, 40, 40], textColor: 255 },
+      alternateRowStyles: { fillColor: [245, 245, 245] },
+      margin: { left: 14, right: 14 },
+    });
 
-  // Footer
-  const pageHeight = doc.internal.pageSize.height;
-  doc.setFontSize(9);
-  doc.text("Generated from dutycalc.ng", 14, pageHeight - 8);
+    // Footer
+    const pageHeight = doc.internal.pageSize.height;
+    doc.setFontSize(9);
+    doc.text("Generated from dutycalc.ng", 14, pageHeight - 8);
 
-  doc.save("duty-calculation.pdf");
+    doc.save("duty-calculation.pdf");
 
-  toast({
-    title: "PDF Downloaded",
-    description: "Your duty calculation PDF is ready.",
-  });
-};
+    toast({
+      title: "PDF Downloaded",
+      description: "Your duty calculation PDF is ready.",
+    });
+  };
+
+  // -------------------------------------------------
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-6">
+    <div className="max-w-6xl mx-auto p-4 sm:p-6 space-y-6">
       <div className="text-center">
-        <h1 className="text-3xl font-bold">Customs Duty Calculator</h1>
-        <p className="text-gray-400">Calculate import duties & taxes for Nigeria</p>
+        <h1 className="text-2xl sm:text-3xl font-bold">Customs Duty Calculator</h1>
+        <p className="text-gray-400 text-sm sm:text-base">
+          Calculate import duties & taxes for Nigeria
+        </p>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Input Section */}
-        <Card className="bg-gradient-to-br from-[#0D0E10] via-[#1b2a4a] to-[#063064] text-white border border-blue-900
-        rounded-lg shadow-md">
+        <Card className="bg-gradient-to-br from-[#0D0E10] via-[#1b2a4a] to-[#063064] text-white border border-blue-900 rounded-lg shadow-md">
           <CardHeader>
             <CardTitle>Input Values</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Mode */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div className="w-full">
                 <Label>Calculation Mode</Label>
                 <Select onValueChange={setCalculationType} defaultValue="withVAT">
@@ -239,7 +250,7 @@ const downloadPDF = () => {
                   </SelectContent>
                 </Select>
               </div>
-              <Link href="/tariff" className="ml-2">
+              <Link href="/tariff">
                 <Button
                   variant="outline"
                   size="sm"
@@ -290,11 +301,9 @@ const downloadPDF = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-black text-white">
-                  {Object.keys(exchangeRates).map((curr) => (
-                    <SelectItem key={curr} value={curr}>
-                      {curr}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="USD">USD</SelectItem>
+                  <SelectItem value="EUR">EUR</SelectItem>
+                  <SelectItem value="GBP">GBP</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -303,7 +312,7 @@ const downloadPDF = () => {
               <Label>Exchange Rate (NGN)</Label>
               <Input
                 type="number"
-                value={exchangeRate}
+                value={exchangeRate || ""}
                 onChange={(e) => {
                   setExchangeRate(parseFloat(e.target.value) || 0);
                   setManualExchangeRate(true);
@@ -315,28 +324,26 @@ const downloadPDF = () => {
               <Label>Insurance (NGN)</Label>
               <Input
                 type="number"
-                value={insurance}
+                value={insurance ?? ""}
                 onChange={(e) => {
-                  setInsurance(parseFloat(e.target.value) || 0);
+                  setInsurance(e.target.value ? parseFloat(e.target.value) : undefined);
                   setManualInsurance(true);
                 }}
               />
-              {!manualInsurance && (
+              {!manualInsurance && insurance === undefined && (
                 <p className="text-sm text-gray-400">
                   Auto: {formatCurrency(calculatedInsurance)}
                 </p>
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-4 items-end">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
               <div>
                 <Label>Duty Rate (%)</Label>
                 <Input
                   type="number"
                   value={dutyRate || ""}
-                  onChange={(e) =>
-                    setDutyRate(parseFloat(e.target.value) || 0)
-                  }
+                  onChange={(e) => setDutyRate(parseFloat(e.target.value) || 0)}
                 />
               </div>
               <div className="flex items-center gap-2">
@@ -345,9 +352,7 @@ const downloadPDF = () => {
                   <Input
                     type="number"
                     value={levyRate || ""}
-                    onChange={(e) =>
-                      setLevyRate(parseFloat(e.target.value) || 0)
-                    }
+                    onChange={(e) => setLevyRate(parseFloat(e.target.value) || 0)}
                   />
                 </div>
                 <Link href="/exchange-rate">
@@ -366,19 +371,23 @@ const downloadPDF = () => {
         </Card>
 
         {/* Results Section */}
-        <Card className="bg-gradient-to-br from-[#0D0E10] via-[#1b2a4a] to-[#063064] text-white border border-blue-900
-        rounded-lg shadow-md">
+        <Card className="bg-gradient-to-br from-[#0D0E10] via-[#1b2a4a] to-[#063064] text-white border border-blue-900 rounded-lg shadow-md">
           <CardHeader>
             <CardTitle className="flex items-center justify-between border-b border-gray-700 pb-2">
               <span>Results</span>
               <div className="flex gap-2">
-                <Button size="sm" onClick={copyBreakdown}
+                <Button
+                  size="sm"
+                  onClick={copyBreakdown}
                   className="bg-green-600 hover:bg-green-700 text-white"
-                  >
+                >
                   <Copy className="w-4 h-4 mr-1" /> Copy
                 </Button>
-                <Button size="sm" onClick={downloadPDF}
-                className="bg-[#ff0000] hover:bg-[#cc0000] text-white">
+                <Button
+                  size="sm"
+                  onClick={downloadPDF}
+                  className="bg-[#ff0000] hover:bg-[#cc0000] text-white"
+                >
                   <Download className="w-4 h-4 mr-1" /> PDF
                 </Button>
               </div>
@@ -386,7 +395,7 @@ const downloadPDF = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-                  {/* CIF */}
+              {/* CIF */}
               <div className="flex justify-between font-semibold">
                 <span>CIF:</span>
                 <span className="text-yellow-200">{formatCurrency(cif)}</span>
@@ -436,9 +445,9 @@ const downloadPDF = () => {
 
               <div className="flex justify-between font-bold border-t border-gray-700 pt-2 mt-2">
                 <span>{getCalculationLabel()}:</span>
-                <span className="text-green-500">{formatCurrency(getFinalTotal())}
+                <span className="text-green-500">
+                  {formatCurrency(getFinalTotal())}
                 </span>
-  
               </div>
             </div>
           </CardContent>
