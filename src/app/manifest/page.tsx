@@ -18,7 +18,6 @@ import {
 import { supabase } from "@/lib/supabaseClient";
 
 export type ManifestRow = {
-  sno: number;
   manifest_no: string;
   destination: string;
   command: string;
@@ -41,14 +40,23 @@ export default function ManifestPage() {
   const [page, setPage] = useState(1);
   const pageSize = 20;
 
-  // Fetch from Supabase
+  // Fetch from Supabase (sorted by manifest number DESC)
   useEffect(() => {
     const fetchData = async () => {
-      const { data, error } = await supabase.from("manifest").select("*");
+      const { data, error } = await supabase
+        .from("manifest")
+        .select("*");
+
       if (error) {
         console.error("Supabase error:", error);
       } else {
-        setManifests(data || []);
+        // Sort manifests manually by numeric part of manifest_no
+        const sorted = (data || []).sort((a, b) => {
+          const numA = parseInt(a.manifest_no.replace(/\D/g, ""), 10);
+          const numB = parseInt(b.manifest_no.replace(/\D/g, ""), 10);
+          return numB - numA; // descending
+        });
+        setManifests(sorted);
       }
     };
     fetchData();
@@ -151,6 +159,7 @@ export default function ManifestPage() {
             <Label>Reg From</Label>
             <Input
               type="date"
+              className="text-white placeholder-gray-400"
               onChange={(e) =>
                 setDateRegFrom(e.target.value ? new Date(e.target.value) : null)
               }
@@ -160,6 +169,7 @@ export default function ManifestPage() {
             <Label>Reg To</Label>
             <Input
               type="date"
+              className="text-white placeholder-gray-400"
               onChange={(e) =>
                 setDateRegTo(e.target.value ? new Date(e.target.value) : null)
               }
@@ -169,6 +179,7 @@ export default function ManifestPage() {
             <Label>Departure From</Label>
             <Input
               type="date"
+              className="text-white placeholder-gray-400"
               onChange={(e) =>
                 setDateDepartureFrom(
                   e.target.value ? new Date(e.target.value) : null
@@ -180,6 +191,7 @@ export default function ManifestPage() {
             <Label>Departure To</Label>
             <Input
               type="date"
+              className="text-white placeholder-gray-400"
               onChange={(e) =>
                 setDateDepartureTo(
                   e.target.value ? new Date(e.target.value) : null
@@ -214,7 +226,7 @@ export default function ManifestPage() {
         <table className="w-full border-collapse">
           <thead className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white">
             <tr>
-              <th className="p-2">S/N</th>
+              {/* Removed S/N column */}
               <th className="p-2">Manifest</th>
               <th className="p-2">Port of Entry</th>
               <th className="p-2">Command</th>
@@ -226,41 +238,40 @@ export default function ManifestPage() {
             </tr>
           </thead>
           <tbody>
-  {paginated.length > 0 ? (
-    paginated.map((row, idx) => (
-      <tr
-        key={row.sno}
-        className={`border-t transition-all duration-200 ${
-          idx % 2 === 0 ? "bg-black" : "bg-black"
-        } hover:bg-gradient-to-r hover:from-indigo-600 hover:to-indigo-500 hover:shadow-md hover:rounded-md`}
-      >
-        <td className="p-2">{row.sno}</td>
-        <td className="p-2">{row.manifest_no}</td>
-        <td className="p-2">{row.destination}</td>
-        <td className="p-2">{row.command}</td>
-        <td className="p-2">{row.origin}</td>
-        <td className="p-2">{row.air_shipping_line}</td>
-        <td className="p-2">{row.voyage_flight_no || "-"}</td>
-        <td className="p-2">
-          {row.date_of_registration
-            ? format(new Date(row.date_of_registration), "yyyy-MM-dd")
-            : "-"}
-        </td>
-        <td className="p-2">
-          {row.date_of_departure
-            ? format(new Date(row.date_of_departure), "yyyy-MM-dd")
-            : "-"}
-        </td>
-      </tr>
-    ))
-  ) : (
-    <tr>
-      <td className="p-4 text-center text-gray-500" colSpan={9}>
-        No manifests found
-      </td>
-    </tr>
-  )}
-</tbody>
+            {paginated.length > 0 ? (
+              paginated.map((row, idx) => (
+                <tr
+                  key={row.manifest_no}
+                  className={`border-t transition-all duration-200 ${
+                    idx % 2 === 0 ? "bg-black" : "bg-black"
+                  } hover:bg-gradient-to-r hover:from-indigo-600 hover:to-indigo-500 hover:shadow-md hover:rounded-md`}
+                >
+                  <td className="p-2">{row.manifest_no}</td>
+                  <td className="p-2">{row.destination}</td>
+                  <td className="p-2">{row.command}</td>
+                  <td className="p-2">{row.origin}</td>
+                  <td className="p-2">{row.air_shipping_line}</td>
+                  <td className="p-2">{row.voyage_flight_no || "-"}</td>
+                  <td className="p-2">
+                    {row.date_of_registration
+                      ? format(new Date(row.date_of_registration), "yyyy-MM-dd")
+                      : "-"}
+                  </td>
+                  <td className="p-2">
+                    {row.date_of_departure
+                      ? format(new Date(row.date_of_departure), "yyyy-MM-dd")
+                      : "-"}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td className="p-4 text-center text-gray-500" colSpan={8}>
+                  No manifests found
+                </td>
+              </tr>
+            )}
+          </tbody>
         </table>
       </div>
 
