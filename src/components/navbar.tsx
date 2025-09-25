@@ -142,18 +142,11 @@ export default function Navbar() {
                 Exchange Rate
               </Link>
               <Link
-                href="/prohibition-list#import"
+                href="/prohibition-list"
                 className="block text-sm text-gray-300 hover:text-white"
                 onClick={() => setOpen(false)}
               >
-                Prohibition List – Import
-              </Link>
-              <Link
-                href="/prohibition-list#export"
-                className="block text-sm text-gray-300 hover:text-white"
-                onClick={() => setOpen(false)}
-              >
-                Prohibition List – Export
+                Prohibition List
               </Link>
             </div>
           </div>

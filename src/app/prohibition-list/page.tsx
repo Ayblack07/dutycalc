@@ -1,36 +1,38 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 export default function ProhibitionListPage() {
   const [activeTab, setActiveTab] = useState<"import" | "export">("import");
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10 bg-[#0a1a3f] text-white rounded-lg shadow-lg">
-      <h1 className="text-3xl font-bold mb-6">Prohibition List</h1>
-      <p className="mb-8">
+    <div className="max-w-6xl mx-auto px-6 py-10 bg-[#0a1a3c] text-white rounded-lg shadow-lg">
+      {/* Page Heading */}
+      <h1 className="text-3xl font-bold mb-6 text-center">Prohibition List</h1>
+      <p className="mb-8 text-center text-gray-200">
         Below is the official prohibition list for imports and exports as
-        published by customs. Select a tab to view details.
+        published by the Nigeria Customs Service. Select a tab to view details.
       </p>
 
       {/* Tabs */}
-      <div className="flex space-x-4 mb-6">
+      <div className="flex justify-center space-x-4 mb-8">
         <button
           onClick={() => setActiveTab("import")}
-          className={`px-4 py-2 rounded-t-lg font-semibold ${
+          className={`px-6 py-2 rounded-t-lg font-semibold transition ${
             activeTab === "import"
               ? "bg-blue-600 text-white"
-              : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+              : "bg-gray-200 text-gray-800 hover:bg-gray-300"
           }`}
         >
           Import
         </button>
         <button
           onClick={() => setActiveTab("export")}
-          className={`px-4 py-2 rounded-t-lg font-semibold ${
+          className={`px-6 py-2 rounded-t-lg font-semibold transition ${
             activeTab === "export"
               ? "bg-blue-600 text-white"
-              : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+              : "bg-gray-200 text-gray-800 hover:bg-gray-300"
           }`}
         >
           Export
@@ -40,62 +42,124 @@ export default function ProhibitionListPage() {
       {/* Import Section */}
       {activeTab === "import" && (
         <section>
-          <h2 className="text-2xl bg-blue-900 font-semibold text-red-400 mb-4 p-2 rounded">
+          <h2 className="text-2xl font-bold mb-6 text-yellow-400">
             Import Prohibition List
           </h2>
           <div className="prose max-w-none text-white">
-            <ol className="list-decimal pl-6 space-y-2">
+            <ol className="list-decimal pl-6 space-y-3">
               <li>
-                <strong>Live or Dead Birds including Frozen Poultry</strong> – HS
-                Codes 0105.1100 – 0105.9900, 0106.3100 – 0106.3900, 0207.1100 –
-                0207.3600 and 0210.9900
+                <strong>Live or Dead Birds including Frozen Poultry</strong> –
+                HS Codes 0105.1100 – 0105.9900, 0106.3100 – 0106.3900, 0207.1100
+                – 0207.3600 and 0210.9900
               </li>
               <li>
                 <strong>Pork, Beef</strong> – HS Codes 0201.1000 – 0204.5000,
                 0206.1000 – 0206.9000, 0210.1000 – 0210.2000
               </li>
               <li>
-                <strong>Birds Eggs</strong> – HS Code 0407.0000; excluding
-                hatching eggs
+                <strong>Birds Eggs</strong> – HS Code 0407.0000 (excluding
+                hatching eggs)
               </li>
-              {/* ... keep rest of your items ... */}
               <li>
-                <strong>Tomato Paste or Concentrate</strong> – HS Codes
-                2002100000, 2002902000, 2002909000
+                <strong>Refined Vegetable Oils and Fats</strong> – HS Codes
+                1507.1000.00 – 1516.2000.29 (excl. refined Linseed, Castor, Olive
+                oils; crude vegetable oils NOT banned)
+              </li>
+              <li>
+                <strong>Cane or Beet Sugar and Chemically Pure Sucrose</strong> –
+                HS Codes 1701.91.1000 – 1701.99.9000 in retail packs
+              </li>
+              <li>
+                <strong>Medicaments</strong> under Headings 3003 & 3004, such as:
+                <ul className="list-disc pl-6 mt-2 space-y-1">
+                  <li>Paracetamol (tablets & syrups)</li>
+                  <li>Cotrimoxazole (tablets & syrups)</li>
+                  <li>Metronidazole (tablets & syrups)</li>
+                  <li>Chloroquine (tablets & syrups)</li>
+                  <li>
+                    Haematinic formulations (Ferrous Sulphate, Ferrous Gluconate,
+                    Folic Acid, Vitamin B Complex tablets – except modified
+                    release)
+                  </li>
+                  <li>Multivitamins (tablets, capsules, syrups – excl. special)</li>
+                  <li>Aspirin tablets (excl. modified release & soluble)</li>
+                  <li>Magnesium Trisilicate (tabs & suspensions)</li>
+                  <li>Piperazine (tabs & syrups)</li>
+                  <li>Levamisole (tabs & syrups)</li>
+                  <li>Clotrimazole cream</li>
+                  <li>Penicillin / Gentamycin ointments</li>
+                  <li>Pyrantel Pamoate (tabs & syrups)</li>
+                  <li>Intravenous Fluids (Dextrose, Normal Saline, etc.)</li>
+                </ul>
+              </li>
+              <li>
+                <strong>Waste Pharmaceuticals</strong> – HS Code 3006.9200
+              </li>
+              <li>
+                <strong>Soaps & Detergents</strong> – HS Codes 3401.11.1000 –
+                3402.90.0000 (in retail packs only)
+              </li>
+              <li>
+                <strong>Used Motor Vehicles</strong> above 12 years – HS Codes
+                8703.10.0000 – 8703.90.0000
+              </li>
+              <li>
+                <strong>Tomato Paste / Concentrate</strong> – HS Codes 2002100000,
+                2002902000, 2002909000
               </li>
             </ol>
 
-            {/* Internal link */}
+            {/* Schedule 4 link */}
             <p className="mt-6">
-              <a href="#absolute" className="text-yellow-300 underline">
-                (Goods that are absolutely prohibited items)
-              </a>
-            </p>
-          </div>
-
-          {/* Target section */}
-          <div id="absolute" className="mt-12 p-4 bg-blue-800 rounded">
-            <h3 className="text-xl font-bold mb-2">Absolutely Prohibited Items</h3>
-            <p>
-              These are items under <strong>Schedule 4</strong> which are
-              completely banned from importation regardless of purpose or license.
+              <Link
+                href="#schedule4"
+                className="underline text-yellow-400 hover:text-yellow-300"
+              >
+                Goods in Schedule 4: Absolutely Prohibited Items
+              </Link>
             </p>
           </div>
         </section>
       )}
 
-      {/* Export Section */}
       {activeTab === "export" && (
-        <section>
-          <h2 className="text-2xl font-semibold text-green-400 mb-4">
-            Export Prohibition List
-          </h2>
-          <p>
-            Export prohibition list will be provided here. (e.g., crude oil,
-            timber, wildlife products, etc.)
-          </p>
-        </section>
-      )}
+  <section>
+    <h2 className="text-2xl font-bold mb-6 text-green-400">
+      Export Prohibition List
+    </h2>
+    <div className="prose max-w-none text-white">
+      <ol className="list-decimal pl-6 space-y-3">
+        <li>Maize</li>
+        <li>Timber (rough or sawn)</li>
+        <li>
+          Raw hides and skin (including Wet Blue and unfinished leather) —
+          HS Codes 4101.2000.00 – 4108.9200.00
+        </li>
+        <li>Scrap metals</li>
+        <li>Unprocessed rubber latex and rubber lumps</li>
+        <li>Artifacts & Antiquities</li>
+        <li>
+          Wildlife animals classified as endangered species and their
+          derivatives (e.g. crocodile, elephant, lizard, eagle, monkey,
+          zebra, lion, etc.)
+        </li>
+        {/* Add more if you have more items */}
+      </ol>
+    </div>
+  </section>
+)}
+
+      {/* Schedule 4 Section */}
+      <section id="schedule4" className="mt-12">
+        <h3 className="text-xl font-bold text-red-400 mb-4">
+          Schedule 4: Absolutely Prohibited Items
+        </h3>
+        <p className="text-gray-200">
+          Goods under Schedule 4 are absolutely prohibited from importation into
+          Nigeria. Examples include certain hazardous chemicals, counterfeit
+          currency, and items deemed dangerous to national security or health.
+        </p>
+      </section>
     </div>
   );
 }
