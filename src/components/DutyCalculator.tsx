@@ -22,29 +22,47 @@ import { useToast } from "@/hooks/use-toast";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import Link from "next/link";
-import { supabase } from "@/lib/supabaseClient";
-
-// -------------------------------------------------
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 export default function DutyCalculator() {
   const { toast } = useToast();
+  const supabase = createClientComponentClient();
 
   // States
+  const [currencies, setCurrencies] = useState<string[]>([]);
+  const [currency, setCurrency] = useState<string>("USD");
+  const [exchangeRate, setExchangeRate] = useState<number>(1550);
+  const [manualExchangeRate, setManualExchangeRate] = useState<boolean>(false);
+
   const [dutyRate, setDutyRate] = useState<number>(0);
   const [levyRate, setLevyRate] = useState<number>(0);
   const [invoice, setInvoice] = useState<number | undefined>(undefined);
   const [freight, setFreight] = useState<number | undefined>(undefined);
-  const [currency, setCurrency] = useState<string>("USD");
-  const [exchangeRate, setExchangeRate] = useState<number>(0); // ✅ no default
-  const [manualExchangeRate, setManualExchangeRate] = useState<boolean>(false);
-  const [insurance, setInsurance] = useState<number | undefined>(undefined); // ✅ no default
+  const [insurance, setInsurance] = useState<number | undefined>(undefined);
   const [manualInsurance, setManualInsurance] = useState<boolean>(false);
   const [calculationType, setCalculationType] = useState<string>("withVAT");
 
-  // ✅ Fetch latest exchange rate from Supabase when currency changes
+  // Fetch currencies from Supabase
   useEffect(() => {
-    const fetchRate = async () => {
-      if (!manualExchangeRate) {
+    const fetchCurrencies = async () => {
+      const { data, error } = await supabase
+        .from("exchange_rate")
+        .select("code")
+        .order("code", { ascending: true });
+
+      if (!error && data) {
+        const uniqueCodes = Array.from(new Set(data.map((row) => row.code)));
+        setCurrencies(uniqueCodes);
+      }
+    };
+
+    fetchCurrencies();
+  }, [supabase]);
+
+  // Fetch exchange rate when currency changes
+  useEffect(() => {
+    const fetchExchangeRate = async () => {
+      if (!manualExchangeRate && currency) {
         const { data, error } = await supabase
           .from("exchange_rate")
           .select("value")
@@ -58,8 +76,9 @@ export default function DutyCalculator() {
         }
       }
     };
-    fetchRate();
-  }, [currency, manualExchangeRate]);
+
+    fetchExchangeRate();
+  }, [currency, manualExchangeRate, supabase]);
 
   // NGN values
   const invoiceNGN = (invoice || 0) * exchangeRate;
@@ -67,9 +86,10 @@ export default function DutyCalculator() {
 
   // Insurance
   const calculatedInsurance = (invoiceNGN + freightNGN) * 0.015;
-  const finalInsurance = manualInsurance
-    ? insurance || 0
-    : calculatedInsurance;
+  const finalInsurance =
+    manualInsurance && insurance !== undefined
+      ? insurance
+      : calculatedInsurance;
 
   // Calculations
   const cif = invoiceNGN + freightNGN + finalInsurance;
@@ -198,7 +218,10 @@ ETLS (0.5%): ${formatCurrency(etls)}
       head: [["Item", "Value"]],
       body: tableBody,
       theme: "grid",
-      styles: { fontSize: 11, cellPadding: 2 },
+      styles: {
+        fontSize: 11,
+        cellPadding: { top: 1.5, right: 2, bottom: 1.5, left: 2 },
+      },
       headStyles: { fillColor: [40, 40, 40], textColor: 255 },
       alternateRowStyles: { fillColor: [245, 245, 245] },
       margin: { left: 14, right: 14 },
@@ -217,8 +240,6 @@ ETLS (0.5%): ${formatCurrency(etls)}
     });
   };
 
-  // -------------------------------------------------
-
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6 space-y-6">
       <div className="text-center">
@@ -228,7 +249,7 @@ ETLS (0.5%): ${formatCurrency(etls)}
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid lg:grid-cols-2 gap-6">
         {/* Input Section */}
         <Card className="bg-gradient-to-br from-[#0D0E10] via-[#1b2a4a] to-[#063064] text-white border border-blue-900 rounded-lg shadow-md">
           <CardHeader>
@@ -236,10 +257,13 @@ ETLS (0.5%): ${formatCurrency(etls)}
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Mode */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
               <div className="w-full">
                 <Label>Calculation Mode</Label>
-                <Select onValueChange={setCalculationType} defaultValue="withVAT">
+                <Select
+                  onValueChange={setCalculationType}
+                  defaultValue="withVAT"
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select Mode" />
                   </SelectTrigger>
@@ -250,11 +274,11 @@ ETLS (0.5%): ${formatCurrency(etls)}
                   </SelectContent>
                 </Select>
               </div>
-              <Link href="/tariff">
+              <Link href="/tariff" className="w-full sm:w-auto">
                 <Button
                   variant="outline"
                   size="sm"
-                  className="text-xs px-2 py-1 flex items-center"
+                  className="text-xs px-2 py-1 flex items-center w-full sm:w-auto"
                 >
                   <LinkIcon className="w-3 h-3 mr-1" />
                   Check Tariff
@@ -268,7 +292,9 @@ ETLS (0.5%): ${formatCurrency(etls)}
                 type="number"
                 value={invoice ?? ""}
                 onChange={(e) =>
-                  setInvoice(e.target.value ? parseFloat(e.target.value) : undefined)
+                  setInvoice(
+                    e.target.value ? parseFloat(e.target.value) : undefined
+                  )
                 }
               />
               {invoice !== undefined && (
@@ -284,7 +310,9 @@ ETLS (0.5%): ${formatCurrency(etls)}
                 type="number"
                 value={freight ?? ""}
                 onChange={(e) =>
-                  setFreight(e.target.value ? parseFloat(e.target.value) : undefined)
+                  setFreight(
+                    e.target.value ? parseFloat(e.target.value) : undefined
+                  )
                 }
               />
               {freight !== undefined && (
@@ -300,10 +328,12 @@ ETLS (0.5%): ${formatCurrency(etls)}
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-black text-white">
-                  <SelectItem value="USD">USD</SelectItem>
-                  <SelectItem value="EUR">EUR</SelectItem>
-                  <SelectItem value="GBP">GBP</SelectItem>
+                <SelectContent className="bg-black text-white max-h-60 overflow-y-auto">
+                  {currencies.map((curr) => (
+                    <SelectItem key={curr} value={curr}>
+                      {curr}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -312,7 +342,7 @@ ETLS (0.5%): ${formatCurrency(etls)}
               <Label>Exchange Rate (NGN)</Label>
               <Input
                 type="number"
-                value={exchangeRate || ""}
+                value={exchangeRate}
                 onChange={(e) => {
                   setExchangeRate(parseFloat(e.target.value) || 0);
                   setManualExchangeRate(true);
@@ -326,11 +356,11 @@ ETLS (0.5%): ${formatCurrency(etls)}
                 type="number"
                 value={insurance ?? ""}
                 onChange={(e) => {
-                  setInsurance(e.target.value ? parseFloat(e.target.value) : undefined);
+                  setInsurance(parseFloat(e.target.value) || undefined);
                   setManualInsurance(true);
                 }}
               />
-              {!manualInsurance && insurance === undefined && (
+              {!manualInsurance && (
                 <p className="text-sm text-gray-400">
                   Auto: {formatCurrency(calculatedInsurance)}
                 </p>
@@ -373,20 +403,20 @@ ETLS (0.5%): ${formatCurrency(etls)}
         {/* Results Section */}
         <Card className="bg-gradient-to-br from-[#0D0E10] via-[#1b2a4a] to-[#063064] text-white border border-blue-900 rounded-lg shadow-md">
           <CardHeader>
-            <CardTitle className="flex items-center justify-between border-b border-gray-700 pb-2">
+            <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-gray-700 pb-2">
               <span>Results</span>
-              <div className="flex gap-2">
+              <div className="flex gap-2 w-full sm:w-auto">
                 <Button
                   size="sm"
                   onClick={copyBreakdown}
-                  className="bg-green-600 hover:bg-green-700 text-white"
+                  className="bg-green-600 hover:bg-green-700 text-white flex-1 sm:flex-none"
                 >
                   <Copy className="w-4 h-4 mr-1" /> Copy
                 </Button>
                 <Button
                   size="sm"
                   onClick={downloadPDF}
-                  className="bg-[#ff0000] hover:bg-[#cc0000] text-white"
+                  className="bg-[#ff0000] hover:bg-[#cc0000] text-white flex-1 sm:flex-none"
                 >
                   <Download className="w-4 h-4 mr-1" /> PDF
                 </Button>
@@ -398,7 +428,9 @@ ETLS (0.5%): ${formatCurrency(etls)}
               {/* CIF */}
               <div className="flex justify-between font-semibold">
                 <span>CIF:</span>
-                <span className="text-yellow-200">{formatCurrency(cif)}</span>
+                <span className="text-yellow-200">
+                  {formatCurrency(cif)}
+                </span>
               </div>
 
               {calculationType === "idec" ? (
