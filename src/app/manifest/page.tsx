@@ -223,7 +223,7 @@ export default function ManifestPage() {
 
       {/* Table */}
       <div className="overflow-x-auto border rounded-lg">
-        <table className="w-full border-collapse">
+        <table className="w-full border-collapse, bg-blue-900 : bg-blue-950">
           <thead className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white">
             <tr>
               {/* Removed S/N column */}
@@ -243,7 +243,7 @@ export default function ManifestPage() {
                 <tr
                   key={row.manifest_no}
                   className={`border-t transition-all duration-200 ${
-                    idx % 2 === 0 ? "bg-black" : "bg-black"
+                    idx % 2 === 0 ? "bg-black" : "bg-gray-400"
                   } hover:bg-gradient-to-r hover:from-indigo-600 hover:to-indigo-500 hover:shadow-md hover:rounded-md`}
                 >
                   <td className="p-2">{row.manifest_no}</td>
