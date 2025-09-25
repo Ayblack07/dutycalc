@@ -6,8 +6,8 @@ import type { Metadata } from "next";
 // ✅ Add global site-wide SEO metadata here
 export const metadata: Metadata = {
   title: {
-    default: "DutyCalc Pro – Nigeria Customs Duty Calculator",
-    template: "%s | DutyCalc Pro",
+    default: "DutyCalc – Nigeria Customs Duty Calculator",
+    template: "%s | DutyCalc",
   },
   description:
     "Accurate Nigeria Customs duty calculator, tariff lookup, manifest checker, learning hub, and exchange rates. Trusted by importers/exporters for reliable trade operations.",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "DutyCalc Pro – Nigeria Customs Duty Calculator",
+    title: "DutyCalc – Nigeria Customs Duty Calculator",
     description:
       "Accurate duty calculations, tariff lookup, manifest checker, and exchange rates for Nigeria imports & exports.",
   },

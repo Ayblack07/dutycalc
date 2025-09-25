@@ -151,7 +151,7 @@ export default function HomePage() {
               Comprehensive guides, tutorials, and glossaries for trade ops.
             </p>
             <div className="text-center">
-              <Link href="/learning" className="text-[#F7D234] font-semibold hover:underline">
+              <Link href="/learning-hub" className="text-[#F7D234] font-semibold hover:underline">
                 Explore Learning Hub →
               </Link>
             </div>
@@ -213,7 +213,7 @@ export default function HomePage() {
           Ready to Streamline Your Operations?
         </h2>
         <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
-          Join thousands of freight forwarders who trust DutyCalc Pro for
+          Join thousands of freight forwarders who trust DutyCalc for
           accurate calculations and clearing assistance.
         </p>
         <Link
