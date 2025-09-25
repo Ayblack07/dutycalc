@@ -48,29 +48,29 @@ export default function ProhibitionListPage() {
           <div className="prose max-w-none text-white">
             <ol className="list-decimal pl-6 space-y-3">
               <li>
-                <strong>Live or Dead Birds including Frozen Poultry</strong> –
+              Live or Dead Birds including Frozen Poultry –
                 HS Codes 0105.1100 – 0105.9900, 0106.3100 – 0106.3900, 0207.1100
                 – 0207.3600 and 0210.9900
               </li>
               <li>
-                <strong>Pork, Beef</strong> – HS Codes 0201.1000 – 0204.5000,
+                Pork, Beef – HS Codes 0201.1000 – 0204.5000,
                 0206.1000 – 0206.9000, 0210.1000 – 0210.2000
               </li>
               <li>
-                <strong>Birds Eggs</strong> – HS Code 0407.0000 (excluding
+                Birds Eggs – HS Code 0407.0000 (excluding
                 hatching eggs)
               </li>
               <li>
-                <strong>Refined Vegetable Oils and Fats</strong> – HS Codes
+                Refined Vegetable Oils and Fats – HS Codes
                 1507.1000.00 – 1516.2000.29 (excl. refined Linseed, Castor, Olive
                 oils; crude vegetable oils NOT banned)
               </li>
               <li>
-                <strong>Cane or Beet Sugar and Chemically Pure Sucrose</strong> –
+                Cane or Beet Sugar and Chemically Pure Sucrose –
                 HS Codes 1701.91.1000 – 1701.99.9000 in retail packs
               </li>
               <li>
-                <strong>Medicaments</strong> under Headings 3003 & 3004, such as:
+                Medicaments under Headings 3003 & 3004, such as:
                 <ul className="list-disc pl-6 mt-2 space-y-1">
                   <li>Paracetamol (tablets & syrups)</li>
                   <li>Cotrimoxazole (tablets & syrups)</li>
@@ -93,18 +93,18 @@ export default function ProhibitionListPage() {
                 </ul>
               </li>
               <li>
-                <strong>Waste Pharmaceuticals</strong> – HS Code 3006.9200
+                Waste Pharmaceuticals – HS Code 3006.9200
               </li>
               <li>
-                <strong>Soaps & Detergents</strong> – HS Codes 3401.11.1000 –
+                Soaps & Detergents – HS Codes 3401.11.1000 –
                 3402.90.0000 (in retail packs only)
               </li>
               <li>
-                <strong>Used Motor Vehicles</strong> above 12 years – HS Codes
+                Used Motor Vehicles above 12 years – HS Codes
                 8703.10.0000 – 8703.90.0000
               </li>
               <li>
-                <strong>Tomato Paste / Concentrate</strong> – HS Codes 2002100000,
+                Tomato Paste / Concentrate – HS Codes 2002100000,
                 2002902000, 2002909000
               </li>
             </ol>
