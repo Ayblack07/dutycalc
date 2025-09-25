@@ -216,7 +216,7 @@ export default function ManifestPage() {
             <tr>
               <th className="p-2">S/N</th>
               <th className="p-2">Manifest</th>
-              <th className="p-2">Destination</th>
+              <th className="p-2">Port of Entry</th>
               <th className="p-2">Command</th>
               <th className="p-2">Place of departure</th>
               <th className="p-2">Air/Shipping Line</th>
