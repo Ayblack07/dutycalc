@@ -2,10 +2,21 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Menu, X, Calculator, Search, FileText, BookOpen, Phone } from "lucide-react";
+import {
+  Menu,
+  X,
+  Calculator,
+  Search,
+  FileText,
+  BookOpen,
+  Phone,
+  ChevronDown,
+  List,
+} from "lucide-react";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [resourcesOpen, setResourcesOpen] = useState(false);
 
   const links = [
     { href: "/calculator", label: "Calculator", icon: Calculator },
@@ -16,21 +27,73 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="bg-gradient-to-r from-[#090A0B] via-[#0D0E10] to-[#1F2937] text-white shadow-md">
+    <nav className="bg-gradient-to-r from-blue-700 via-blue-800 to-blue-900 text-white shadow-md">
       <div className="max-w-7xl mx-auto flex justify-between items-center px-4 py-3">
         {/* Logo */}
-        <Link href="/" className="text-xl font-bold bg-[#F7D234] text-black px-2 py-1 rounded">
+        <Link
+          href="/"
+          className="text-xl font-bold bg-[#F7D234] text-black px-2 py-1 rounded"
+        >
           DutyCalc
         </Link>
 
         {/* Desktop Menu */}
-        <div className="hidden md:flex space-x-6">
-          {links.map(({ href, label, icon: Icon }) => (
+        <div className="hidden md:flex space-x-6 items-center">
+          {links.slice(0, 4).map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
               href={href}
               className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition 
-              text-gray-300 hover:text-white hover:bg-[#1F2937]"
+              text-gray-200 hover:text-white hover:bg-blue-700/40"
+            >
+              <Icon size={18} /> {label}
+            </Link>
+          ))}
+
+          {/* Resources dropdown (desktop) */}
+          <div
+            className="relative"
+            onMouseEnter={() => setResourcesOpen(true)}
+            onMouseLeave={() => setResourcesOpen(false)}
+          >
+            <button
+              className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-gray-200 hover:text-white hover:bg-blue-700/40"
+            >
+              <List size={18} />
+              Resources
+              <ChevronDown size={14} />
+            </button>
+            {resourcesOpen && (
+              <div className="absolute mt-2 w-56 bg-white text-black rounded-lg shadow-lg overflow-hidden z-50">
+                <Link
+                  href="/exchange-rate"
+                  className="block px-4 py-2 text-sm hover:bg-gray-100"
+                >
+                  Exchange Rate
+                </Link>
+                <Link
+                  href="/prohibition-list#import"
+                  className="block px-4 py-2 text-sm hover:bg-gray-100"
+                >
+                  Prohibition List – Import
+                </Link>
+                <Link
+                  href="/prohibition-list#export"
+                  className="block px-4 py-2 text-sm hover:bg-gray-100"
+                >
+                  Prohibition List – Export
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* Contact */}
+          {links.slice(4).map(({ href, label, icon: Icon }) => (
+            <Link
+              key={href}
+              href={href}
+              className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition 
+              text-gray-200 hover:text-white hover:bg-blue-700/40"
             >
               <Icon size={18} /> {label}
             </Link>
@@ -40,7 +103,7 @@ export default function Navbar() {
         {/* CTA (desktop only) */}
         <div className="hidden md:block">
           <Link
-            href="/calculator"
+            href="/signup"
             className="bg-[#F7D234] hover:bg-[#e0c020] text-black px-4 py-2 rounded-lg font-semibold"
           >
             Get Started
@@ -58,13 +121,56 @@ export default function Navbar() {
 
       {/* Mobile Dropdown */}
       {open && (
-        <div className="md:hidden bg-[#1F2937] px-4 py-4 space-y-3">
-          {links.map(({ href, label, icon: Icon }) => (
+        <div className="md:hidden bg-blue-900 px-4 py-4 space-y-3">
+          {links.slice(0, 4).map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
               href={href}
               className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium 
-              text-gray-300 hover:text-white hover:bg-[#2c3446] transition"
+              text-gray-200 hover:text-white hover:bg-blue-700/40 transition"
+              onClick={() => setOpen(false)}
+            >
+              <Icon size={18} /> {label}
+            </Link>
+          ))}
+
+          {/* Resources section (mobile) */}
+          <div className="space-y-1">
+            <p className="flex items-center gap-2 px-3 py-2 text-gray-200 text-sm">
+              <List size={18} /> Resources
+            </p>
+            <div className="ml-6 space-y-1">
+              <Link
+                href="/exchange-rate"
+                className="block text-sm text-gray-300 hover:text-white"
+                onClick={() => setOpen(false)}
+              >
+                Exchange Rate
+              </Link>
+              <Link
+                href="/prohibition-list#import"
+                className="block text-sm text-gray-300 hover:text-white"
+                onClick={() => setOpen(false)}
+              >
+                Prohibition List – Import
+              </Link>
+              <Link
+                href="/prohibition-list#export"
+                className="block text-sm text-gray-300 hover:text-white"
+                onClick={() => setOpen(false)}
+              >
+                Prohibition List – Export
+              </Link>
+            </div>
+          </div>
+
+          {/* Contact */}
+          {links.slice(4).map(({ href, label, icon: Icon }) => (
+            <Link
+              key={href}
+              href={href}
+              className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium 
+              text-gray-200 hover:text-white hover:bg-blue-700/40 transition"
               onClick={() => setOpen(false)}
             >
               <Icon size={18} /> {label}
@@ -73,7 +179,7 @@ export default function Navbar() {
 
           {/* CTA button in dropdown */}
           <Link
-            href="/calculator"
+            href="/signup"
             className="block bg-[#F7D234] hover:bg-[#e0c020] text-black px-4 py-2 rounded-lg font-semibold text-center"
             onClick={() => setOpen(false)}
           >
