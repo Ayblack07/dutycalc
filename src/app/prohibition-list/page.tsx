@@ -43,8 +43,8 @@ export default function ProhibitionListPage() {
           <h2 className="text-2xl font-semibold text-red-700 mb-4">
             Import Prohibition List
           </h2>
-          <div className="prose max-w-none text-gray-800">
-            <ul className="list-disc pl-6 space-y-2">
+          <div className="prose max-w-none text-white">
+            <ol className="type-1 pl-6 space-y-2">
               <li>
                 <strong>Live or Dead Birds including Frozen Poultry</strong> – HS
                 Codes 0105.1100 – 0105.9900, 0106.3100 – 0106.3900, 0207.1100 –
@@ -92,9 +92,27 @@ export default function ProhibitionListPage() {
               </li>
               <li>
                 <strong>Medicaments</strong> falling under Headings 3003 and
-                3004 such as: Paracetamol, Cotrimoxazole, Metronidazole,
-                Chloroquine, etc. (see full list in law).
-              </li>
+                3004 such as: 
+                <ul>
+                  <li>Paracetamol Tablet and syrups</li> 
+                  <li>Cotrimoxazole tablet and syrups</li>
+                  <li>Metronidazole Tablet and syrups</li>
+                  <li>Chloroquine Tablet and syrups</li>
+                  <li>Haematinic Formulations; Ferrous Sulphate and Ferrous Gluconate Tablets, 
+                    Folic Acid Tablets, Vitamin B Complex Tablet [except modified released formulations].</li>
+                 etc. (see full list in law).
+                  <li>Multivitamin Tablets, Capsules and Syrups [except special formulations].</li>
+                  <li>Aspirin Tablets [except modified released formulation and soluble aspirin].</li>
+                  <li>Magnesium Trisilicate Tablets and Suspensions.</li>
+                  <li>Piperazine Tablets and Syrups</li>
+                  <li>Levamisole Tablets and Syrups</li>
+                  <li>Clotrimazole Cream</li>
+                  <li>Ointments – Penicillin/ Gentamycin</li>
+                  <li>Pyrantel Pamoate Tablets and Syrups</li>
+                  <li>Intravenous Fluids [Dextrose, Normal Saline, etc.]</li>
+                 </ul>
+              </li> </ol>
+            <ol>
               <li>
                 <strong>Waste Pharmaceuticals</strong> – HS Code 3006.9200
               </li>
@@ -153,7 +171,7 @@ export default function ProhibitionListPage() {
                 <strong>Goods in Schedule 4</strong>: absolutely prohibited
                 items.
               </li>
-            </ul>
+            </ol>
           </div>
         </section>
       )}
