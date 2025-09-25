@@ -7,8 +7,8 @@ export default function ProhibitionListPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10">
-      <h1 className="text-3xl font-bold text-blue-900 mb-6">Prohibition List</h1>
-      <p className="text-gray-700 mb-8">
+      <h1 className="text-3xl font-bold text-blue-700 mb-6">Prohibition List</h1>
+      <p className="text-white mb-8">
         Below is the official prohibition list for imports and exports as
         published by customs. Select a tab to view details.
       </p>
@@ -40,7 +40,7 @@ export default function ProhibitionListPage() {
       {/* Import Section */}
       {activeTab === "import" && (
         <section>
-          <h2 className="text-2xl font-semibold text-red-700 mb-4">
+          <h2 className="text-2xl bg-blue-900 font-semibold text-red-700 mb-4">
             Import Prohibition List
           </h2>
           <div className="prose max-w-none text-white">
@@ -111,8 +111,7 @@ export default function ProhibitionListPage() {
                   <li>Pyrantel Pamoate Tablets and Syrups</li>
                   <li>Intravenous Fluids [Dextrose, Normal Saline, etc.]</li>
                  </ul>
-              </li> </ol>
-            <ol>
+              </li> 
               <li>
                 <strong>Waste Pharmaceuticals</strong> – HS Code 3006.9200
               </li>
@@ -182,7 +181,7 @@ export default function ProhibitionListPage() {
           <h2 className="text-2xl font-semibold text-green-700 mb-4">
             Export Prohibition List
           </h2>
-          <p className="text-gray-700">
+          <p className="text-white">
             Export prohibition list will be provided here. (e.g., crude oil,
             timber, wildlife products, etc.)
           </p>
