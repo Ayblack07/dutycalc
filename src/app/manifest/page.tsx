@@ -214,7 +214,6 @@ export default function ManifestPage() {
         <table className="w-full border-collapse">
           <thead className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white">
             <tr>
-              <th className="p-2">S/N</th>
               <th className="p-2">Manifest</th>
               <th className="p-2">Port of Entry</th>
               <th className="p-2">Command</th>
