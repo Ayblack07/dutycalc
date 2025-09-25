@@ -33,37 +33,54 @@ export default function ExchangeRateClient() {
   }, []);
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4 text-white">Exchange Rates</h1>
+    <div className="max-w-4xl mx-auto p-4 sm:p-6">
+      <h1 className="text-xl sm:text-2xl font-bold mb-4 text-white">
+        Exchange Rates
+      </h1>
+
       <Card className="bg-[#0D0E10] text-white shadow-md">
         <CardHeader>
-          <CardTitle>Current Exchange Rates</CardTitle>
+          <CardTitle className="text-lg sm:text-xl">
+            Current Exchange Rates
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <table className="w-full border-collapse border border-gray-700 text-left">
-            <thead>
-              <tr className="bg-gray-800">
-                <th className="border border-gray-700 px-4 py-2">Name</th>
-                <th className="border border-gray-700 px-4 py-2">Code</th>
-                <th className="border border-gray-700 px-4 py-2">Value (₦)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rates.map((rate) => (
-                <tr key={rate.id} className="hover:bg-gray-900">
-                  <td className="border border-gray-700 px-4 py-2">
-                    {rate.name}
-                  </td>
-                  <td className="border border-gray-700 px-4 py-2">
-                    {rate.code}
-                  </td>
-                  <td className="border border-gray-700 px-4 py-2 font-bold bg-gradient-to-r from-green-500 via-green-300 to-orange-200 bg-clip-text text-transparent animate-pulse">
-                    {rate.value.toLocaleString()}
-                  </td>
+          {/* ✅ Mobile responsive scroll */}
+          <div className="overflow-x-auto">
+            <table className="min-w-full border-collapse border border-gray-700 text-left text-sm sm:text-base">
+              <thead>
+                <tr className="bg-gray-800">
+                  <th className="border border-gray-700 px-3 sm:px-4 py-2">
+                    Name
+                  </th>
+                  <th className="border border-gray-700 px-3 sm:px-4 py-2">
+                    Code
+                  </th>
+                  <th className="border border-gray-700 px-3 sm:px-4 py-2">
+                    Value (₦)
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {rates.map((rate) => (
+                  <tr
+                    key={rate.id}
+                    className="hover:bg-gray-900 transition-colors"
+                  >
+                    <td className="border border-gray-700 px-3 sm:px-4 py-2 whitespace-nowrap">
+                      {rate.name}
+                    </td>
+                    <td className="border border-gray-700 px-3 sm:px-4 py-2 whitespace-nowrap">
+                      {rate.code}
+                    </td>
+                    <td className="border border-gray-700 px-3 sm:px-4 py-2 font-bold bg-gradient-to-r from-green-500 via-green-300 to-orange-200 bg-clip-text text-transparent animate-pulse whitespace-nowrap">
+                      {rate.value.toLocaleString()}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </CardContent>
       </Card>
     </div>
