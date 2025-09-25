@@ -72,16 +72,10 @@ export default function Navbar() {
                   Exchange Rate
                 </Link>
                 <Link
-                  href="/prohibition-list#import"
+                  href="/prohibition-list"
                   className="block px-4 py-2 text-sm hover:bg-gray-100"
                 >
-                  Prohibition List – Import
-                </Link>
-                <Link
-                  href="/prohibition-list#export"
-                  className="block px-4 py-2 text-sm hover:bg-gray-100"
-                >
-                  Prohibition List – Export
+                  Prohibition List
                 </Link>
               </div>
             )}
