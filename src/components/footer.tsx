@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-gradient-to-br from-[#090A0B] to-[#0066E6] text-gray-300 py-12">
+    <footer className="bg-gradient-to-br from-[#09607B] to-[#607B09] text-gray-200 py-12">
       <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 px-6">
         {/* Logo & Description */}
         <div>
@@ -18,17 +18,17 @@ export default function Footer() {
           <h4 className="font-semibold text-white mb-3">Tools</h4>
           <ul className="space-y-2 text-sm">
             <li>
-              <Link href="/calculator" className="hover:text-[#F7D234]">
+              <Link href="/calculator" className="hover:text-[#1B8B77]">
                 Duty Calculator
               </Link>
             </li>
             <li>
-              <Link href="/tariff" className="hover:text-[#F7D234]">
+              <Link href="/tariff" className="hover:text-[#1B8B77]">
                 Tariff Lookup
               </Link>
             </li>
             <li>
-              <Link href="/manifest" className="hover:text-[#F7D234]">
+              <Link href="/manifest" className="hover:text-[#1B8B77]">
                 Manifest Check
               </Link>
             </li>
@@ -40,12 +40,12 @@ export default function Footer() {
           <h4 className="font-semibold text-white mb-3">Community</h4>
           <ul className="space-y-2 text-sm">
             <li>
-              <Link href="/learning-hub" className="hover:text-[#F7D234]">
+              <Link href="/learning-hub" className="hover:text-[#1B8B77]">
                 Learning Hub
               </Link>
             </li>
             <li>
-              <Link href="/contact" className="hover:text-[#F7D234]">
+              <Link href="/contact" className="hover:text-[#1B8B77]">
                 Contact Us
               </Link>
             </li>
@@ -57,12 +57,12 @@ export default function Footer() {
           <h4 className="font-semibold text-white mb-3">Support</h4>
           <ul className="space-y-2 text-sm">
             <li>
-              <a href="#" className="hover:text-[#F7D234]">
+              <a href="#" className="hover:text-[#1B8B77]">
                 Help Center
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-[#F7D234]">
+              <a href="#" className="hover:text-[#1B8B77]">
                 API Documentation
               </a>
             </li>
@@ -70,7 +70,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="mt-8 border-t border-gray-700 pt-6 text-center text-sm text-gray-400">
+      <div className="mt-8 border-t border-gray-600 pt-6 text-center text-sm text-gray-300">
         © {new Date().getFullYear()} DutyCalc. Built for professionals.
       </div>
     </footer>

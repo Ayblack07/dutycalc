@@ -46,7 +46,7 @@ export default function HomePage() {
   return (
     <main>
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary to-secondary text-center py-24 px-6">
+      <section className="bg-gradient-to-br from-primary to-accent text-center py-24 px-6">
         <h1 className="text-4xl md:text-6xl font-bold text-white">
           Professional Customs{" "}
           <span className="text-accent">Duty Calculator</span>

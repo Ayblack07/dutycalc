@@ -1,24 +1,34 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function Header() {
   return (
-    <header className="bg-slate-100 py-20">
-      <div className="max-w-4xl mx-auto px-4 text-center">
-        <h1 className="text-4xl md:text-6xl font-bold mb-4 text-[#1E3A8A]">
-          Simplify Your Customs Duties
+    <header className="bg-gradient-to-r from-[#09607B] to-[#607B09] py-24 px-6 text-center text-white">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-4xl md:text-6xl font-bold mb-4">
+          Professional Customs <span className="text-[#F6F7F9]">Duty Calculator</span>
         </h1>
-        <p className="text-lg md:text-xl text-gray-600 mb-8">
-          Use our calculator and tools to estimate tariffs, check manifests, and
-          stay updated with the latest trade news.
+        <p className="mt-4 text-lg md:text-xl text-gray-100 max-w-2xl mx-auto">
+          Accurate duty calculations, tariff lookup, manifest checking, and
+          comprehensive trade resources for Nigerian import/export operations.
         </p>
-        <Button
-          size="lg"
-          className="bg-[#F59E0B] hover:bg-[#d97706] text-black font-semibold px-6 py-3 rounded-lg shadow"
-        >
-          Try the Calculator
-        </Button>
+
+        {/* Buttons */}
+        <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4">
+          <Link
+            href="/calculator"
+            className="bg-[#1B8B77] hover:bg-[#09607B] text-white font-semibold px-6 py-3 rounded-lg shadow-md transition"
+          >
+            Start Calculating
+          </Link>
+          <Link
+            href="/tariff"
+            className="bg-white text-[#09607B] border border-[#1B8B77] font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-[#F6F7F9] transition"
+          >
+            Learn More
+          </Link>
+        </div>
       </div>
     </header>
   );
