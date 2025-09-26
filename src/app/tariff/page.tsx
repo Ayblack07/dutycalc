@@ -71,7 +71,9 @@ export default function TariffPage() {
 
     autoTable(doc, {
       startY: 22,
-      head: [["S/No", "HS Code", "Description", "Duty %", "VAT %", "Levy %", "Date"]],
+      head: [
+        ["S/No", "HS Code", "Description", "Duty %", "VAT %", "Levy %", "Date"],
+      ],
       body: filtered.map((row) => [
         row.id,
         row.hscode,
@@ -111,9 +113,7 @@ export default function TariffPage() {
     <div className="min-h-screen bg-gradient-to-br from-[#09607B] to-[#1B8B77] text-white py-10 px-4">
       {/* Header */}
       <div className="text-center max-w-2xl mx-auto mb-10">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">
-          Customs Tariff
-        </h1>
+        <h1 className="text-3xl md:text-4xl font-bold mb-2">Customs Tariff</h1>
         <p className="text-gray-300 text-base md:text-lg">
           Check applicable duty, VAT & levy for import items
         </p>
@@ -148,7 +148,7 @@ export default function TariffPage() {
         </div>
 
         {/* Table */}
-        <div className="bg-white border-[#09607B] rounded-xl shadow-lg backdrop-blur-sm p-4 md:p-6">
+        <div className="bg-white border border-[#09607B] rounded-xl shadow-lg p-4 md:p-6">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[800px]">
               <thead>
@@ -166,17 +166,19 @@ export default function TariffPage() {
                 {filtered.map((row, i) => (
                   <tr
                     key={row.id}
-                    className={`hover:bg-[#2c3446] ${
-                      i % 2 === 0 ? "bg-[#1B8B77]" : "bg-[#1B8B77]/40"
+                    className={`hover:bg-gray-100 ${
+                      i % 2 === 0 ? "bg-white" : "bg-gray-50"
                     }`}
                   >
-                    <td className="p-2">{row.id}</td>
-                    <td className="p-2">{row.hscode}</td>
-                    <td className="p-2">{row.description}</td>
-                    <td className="p-2">{row.duty_rate ?? "-"}</td>
-                    <td className="p-2">{row.vat ?? "-"}</td>
-                    <td className="p-2">{row.levy ?? "-"}</td>
-                    <td className="p-2">{row.date}</td>
+                    <td className="p-2 text-gray-700">{row.id}</td>
+                    <td className="p-2 text-gray-700">{row.hscode}</td>
+                    <td className="p-2 text-gray-700">{row.description}</td>
+                    <td className="p-2 text-gray-700">
+                      {row.duty_rate ?? "-"}
+                    </td>
+                    <td className="p-2 text-gray-700">{row.vat ?? "-"}</td>
+                    <td className="p-2 text-gray-700">{row.levy ?? "-"}</td>
+                    <td className="p-2 text-gray-700">{row.date}</td>
                   </tr>
                 ))}
               </tbody>
@@ -185,7 +187,7 @@ export default function TariffPage() {
 
           {/* Pagination */}
           <div className="flex flex-col sm:flex-row justify-between items-center gap-3 mt-4">
-            <span className="text-sm text-gray-400">
+            <span className="text-sm text-gray-600">
               Page {page} of {totalPages || 1}
             </span>
             <div className="flex gap-2">

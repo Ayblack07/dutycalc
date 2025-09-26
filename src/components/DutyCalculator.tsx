@@ -299,7 +299,7 @@ ETLS (0.5%): ${formatCurrency(etls)}
                     <SelectTrigger>
                       <SelectValue placeholder="Select Mode" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[1b8b77] text-white">
+                    <SelectContent className="bg-[#021b22] text-white">
                       <SelectItem value="withVAT">WITH VAT</SelectItem>
                       <SelectItem value="noVAT">NO VAT</SelectItem>
                       <SelectItem value="idec">IDEC</SelectItem>
@@ -345,7 +345,7 @@ ETLS (0.5%): ${formatCurrency(etls)}
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#1b8b77] text-white max-h-60 overflow-y-auto">
+                      <SelectContent className="bg-[#021b22] text-white max-h-60 overflow-y-auto">
                         {currencies.map((c) => (
                           <SelectItem key={c} value={c}>
                             {c}
@@ -403,7 +403,7 @@ ETLS (0.5%): ${formatCurrency(etls)}
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#1b8b77] text-white max-h-60 overflow-y-auto">
+                      <SelectContent className="bg-[#021b22] text-white max-h-60 overflow-y-auto">
                         {currencies.map((c) => (
                           <SelectItem key={c} value={c}>
                             {c}
