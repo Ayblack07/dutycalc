@@ -27,8 +27,6 @@ export default function HomePage() {
       if (!error && data) {
         setNews(data as NewsItem[]);
       } else if (error) {
-        // keep logging for debugging but no throw to avoid lint/runtime issues
-        // eslint-disable-next-line no-console
         console.error("Failed to fetch news:", error);
       }
     };
@@ -42,25 +40,25 @@ export default function HomePage() {
   return (
     <main>
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-[#090A0B] to-[#0066E6] text-center py-24 px-6">
+      <section className="bg-gradient-to-br from-brand.darkbg to-brand.navy text-center py-24 px-6">
         <h1 className="text-4xl md:text-6xl font-bold text-white">
           Professional Customs{" "}
-          <span className="text-[#F7D234]">Duty Calculator</span>
+          <span className="text-primary">Duty Calculator</span>
         </h1>
-        <p className="mt-4 text-[#9CA3AF] max-w-2xl mx-auto">
+        <p className="mt-4 text-gray-400 max-w-2xl mx-auto">
           Accurate duty calculations, tariff lookup, manifest checking, and
           comprehensive trade resources for Nigerian import/export operations.
         </p>
         <div className="mt-8 flex justify-center gap-6">
           <Link
             href="/calculator"
-            className="bg-[#F7D234] text-black font-semibold px-6 py-3 rounded-lg shadow-lg hover:bg-[#F4D465] transition"
+            className="bg-primary text-black font-semibold px-6 py-3 rounded-lg shadow-soft hover:shadow-glow transition"
           >
             Start Calculating
           </Link>
           <Link
             href="/tariff"
-            className="bg-black border border-[#F7D234] text-white font-semibold px-6 py-3 rounded-lg hover:bg-[#1F2937] transition"
+            className="bg-brand.darkbg border border-primary text-white font-semibold px-6 py-3 rounded-lg hover:bg-brand.accent transition"
           >
             Learn More
           </Link>
@@ -68,23 +66,23 @@ export default function HomePage() {
       </section>
 
       {/* Highlights Section */}
-      <section className="bg-black py-16 text-center grid grid-cols-1 md:grid-cols-3 gap-8">
+      <section className="bg-brand.darkbg py-16 text-center grid grid-cols-1 md:grid-cols-3 gap-8">
         <div>
-          <h3 className="text-3xl font-bold text-[#0066E6]">99.9%</h3>
+          <h3 className="text-3xl font-bold text-brand.blue">99.9%</h3>
           <p className="text-gray-400">Calculation Accuracy</p>
         </div>
         <div>
-          <h3 className="text-3xl font-bold text-[#F7D234]">10,000+</h3>
+          <h3 className="text-3xl font-bold text-primary">10,000+</h3>
           <p className="text-gray-400">HS Codes Database</p>
         </div>
         <div>
-          <h3 className="text-3xl font-bold text-green-500">24/7</h3>
+          <h3 className="text-3xl font-bold text-green-400">24/7</h3>
           <p className="text-gray-400">Real-time Updates</p>
         </div>
       </section>
 
       {/* Feature Cards */}
-      <section className="bg-[#0D0E10] py-20 px-6">
+      <section className="bg-brand.navy py-20 px-6">
         <h2 className="text-3xl font-bold text-white text-center mb-12">
           Complete Trade Platform
         </h2>
@@ -94,8 +92,8 @@ export default function HomePage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 max-w-7xl mx-auto">
           {/* Duty Calculator */}
-          <div className="bg-gradient-to-br from-[#0D0E10] to-[#1F2937] p-6 rounded-xl shadow hover:scale-105 transition">
-            <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-xl bg-[#0066E6]/20 text-[#0066E6] mx-auto">
+          <div className="bg-gradient-to-br from-brand.darkbg to-brand.accent p-6 rounded-xl shadow hover:scale-105 transition">
+            <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-xl bg-brand.blue/20 text-brand.blue mx-auto">
               <Calculator size={28} />
             </div>
             <h3 className="text-xl font-bold text-white mb-2 text-center">Duty Calculator</h3>
@@ -103,15 +101,15 @@ export default function HomePage() {
               Accurate customs duty calculations with real-time exchange rates.
             </p>
             <div className="text-center">
-              <Link href="/calculator" className="text-[#F7D234] font-semibold hover:underline">
+              <Link href="/calculator" className="text-primary font-semibold hover:underline">
                 Explore Duty Calculator →
               </Link>
             </div>
           </div>
 
           {/* Tariff Lookup */}
-          <div className="bg-gradient-to-br from-[#0D0E10] to-[#1F2937] p-6 rounded-xl shadow hover:scale-105 transition">
-            <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-xl bg-[#F7D234]/20 text-[#F7D234] mx-auto">
+          <div className="bg-gradient-to-br from-brand.darkbg to-brand.accent p-6 rounded-xl shadow hover:scale-105 transition">
+            <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-xl bg-primary/20 text-primary mx-auto">
               <Search size={28} />
             </div>
             <h3 className="text-xl font-bold text-white mb-2 text-center">Tariff Lookup</h3>
@@ -119,14 +117,14 @@ export default function HomePage() {
               Search HS codes and tariff classifications with a full database.
             </p>
             <div className="text-center">
-              <Link href="/tariff" className="text-[#F7D234] font-semibold hover:underline">
+              <Link href="/tariff" className="text-primary font-semibold hover:underline">
                 Explore Tariff Lookup →
               </Link>
             </div>
           </div>
 
           {/* Manifest Check */}
-          <div className="bg-gradient-to-br from-[#0D0E10] to-[#1F2937] p-6 rounded-xl shadow hover:scale-105 transition">
+          <div className="bg-gradient-to-br from-brand.darkbg to-brand.accent p-6 rounded-xl shadow hover:scale-105 transition">
             <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-xl bg-green-500/20 text-green-500 mx-auto">
               <FileText size={28} />
             </div>
@@ -135,14 +133,14 @@ export default function HomePage() {
               Verify Bill of Lading and Airway Bill details for documentation.
             </p>
             <div className="text-center">
-              <Link href="/manifest" className="text-[#F7D234] font-semibold hover:underline">
+              <Link href="/manifest" className="text-primary font-semibold hover:underline">
                 Explore Manifest Check →
               </Link>
             </div>
           </div>
 
           {/* Learning Hub */}
-          <div className="bg-gradient-to-br from-[#0D0E10] to-[#1F2937] p-6 rounded-xl shadow hover:scale-105 transition">
+          <div className="bg-gradient-to-br from-brand.darkbg to-brand.accent p-6 rounded-xl shadow hover:scale-105 transition">
             <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-xl bg-purple-500/20 text-purple-500 mx-auto">
               <BookOpen size={28} />
             </div>
@@ -151,14 +149,14 @@ export default function HomePage() {
               Comprehensive guides, tutorials, and glossaries for trade ops.
             </p>
             <div className="text-center">
-              <Link href="/learning-hub" className="text-[#F7D234] font-semibold hover:underline">
+              <Link href="/learning-hub" className="text-primary font-semibold hover:underline">
                 Explore Learning Hub →
               </Link>
             </div>
           </div>
 
           {/* Exchange Rate */}
-          <div className="bg-gradient-to-br from-[#0D0E10] to-[#1F2937] p-6 rounded-xl shadow hover:scale-105 transition">
+          <div className="bg-gradient-to-br from-brand.darkbg to-brand.accent p-6 rounded-xl shadow hover:scale-105 transition">
             <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-xl bg-yellow-500/20 text-yellow-500 mx-auto">
               <DollarSign size={28} />
             </div>
@@ -167,7 +165,7 @@ export default function HomePage() {
               View and track the latest customs exchange rates from Supabase.
             </p>
             <div className="text-center">
-              <Link href="/exchange-rate" className="text-[#F7D234] font-semibold hover:underline">
+              <Link href="/exchange-rate" className="text-primary font-semibold hover:underline">
                 Explore Exchange Rates →
               </Link>
             </div>
@@ -175,8 +173,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* News Section (fetched from Supabase) */}
-      <section className="bg-black py-20 px-6">
+      {/* News Section */}
+      <section className="bg-brand.darkbg py-20 px-6">
         <h2 className="text-3xl font-bold text-white text-center mb-12">Latest News</h2>
 
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -184,7 +182,7 @@ export default function HomePage() {
             news.map((item) => (
               <article
                 key={item.id}
-                className="bg-gradient-to-br from-[#0D0E10] to-[#1F2937] p-6 rounded-xl shadow hover:scale-105 transition"
+                className="bg-gradient-to-br from-brand.darkbg to-brand.accent p-6 rounded-xl shadow hover:scale-105 transition"
               >
                 <h3 className="text-xl font-bold text-white mb-2">{item.title}</h3>
                 <p className="text-gray-400 mb-4">
@@ -195,7 +193,7 @@ export default function HomePage() {
                   <p className="text-sm text-gray-500">{formatDate(item.created_at)}</p>
                 </div>
                 <div className="mt-4">
-                  <Link href={`/news/${item.id}`} className="text-[#F7D234] font-semibold hover:underline">
+                  <Link href={`/news/${item.id}`} className="text-primary font-semibold hover:underline">
                     Read More →
                   </Link>
                 </div>
@@ -208,7 +206,7 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-gradient-to-br from-[#090A0B] to-[#0066E6] text-center py-16">
+      <section className="bg-gradient-to-br from-brand.darkbg to-brand.navy text-center py-16">
         <h2 className="text-2xl md:text-4xl font-bold text-white mb-4">
           Ready to Streamline Your Operations?
         </h2>
@@ -218,7 +216,7 @@ export default function HomePage() {
         </p>
         <Link
           href="/contact"
-          className="bg-[#F7D234] text-black font-semibold px-6 py-3 rounded-lg shadow-lg hover:bg-[#F4D465] transition"
+          className="bg-primary text-black font-semibold px-6 py-3 rounded-lg shadow-soft hover:shadow-glow transition"
         >
           Contact Us Now
         </Link>

@@ -27,12 +27,12 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="bg-gradient-to-r from-blue-700 via-blue-800 to-blue-900 text-white shadow-md">
+    <nav className="bg-gradient-to-r from-brand.darkbg via-brand.navy to-brand.accent text-white shadow-md">
       <div className="max-w-7xl mx-auto flex justify-between items-center px-4 py-3">
         {/* Logo */}
         <Link
           href="/"
-          className="text-xl font-bold bg-[#F7D234] text-black px-2 py-1 rounded"
+          className="text-xl font-bold bg-primary text-black px-2 py-1 rounded-lg shadow-soft"
         >
           DutyCalc
         </Link>
@@ -44,7 +44,7 @@ export default function Navbar() {
               key={href}
               href={href}
               className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition 
-              text-gray-200 hover:text-white hover:bg-blue-700/40"
+              text-gray-300 hover:text-white hover:bg-brand.accent/40"
             >
               <Icon size={18} /> {label}
             </Link>
@@ -57,7 +57,7 @@ export default function Navbar() {
             onMouseLeave={() => setResourcesOpen(false)}
           >
             <button
-              className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-gray-200 hover:text-white hover:bg-blue-700/40"
+              className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-brand.accent/40"
             >
               <List size={18} />
               Resources
@@ -87,7 +87,7 @@ export default function Navbar() {
               key={href}
               href={href}
               className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition 
-              text-gray-200 hover:text-white hover:bg-blue-700/40"
+              text-gray-300 hover:text-white hover:bg-brand.accent/40"
             >
               <Icon size={18} /> {label}
             </Link>
@@ -98,7 +98,7 @@ export default function Navbar() {
         <div className="hidden md:block">
           <Link
             href="/signup"
-            className="bg-[#F7D234] hover:bg-[#e0c020] text-black px-4 py-2 rounded-lg font-semibold"
+            className="bg-primary hover:bg-yellow-400 text-black px-4 py-2 rounded-lg font-semibold shadow-soft"
           >
             Get Started
           </Link>
@@ -107,7 +107,7 @@ export default function Navbar() {
         {/* Hamburger (mobile only) */}
         <button
           onClick={() => setOpen(!open)}
-          className="md:hidden p-2 focus:outline-none"
+          className="md:hidden p-2 focus:outline-none text-white"
         >
           {open ? <X size={26} /> : <Menu size={26} />}
         </button>
@@ -115,13 +115,13 @@ export default function Navbar() {
 
       {/* Mobile Dropdown */}
       {open && (
-        <div className="md:hidden bg-blue-900 px-4 py-4 space-y-3">
+        <div className="md:hidden bg-brand.navy px-4 py-4 space-y-3">
           {links.slice(0, 4).map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
               href={href}
               className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium 
-              text-gray-200 hover:text-white hover:bg-blue-700/40 transition"
+              text-gray-300 hover:text-white hover:bg-brand.accent/40 transition"
               onClick={() => setOpen(false)}
             >
               <Icon size={18} /> {label}
@@ -130,20 +130,20 @@ export default function Navbar() {
 
           {/* Resources section (mobile) */}
           <div className="space-y-1">
-            <p className="flex items-center gap-2 px-3 py-2 text-gray-200 text-sm">
+            <p className="flex items-center gap-2 px-3 py-2 text-gray-300 text-sm">
               <List size={18} /> Resources
             </p>
             <div className="ml-6 space-y-1">
               <Link
                 href="/exchange-rate"
-                className="block text-sm text-gray-300 hover:text-white"
+                className="block text-sm text-gray-400 hover:text-white"
                 onClick={() => setOpen(false)}
               >
                 Exchange Rate
               </Link>
               <Link
                 href="/prohibition-list"
-                className="block text-sm text-gray-300 hover:text-white"
+                className="block text-sm text-gray-400 hover:text-white"
                 onClick={() => setOpen(false)}
               >
                 Prohibition List
@@ -157,7 +157,7 @@ export default function Navbar() {
               key={href}
               href={href}
               className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium 
-              text-gray-200 hover:text-white hover:bg-blue-700/40 transition"
+              text-gray-300 hover:text-white hover:bg-brand.accent/40 transition"
               onClick={() => setOpen(false)}
             >
               <Icon size={18} /> {label}
@@ -167,7 +167,7 @@ export default function Navbar() {
           {/* CTA button in dropdown */}
           <Link
             href="/signup"
-            className="block bg-[#F7D234] hover:bg-[#e0c020] text-black px-4 py-2 rounded-lg font-semibold text-center"
+            className="block bg-primary hover:bg-yellow-400 text-black px-4 py-2 rounded-lg font-semibold text-center shadow-soft"
             onClick={() => setOpen(false)}
           >
             Get Started
