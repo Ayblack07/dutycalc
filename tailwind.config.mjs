@@ -14,21 +14,26 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: "#1E3A8A", // Midnight Blue
-          light: "#243C96",   // lighter hover tone
+          DEFAULT: "#09607B", // Deep teal
+          dark: "#074C62",
+        },
+        secondary: {
+          DEFAULT: "#607B09", // Olive-green
+          dark: "#4C6007",
         },
         accent: {
-          DEFAULT: "#F59E0B", // Gold
-          dark: "#e0a020",    // darker hover tone
+          DEFAULT: "#1B8B77", // Vibrant green
+          dark: "#166B5D",
         },
-        highlight: "#9CA3AF", // Silver/Gray
-        background: "#F3F4F6", // Light Slate
+        background: "#F6F7F9", // Light background
+        white: "#FFFFFF",
       },
       fontFamily: {
         sans: ["Inter", "ui-sans-serif", "system-ui"],
       },
       boxShadow: {
         soft: "0 4px 10px rgba(0, 0, 0, 0.1)",
+        glow: "0 0 12px rgba(9, 96, 123, 0.3)",
       },
     },
   },
