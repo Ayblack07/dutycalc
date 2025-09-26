@@ -13,23 +13,18 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: {
-          DEFAULT: "#D4AF37", // elegant gold
-          dark: "#B28C1D", // richer gold
-        },
         brand: {
-          navy: "#0A192F", // deep navy
-          blue: "#1E3A8A", // royal blue
-          darkbg: "#111827", // near black
-          accent: "#374151", // grayish accent
+          navy: "#1E3A8A",   // Primary: Midnight Blue
+          gold: "#F59E0B",   // Accent: Gold
+          slate: "#F3F4F6",  // Background: Light Slate
+          gray: "#9CA3AF",   // Highlight: Silver/Gray
         },
       },
       fontFamily: {
         sans: ["Inter", "ui-sans-serif", "system-ui"],
       },
       boxShadow: {
-        soft: "0 4px 20px rgba(0, 0, 0, 0.25)", // deeper shadow
-        glow: "0 0 12px rgba(212, 175, 55, 0.5)", // subtle gold glow
+        soft: "0 4px 10px rgba(0, 0, 0, 0.2)",
       },
     },
   },
