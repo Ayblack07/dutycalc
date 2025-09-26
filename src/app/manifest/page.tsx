@@ -36,25 +36,21 @@ export default function ManifestPage() {
   const [dateDepartureFrom, setDateDepartureFrom] = useState<Date | null>(null);
   const [dateDepartureTo, setDateDepartureTo] = useState<Date | null>(null);
 
-  // Pagination
   const [page, setPage] = useState(1);
   const pageSize = 20;
 
-  // Fetch from Supabase (sorted by manifest number DESC)
+  // Fetch manifests
   useEffect(() => {
     const fetchData = async () => {
-      const { data, error } = await supabase
-        .from("manifest")
-        .select("*");
+      const { data, error } = await supabase.from("manifest").select("*");
 
       if (error) {
         console.error("Supabase error:", error);
       } else {
-        // Sort manifests manually by numeric part of manifest_no
         const sorted = (data || []).sort((a, b) => {
           const numA = parseInt(a.manifest_no.replace(/\D/g, ""), 10);
           const numB = parseInt(b.manifest_no.replace(/\D/g, ""), 10);
-          return numB - numA; // descending
+          return numB - numA;
         });
         setManifests(sorted);
       }
@@ -112,7 +108,7 @@ export default function ManifestPage() {
     });
   }, [manifests, keyword, dateRegFrom, dateRegTo, dateDepartureFrom, dateDepartureTo]);
 
-  // Pagination slice
+  // Pagination
   const paginated = useMemo(() => {
     const start = (page - 1) * pageSize;
     return filtered.slice(start, start + pageSize);
@@ -144,9 +140,9 @@ export default function ManifestPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-8">
+    <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-8 bg-[#F6F7F9] rounded-lg">
       {/* Filters */}
-      <div className="space-y-4">
+      <div className="space-y-4 bg-white p-4 rounded-lg shadow-sm border">
         <Input
           placeholder="Search manifests..."
           value={keyword}
@@ -159,7 +155,6 @@ export default function ManifestPage() {
             <Label>Reg From</Label>
             <Input
               type="date"
-              className="text-white placeholder-gray-400"
               onChange={(e) =>
                 setDateRegFrom(e.target.value ? new Date(e.target.value) : null)
               }
@@ -169,7 +164,6 @@ export default function ManifestPage() {
             <Label>Reg To</Label>
             <Input
               type="date"
-              className="text-white placeholder-gray-400"
               onChange={(e) =>
                 setDateRegTo(e.target.value ? new Date(e.target.value) : null)
               }
@@ -179,7 +173,6 @@ export default function ManifestPage() {
             <Label>Departure From</Label>
             <Input
               type="date"
-              className="text-white placeholder-gray-400"
               onChange={(e) =>
                 setDateDepartureFrom(
                   e.target.value ? new Date(e.target.value) : null
@@ -191,7 +184,6 @@ export default function ManifestPage() {
             <Label>Departure To</Label>
             <Input
               type="date"
-              className="text-white placeholder-gray-400"
               onChange={(e) =>
                 setDateDepartureTo(
                   e.target.value ? new Date(e.target.value) : null
@@ -213,7 +205,7 @@ export default function ManifestPage() {
             This Month
           </Button>
           <Button
-            className="bg-red-600 text-white hover:bg-red-700"
+            className="bg-[#607B09] text-white hover:bg-[#4e6707]"
             onClick={resetFilters}
           >
             <RotateCcw className="w-4 h-4 mr-2" /> Reset
@@ -222,19 +214,18 @@ export default function ManifestPage() {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto border rounded-lg">
-        <table className="w-full border-collaps">
-          <thead className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white">
+      <div className="overflow-x-auto border rounded-lg shadow-sm bg-white">
+        <table className="w-full border-collapse text-sm">
+          <thead className="bg-gradient-to-r from-[#09607B] to-[#1B8B77] text-white">
             <tr>
-              {/* Removed S/N column */}
               <th className="p-2">Manifest</th>
               <th className="p-2">Port of Entry</th>
               <th className="p-2">Command</th>
-              <th className="p-2">Place of departure</th>
+              <th className="p-2">Place of Departure</th>
               <th className="p-2">Air/Shipping Line</th>
               <th className="p-2">Voyage/Flight No</th>
               <th className="p-2">Date Reg</th>
-              <th className="p-2">Date dep</th>
+              <th className="p-2">Date Dep</th>
             </tr>
           </thead>
           <tbody>
@@ -242,9 +233,9 @@ export default function ManifestPage() {
               paginated.map((row, idx) => (
                 <tr
                   key={row.manifest_no}
-                  className={`border-t transition-all duration-200 ${
-                    idx % 2 === 0 ? "bg-blue-950" : "bg-blue-900"
-                  } hover:bg-gradient-to-r hover:from-lime-700 hover:to-lime-600 hover:shadow-md hover:rounded-md`}
+                  className={`border-t transition-colors duration-200 ${
+                    idx % 2 === 0 ? "bg-white" : "bg-gray-50"
+                  } hover:bg-[#F0FDF4]`}
                 >
                   <td className="p-2">{row.manifest_no}</td>
                   <td className="p-2">{row.destination}</td>
@@ -275,7 +266,7 @@ export default function ManifestPage() {
         </table>
       </div>
 
-      {/* Pagination Controls */}
+      {/* Pagination */}
       <div className="flex justify-between items-center mt-4">
         <Button
           variant="outline"
@@ -284,7 +275,7 @@ export default function ManifestPage() {
         >
           Previous
         </Button>
-        <span>
+        <span className="text-sm text-gray-600">
           Page {page} of {Math.ceil(filtered.length / pageSize)}
         </span>
         <Button
