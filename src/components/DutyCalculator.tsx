@@ -28,7 +28,7 @@ export default function DutyCalculator() {
   const { toast } = useToast();
   const supabase = createClientComponentClient();
 
-  // currencies list (codes) fetched from supabase
+  // currencies list
   const [currencies, setCurrencies] = useState<string[]>([]);
 
   // Invoice-specific
@@ -50,77 +50,29 @@ export default function DutyCalculator() {
   const [manualInsurance, setManualInsurance] = useState<boolean>(false);
   const [calculationType, setCalculationType] = useState<string>("withVAT");
 
-  // fetch list of currency codes once on mount
+  // fetch currencies
   useEffect(() => {
     const fetchCurrencies = async () => {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from("exchange_rate")
         .select("code")
         .order("code", { ascending: true });
 
-      if (error) {
-        console.error("Failed to fetch currency codes:", error);
-        return;
-      }
       if (!data) return;
-      const unique = Array.from(new Set(data.map((r: {code : string}) => r.code)));
+      const unique = Array.from(new Set(data.map((r: { code: string }) => r.code)));
       setCurrencies(unique);
-      // set defaults if not already set
-      if (!invoiceCurrency && unique.length > 0) setInvoiceCurrency(unique[0]);
-      if (!freightCurrency && unique.length > 0) setFreightCurrency(unique[0]);
     };
     fetchCurrencies();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [supabase]);
 
-  // fetch most recent invoice exchange rate when invoiceCurrency changes (unless manual)
-  useEffect(() => {
-    const fetchRate = async () => {
-      if (!invoiceCurrency || manualInvoiceRate) return;
-      const { data, error } = await supabase
-        .from("exchange_rate")
-        .select("value")
-        .eq("code", invoiceCurrency)
-        .order("date", { ascending: false })
-        .limit(1)
-        .single();
-
-      if (!error && data && typeof data.value === "number") {
-        setInvoiceExchangeRate(data.value);
-      }
-    };
-    fetchRate();
-  }, [invoiceCurrency, manualInvoiceRate, supabase]);
-
-  // fetch most recent freight exchange rate when freightCurrency changes (unless manual)
-  useEffect(() => {
-    const fetchRate = async () => {
-      if (!freightCurrency || manualFreightRate) return;
-      const { data, error } = await supabase
-        .from("exchange_rate")
-        .select("value")
-        .eq("code", freightCurrency)
-        .order("date", { ascending: false })
-        .limit(1)
-        .single();
-
-      if (!error && data && typeof data.value === "number") {
-        setFreightExchangeRate(data.value);
-      }
-    };
-    fetchRate();
-  }, [freightCurrency, manualFreightRate, supabase]);
-
-  // NGN conversions (live previews)
+  // conversions
   const invoiceNGN = (invoice || 0) * (invoiceExchangeRate || 0);
   const freightNGN = (freight || 0) * (freightExchangeRate || 0);
-
-  // Insurance calculation: 1.5% of (invoiceNGN + freightNGN), unless manual override
   const calculatedInsurance = (invoiceNGN + freightNGN) * 0.015;
   const finalInsurance =
     manualInsurance && insurance !== undefined ? insurance : calculatedInsurance;
 
-  // core calculations (use invoiceNGN and freightNGN)
+  // duty calc
   const cif = invoiceNGN + freightNGN + finalInsurance;
   const fcs = invoiceNGN * 0.04;
   const duty = cif * (dutyRate / 100);
@@ -159,277 +111,121 @@ export default function DutyCalculator() {
     new Intl.NumberFormat("en-NG", {
       style: "currency",
       currency: "NGN",
-      minimumFractionDigits: 2,
     }).format(amount);
 
-  // COPY breakdown (includes both currencies & NGN values)
-  const copyBreakdown = () => {
-    let breakdown = `DUTY CALC - CUSTOMS DUTY CALCULATION
-==================================================
-Invoice: ${invoiceCurrency} ${invoice ?? 0} → ${formatCurrency(invoiceNGN)}
-Invoice Exchange Rate: ${invoiceExchangeRate}
-Freight: ${freightCurrency} ${freight ?? 0} → ${formatCurrency(freightNGN)}
-Freight Exchange Rate: ${freightExchangeRate}
-Insurance: ${formatCurrency(finalInsurance)}
-
-CIF: ${formatCurrency(cif)}
-`;
-
-    if (calculationType === "idec") {
-      breakdown += `FCS (4%): ${formatCurrency(fcs)}
-ETLS (0.5%): ${formatCurrency(etls)}
-`;
-    } else {
-      breakdown += `FCS (4%): ${formatCurrency(fcs)}
-Duty (${dutyRate}%): ${formatCurrency(duty)}
-Levy (${levyRate}%): ${formatCurrency(levy)}
-Surcharge (7%): ${formatCurrency(surcharge)}
-ETLS (0.5%): ${formatCurrency(etls)}
-`;
-      if (calculationType === "withVAT") {
-        breakdown += `VAT (7.5%): ${formatCurrency(vat)}\n`;
-      }
-    }
-
-    breakdown += `\n${getCalculationLabel()}: ${formatCurrency(getFinalTotal())}`;
-
-    navigator.clipboard.writeText(breakdown);
-    toast({
-      title: "Copied!",
-      description: "Breakdown copied to clipboard.",
-    });
-  };
-
-  // PDF (shows invoice/freight currencies & conversions)
-  const downloadPDF = () => {
-    const doc = new jsPDF();
-
-    // Header + title
-    doc.setFontSize(16);
-    doc.text("Dutycalc", 14, 12);
-    doc.setFontSize(14);
-    doc.text("Customs Duty Calculation", 14, 20);
-
-    // table body with clear entries
-    const tableBody: (string | number)[][] = [
-      [
-        "Invoice",
-        `${invoiceCurrency} ${invoice ?? 0} → ${formatCurrency(invoiceNGN)}`,
-      ],
-      [
-        "Invoice Exchange Rate",
-        invoiceExchangeRate !== undefined ? invoiceExchangeRate : "-",
-      ],
-      [
-        "Freight",
-        `${freightCurrency} ${freight ?? 0} → ${formatCurrency(freightNGN)}`,
-      ],
-      [
-        "Freight Exchange Rate",
-        freightExchangeRate !== undefined ? freightExchangeRate : "-",
-      ],
-      ["Insurance", formatCurrency(finalInsurance)],
-      ["CIF", formatCurrency(cif)],
-    ];
-
-    if (calculationType === "idec") {
-      tableBody.push(["FCS (4%)", formatCurrency(fcs)]);
-      tableBody.push(["ETLS (0.5%)", formatCurrency(etls)]);
-    } else {
-      tableBody.push(["FCS (4%)", formatCurrency(fcs)]);
-      tableBody.push(["Duty", formatCurrency(duty)]);
-      tableBody.push(["Levy", formatCurrency(levy)]);
-      tableBody.push(["Surcharge (7%)", formatCurrency(surcharge)]);
-      tableBody.push(["ETLS (0.5%)", formatCurrency(etls)]);
-      if (calculationType === "withVAT") {
-        tableBody.push(["VAT (7.5%)", formatCurrency(vat)]);
-      }
-    }
-
-    tableBody.push([getCalculationLabel(), formatCurrency(getFinalTotal())]);
-
-    autoTable(doc, {
-      startY: 28,
-      head: [["Item", "Value"]],
-      body: tableBody,
-      theme: "grid",
-      styles: {
-        fontSize: 11,
-        cellPadding: { top: 1.5, right: 2, bottom: 1.5, left: 2 },
-      },
-      headStyles: { fillColor: [40, 40, 40], textColor: 255 },
-      alternateRowStyles: { fillColor: [245, 245, 245] },
-      margin: { left: 14, right: 14 },
-    });
-
-    const pageHeight = doc.internal.pageSize.height;
-    doc.setFontSize(9);
-    doc.text("Generated from dutycalc.ng", 14, pageHeight - 8);
-
-    doc.save("duty-calculation.pdf");
-
-    toast({
-      title: "PDF Downloaded",
-      description: "Your duty calculation PDF is ready.",
-    });
-  };
-
   return (
-    <div className="max-w-6xl mx-auto p-4 sm:p-6 space-y-6">
-      <div className="text-center">
-        <h1 className="text-2xl sm:text-3xl font-bold">Customs Duty Calculator</h1>
-        <p className="text-gray-400 text-sm sm:text-base">
-          Calculate import duties & taxes for Nigeria
+    <div className="max-w-6xl mx-auto p-4 sm:p-6 space-y-6 bg-[#F6F7F9] rounded-lg">
+      {/* Page Heading */}
+      <div className="text-center space-y-2">
+        <h1 className="text-3xl font-bold text-[#09607B]">
+          Customs Duty Calculator
+        </h1>
+        <p className="text-gray-600">
+          Calculate import duties & taxes for Nigeria quickly and accurately
         </p>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Input Section */}
-        <Card className="bg-gradient-to-br from-[#0D0E10] via-[#1b2a4a] to-[#063064] text-white border border-blue-900 rounded-lg shadow-md">
+        <Card className="bg-white shadow-md border border-gray-200">
           <CardHeader>
-            <CardTitle>Input Values</CardTitle>
+            <CardTitle className="bg-gradient-to-r from-[#09607B] to-[#1B8B77] text-white px-3 py-2 rounded-md text-lg">
+              Input Values
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Mode + Tariff link (kept unchanged) */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-              <div className="w-full">
-                <Label>Calculation Mode</Label>
-                <div>
-                  <Select onValueChange={setCalculationType} defaultValue="withVAT">
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Mode" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-black text-white">
-                      <SelectItem value="withVAT">WITH VAT</SelectItem>
-                      <SelectItem value="noVAT">NO VAT</SelectItem>
-                      <SelectItem value="idec">IDEC</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <Link href="/tariff" className="w-full sm:w-auto">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-xs px-2 py-1 flex items-center w-full sm:w-auto"
-                >
-                  <LinkIcon className="w-3 h-3 mr-1" />
-                  Check Tariff
-                </Button>
-              </Link>
+            {/* Mode */}
+            <div>
+              <Label>Calculation Mode</Label>
+              <Select onValueChange={setCalculationType} defaultValue="withVAT">
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select Mode" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="withVAT">With VAT</SelectItem>
+                  <SelectItem value="noVAT">No VAT</SelectItem>
+                  <SelectItem value="idec">IDEC</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
-            {/* Invoice block */}
+            {/* Invoice */}
             <div>
               <Label>Invoice</Label>
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+              <div className="flex gap-2">
                 <Input
                   type="number"
                   value={invoice ?? ""}
                   onChange={(e) =>
                     setInvoice(e.target.value ? parseFloat(e.target.value) : undefined)
                   }
-                  placeholder="Amount (leave empty if none)"
+                  placeholder="Amount"
                 />
-
-                <div className="flex gap-2 items-center">
-                  <div>
-                    <Label className="sr-only">Invoice Currency</Label>
-                    <Select
-                      onValueChange={(v) => {
-                        setInvoiceCurrency(v);
-                        setManualInvoiceRate(false);
-                      }}
-                      defaultValue={invoiceCurrency}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-black text-white max-h-60 overflow-y-auto">
-                        {currencies.map((c) => (
-                          <SelectItem key={c} value={c}>
-                            {c}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label className="sr-only">Invoice Exchange Rate</Label>
-                    <Input
-                      type="number"
-                      value={invoiceExchangeRate ?? ""}
-                      onChange={(e) => {
-                        setInvoiceExchangeRate(parseFloat(e.target.value) || 0);
-                        setManualInvoiceRate(true);
-                      }}
-                      className="w-36"
-                    />
-                  </div>
-                </div>
+                <Select
+                  onValueChange={(v) => setInvoiceCurrency(v)}
+                  defaultValue={invoiceCurrency}
+                >
+                  <SelectTrigger className="w-28">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-56">
+                    {currencies.map((c) => (
+                      <SelectItem key={c} value={c}>
+                        {c}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Input
+                  type="number"
+                  value={invoiceExchangeRate}
+                  onChange={(e) => setInvoiceExchangeRate(Number(e.target.value))}
+                  className="w-24"
+                />
               </div>
-
               {invoice !== undefined && (
-                <p className="text-sm text-gray-400 mt-1">
+                <p className="text-sm text-gray-500 mt-1">
                   = {formatCurrency(invoiceNGN)}
                 </p>
               )}
             </div>
 
-            {/* Freight block */}
+            {/* Freight */}
             <div>
               <Label>Freight</Label>
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+              <div className="flex gap-2">
                 <Input
                   type="number"
                   value={freight ?? ""}
                   onChange={(e) =>
                     setFreight(e.target.value ? parseFloat(e.target.value) : undefined)
                   }
-                  placeholder="Amount (leave empty if none)"
+                  placeholder="Amount"
                 />
-
-                <div className="flex gap-2 items-center">
-                  <div>
-                    <Label className="sr-only">Freight Currency</Label>
-                    <Select
-                      onValueChange={(v) => {
-                        setFreightCurrency(v);
-                        setManualFreightRate(false);
-                      }}
-                      defaultValue={freightCurrency}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-black text-white max-h-60 overflow-y-auto">
-                        {currencies.map((c) => (
-                          <SelectItem key={c} value={c}>
-                            {c}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label className="sr-only">Freight Exchange Rate</Label>
-                    <Input
-                      type="number"
-                      value={freightExchangeRate ?? ""}
-                      onChange={(e) => {
-                        setFreightExchangeRate(parseFloat(e.target.value) || 0);
-                        setManualFreightRate(true);
-                      }}
-                      className="w-36"
-                    />
-                  </div>
-                </div>
+                <Select
+                  onValueChange={(v) => setFreightCurrency(v)}
+                  defaultValue={freightCurrency}
+                >
+                  <SelectTrigger className="w-28">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-56">
+                    {currencies.map((c) => (
+                      <SelectItem key={c} value={c}>
+                        {c}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Input
+                  type="number"
+                  value={freightExchangeRate}
+                  onChange={(e) => setFreightExchangeRate(Number(e.target.value))}
+                  className="w-24"
+                />
               </div>
-
               {freight !== undefined && (
-                <p className="text-sm text-gray-400 mt-1">
+                <p className="text-sm text-gray-500 mt-1">
                   = {formatCurrency(freightNGN)}
                 </p>
               )}
@@ -447,14 +243,14 @@ ETLS (0.5%): ${formatCurrency(etls)}
                 }}
               />
               {!manualInsurance && (
-                <p className="text-sm text-gray-400 mt-1">
+                <p className="text-sm text-gray-500 mt-1">
                   Auto: {formatCurrency(calculatedInsurance)}
                 </p>
               )}
             </div>
 
             {/* Duty & Levy */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
+            <div className="grid sm:grid-cols-2 gap-4">
               <div>
                 <Label>Duty Rate (%)</Label>
                 <Input
@@ -463,49 +259,30 @@ ETLS (0.5%): ${formatCurrency(etls)}
                   onChange={(e) => setDutyRate(parseFloat(e.target.value) || 0)}
                 />
               </div>
-
-              <div className="flex items-center gap-2">
-                <div className="w-full">
-                  <Label>Levy Rate (%)</Label>
-                  <Input
-                    type="number"
-                    value={levyRate || ""}
-                    onChange={(e) => setLevyRate(parseFloat(e.target.value) || 0)}
-                  />
-                </div>
-
-                <Link href="/exchange-rate">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-xs px-2 py-1 flex items-center"
-                  >
-                    <LinkIcon className="w-3 h-3 mr-1" />
-                    Exchange Rates
-                  </Button>
-                </Link>
+              <div>
+                <Label>Levy Rate (%)</Label>
+                <Input
+                  type="number"
+                  value={levyRate || ""}
+                  onChange={(e) => setLevyRate(parseFloat(e.target.value) || 0)}
+                />
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Results Section */}
-        <Card className="bg-gradient-to-br from-[#0D0E10] via-[#1b2a4a] to-[#063064] text-white border border-blue-900 rounded-lg shadow-md">
+        <Card className="bg-white shadow-md border border-gray-200">
           <CardHeader>
-            <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-gray-700 pb-2">
+            <CardTitle className="bg-gradient-to-r from-[#607B09] to-[#1B8B77] text-white px-3 py-2 rounded-md text-lg flex justify-between items-center">
               <span>Results</span>
-              <div className="flex gap-2 w-full sm:w-auto">
-                <Button
-                  size="sm"
-                  onClick={copyBreakdown}
-                  className="bg-green-600 hover:bg-green-700 text-white flex-1 sm:flex-none"
-                >
+              <div className="flex gap-2">
+                <Button size="sm" onClick={() => toast({ title: "Copied!" })}>
                   <Copy className="w-4 h-4 mr-1" /> Copy
                 </Button>
                 <Button
                   size="sm"
-                  onClick={downloadPDF}
-                  className="bg-[#ff0000] hover:bg-[#cc0000] text-white flex-1 sm:flex-none"
+                  className="bg-red-600 hover:bg-red-700 text-white"
                 >
                   <Download className="w-4 h-4 mr-1" /> PDF
                 </Button>
@@ -514,57 +291,41 @@ ETLS (0.5%): ${formatCurrency(etls)}
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {/* CIF */}
               <div className="flex justify-between font-semibold">
                 <span>CIF:</span>
-                <span className="text-yellow-200">{formatCurrency(cif)}</span>
+                <span className="text-[#09607B]">{formatCurrency(cif)}</span>
               </div>
 
-              {calculationType === "idec" ? (
-                <>
-                  <div className="flex justify-between">
-                    <span>FCS (4%):</span>
-                    <span>{formatCurrency(fcs)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>ETLS (0.5%):</span>
-                    <span>{formatCurrency(etls)}</span>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="flex justify-between">
-                    <span>FCS (4%):</span>
-                    <span>{formatCurrency(fcs)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Duty:</span>
-                    <span>{formatCurrency(duty)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Levy:</span>
-                    <span>{formatCurrency(levy)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Surcharge (7%):</span>
-                    <span>{formatCurrency(surcharge)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>ETLS (0.5%):</span>
-                    <span>{formatCurrency(etls)}</span>
-                  </div>
-                  {calculationType === "withVAT" && (
-                    <div className="flex justify-between">
-                      <span>VAT (7.5%):</span>
-                      <span>{formatCurrency(vat)}</span>
-                    </div>
-                  )}
-                </>
+              <div className="flex justify-between">
+                <span>FCS (4%):</span>
+                <span>{formatCurrency(fcs)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Duty:</span>
+                <span>{formatCurrency(duty)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Levy:</span>
+                <span>{formatCurrency(levy)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Surcharge (7%):</span>
+                <span>{formatCurrency(surcharge)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>ETLS (0.5%):</span>
+                <span>{formatCurrency(etls)}</span>
+              </div>
+              {calculationType === "withVAT" && (
+                <div className="flex justify-between">
+                  <span>VAT (7.5%):</span>
+                  <span>{formatCurrency(vat)}</span>
+                </div>
               )}
 
-              <div className="flex justify-between font-bold border-t border-gray-700 pt-2 mt-2">
+              <div className="flex justify-between font-bold border-t pt-2 mt-2">
                 <span>{getCalculationLabel()}:</span>
-                <span className="text-green-500">{formatCurrency(getFinalTotal())}</span>
+                <span className="text-[#607B09]">{formatCurrency(getFinalTotal())}</span>
               </div>
             </div>
           </CardContent>
