@@ -24,10 +24,10 @@ export default function TariffPage() {
   const [search, setSearch] = useState("");
   const [rows, setRows] = useState<TariffRow[]>([]);
   const [page, setPage] = useState(1);
-  const rowsPerPage = 50; // ✅ fetch 50 per page
+  const rowsPerPage = 50;
   const [totalPages, setTotalPages] = useState(1);
 
-  // 🔎 Fetch data from Supabase
+  // Fetch data
   useEffect(() => {
     const fetchData = async () => {
       const start = (page - 1) * rowsPerPage;
@@ -35,7 +35,6 @@ export default function TariffPage() {
 
       let query = supabase.from("tariff").select("*", { count: "exact" });
 
-      // ✅ Server-side search across all rows
       if (search.trim() !== "") {
         query = query.or(
           `hscode.ilike.%${search}%,description.ilike.%${search}%`
@@ -44,21 +43,16 @@ export default function TariffPage() {
 
       const { data, error, count } = await query.range(start, end);
 
-      if (error) {
-        console.error("Supabase error:", error);
-        return;
-      }
-
-      setRows(data || []);
-      if (count) {
-        setTotalPages(Math.ceil(count / rowsPerPage));
+      if (!error) {
+        setRows(data || []);
+        if (count) setTotalPages(Math.ceil(count / rowsPerPage));
       }
     };
 
     fetchData();
   }, [page, search]);
 
-  // 🔎 Client-side fallback filter
+  // Filter
   const filtered = rows.filter(
     (row) =>
       row.hscode?.includes(search) ||
@@ -69,7 +63,7 @@ export default function TariffPage() {
   const nextPage = () => setPage((p) => Math.min(p + 1, totalPages));
   const prevPage = () => setPage((p) => Math.max(p - 1, 1));
 
-  // 📄 Export current page to PDF
+  // Export PDF
   const exportPDF = () => {
     const doc = new jsPDF();
     doc.setFontSize(14);
@@ -95,7 +89,7 @@ export default function TariffPage() {
     doc.save("tariff.pdf");
   };
 
-  // 📊 Export current page to Excel
+  // Export Excel
   const exportExcel = () => {
     const ws = XLSX.utils.json_to_sheet(
       filtered.map((row) => ({
@@ -114,100 +108,102 @@ export default function TariffPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#0D0E10] via-[#1b2a4a] to-[#063064] text-white py-10 px-4">
       {/* Header */}
-      <div className="text-center">
-        <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
+      <div className="text-center max-w-2xl mx-auto mb-10">
+        <h1 className="text-3xl md:text-4xl font-bold mb-2">
           Customs Tariff
         </h1>
-        <p className="text-gray-300">
+        <p className="text-gray-300 text-base md:text-lg">
           Check applicable duty, VAT & levy for import items
         </p>
       </div>
 
-      {/* Search + Export */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
-        <Input
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setPage(1); // reset page on new search
-          }}
-          placeholder="Search by HS code or description"
-          className="bg-gradient-to-r from-[#ffffff] to-[#e0e0e0] text-black border border-[#063064] w-full md:w-1/2"
-        />
-        <div className="flex flex-wrap gap-3 w-full md:w-auto">
-          <Button
-            onClick={exportPDF}
-            className="bg-[#FF0000] hover:bg-[#CC0000] w-full sm:w-auto text-white"
-          >
-            <FileDown className="w-4 h-4 mr-2" /> PDF
-          </Button>
-          <Button
-            onClick={exportExcel}
-            className="bg-green-600 hover:bg-green-700 w-full sm:w-auto text-white"
-          >
-            <FileSpreadsheet className="w-4 h-4 mr-2" /> Excel
-          </Button>
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Search + Export */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+          <Input
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+            placeholder="Search by HS code or description"
+            className="bg-white text-black border border-[#063064] w-full md:w-1/2"
+          />
+          <div className="flex flex-wrap gap-3 w-full md:w-auto">
+            <Button
+              onClick={exportPDF}
+              className="bg-red-600 hover:bg-red-700 text-white w-full sm:w-auto"
+            >
+              <FileDown className="w-4 h-4 mr-2" /> PDF
+            </Button>
+            <Button
+              onClick={exportExcel}
+              className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto"
+            >
+              <FileSpreadsheet className="w-4 h-4 mr-2" /> Excel
+            </Button>
+          </div>
         </div>
-      </div>
 
-      {/* Table */}
-      <div className="bg-gradient-to-br from-[#0D0E10] via-[#1b2a4a] to-[#063064] p-4 md:p-6 rounded-xl border border-[#063064] text-white">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[800px] shadow-lg">
-            <thead>
-              <tr className="bg-gradient-to-r from-[#063064] to-[#0d47a1] text-white">
-                <th className="p-2">S/No</th>
-                <th className="p-2">HS Code</th>
-                <th className="p-2">Description</th>
-                <th className="p-2">Duty %</th>
-                <th className="p-2">VAT %</th>
-                <th className="p-2">Levy %</th>
-                <th className="p-2">Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((row, i) => (
-                <tr
-                  key={row.id}
-                  className={`hover:bg-[#2c3446] ${
-                    i % 2 === 0 ? "bg-[#1a237e]/40" : "bg-[#004d40]/40"
-                  }`}
-                >
-                  <td className="p-2">{row.id}</td>
-                  <td className="p-2">{row.hscode}</td>
-                  <td className="p-2">{row.description}</td>
-                  <td className="p-2">{row.duty_rate ?? "-"}</td>
-                  <td className="p-2">{row.vat ?? "-"}</td>
-                  <td className="p-2">{row.levy ?? "-"}</td>
-                  <td className="p-2">{row.date}</td>
+        {/* Table */}
+        <div className="bg-black/40 border border-blue-900 rounded-xl shadow-lg backdrop-blur-sm p-4 md:p-6">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse min-w-[800px]">
+              <thead>
+                <tr className="bg-gradient-to-r from-[#063064] to-[#0d47a1] text-white">
+                  <th className="p-2">S/No</th>
+                  <th className="p-2">HS Code</th>
+                  <th className="p-2">Description</th>
+                  <th className="p-2">Duty %</th>
+                  <th className="p-2">VAT %</th>
+                  <th className="p-2">Levy %</th>
+                  <th className="p-2">Date</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {filtered.map((row, i) => (
+                  <tr
+                    key={row.id}
+                    className={`hover:bg-[#2c3446] ${
+                      i % 2 === 0 ? "bg-[#1a237e]/40" : "bg-[#004d40]/40"
+                    }`}
+                  >
+                    <td className="p-2">{row.id}</td>
+                    <td className="p-2">{row.hscode}</td>
+                    <td className="p-2">{row.description}</td>
+                    <td className="p-2">{row.duty_rate ?? "-"}</td>
+                    <td className="p-2">{row.vat ?? "-"}</td>
+                    <td className="p-2">{row.levy ?? "-"}</td>
+                    <td className="p-2">{row.date}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-        {/* Pagination Controls */}
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-3 mt-4">
-          <span className="text-sm text-gray-400">
-            Page {page} of {totalPages || 1}
-          </span>
-          <div className="flex gap-2">
-            <Button
-              onClick={prevPage}
-              disabled={page === 1}
-              className="bg-[#063064] text-white disabled:opacity-50"
-            >
-              Prev
-            </Button>
-            <Button
-              onClick={nextPage}
-              disabled={page === totalPages || totalPages === 0}
-              className="bg-[#063064] text-white disabled:opacity-50"
-            >
-              Next
-            </Button>
+          {/* Pagination */}
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-3 mt-4">
+            <span className="text-sm text-gray-400">
+              Page {page} of {totalPages || 1}
+            </span>
+            <div className="flex gap-2">
+              <Button
+                onClick={prevPage}
+                disabled={page === 1}
+                className="bg-[#063064] text-white disabled:opacity-50"
+              >
+                Prev
+              </Button>
+              <Button
+                onClick={nextPage}
+                disabled={page === totalPages || totalPages === 0}
+                className="bg-[#063064] text-white disabled:opacity-50"
+              >
+                Next
+              </Button>
+            </div>
           </div>
         </div>
       </div>
