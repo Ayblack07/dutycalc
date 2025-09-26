@@ -204,23 +204,6 @@ export default function HomePage() {
           )}
         </div>
       </section>
-
-      {/* CTA Section */}
-      <section className="bg-brand.navy text-center py-16">
-        <h2 className="text-2xl md:text-4xl font-bold text-white mb-4">
-          Ready to Streamline Your Operations?
-        </h2>
-        <p className="text-brand.silver mb-8 max-w-2xl mx-auto">
-          Join thousands of freight forwarders who trust DutyCalc for
-          accurate calculations and clearing assistance.
-        </p>
-        <Link
-          href="/contact"
-          className="bg-brand.gold text-black font-semibold px-6 py-3 rounded-lg shadow-soft hover:bg-yellow-600 transition"
-        >
-          Contact Us Now
-        </Link>
-      </section>
     </main>
   );
 }
