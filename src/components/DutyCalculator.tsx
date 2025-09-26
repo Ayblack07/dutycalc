@@ -278,14 +278,14 @@ ETLS (0.5%): ${formatCurrency(etls)}
     <div className="max-w-6xl mx-auto p-4 sm:p-6 space-y-6">
       <div className="text-center">
         <h1 className="text-2xl sm:text-3xl font-bold">Customs Duty Calculator</h1>
-        <p className="text-gray-400 text-sm sm:text-base">
+        <p className="text-black text-sm sm:text-base">
           Calculate import duties & taxes for Nigeria
         </p>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Input Section */}
-        <Card className="bg-gradient-to-br from-[#0D0E10] via-[#1b2a4a] to-[#063064] text-white border border-blue-900 rounded-lg shadow-md">
+        <Card className="bg-gradient-to-br from-[#09607B] to-[#1B8B77] text-white border border-[#0F4F46] rounded-lg shadow-md">
           <CardHeader>
             <CardTitle>Input Values</CardTitle>
           </CardHeader>
@@ -490,7 +490,7 @@ ETLS (0.5%): ${formatCurrency(etls)}
         </Card>
 
         {/* Results Section */}
-        <Card className="bg-gradient-to-br from-[#0D0E10] via-[#1b2a4a] to-[#063064] text-white border border-blue-900 rounded-lg shadow-md">
+        <Card className="bg-gradient-to-br from-[#09607B] to-[#1B8B77] text-white border border-[#0F4F46] rounded-lg shadow-md">
           <CardHeader>
             <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-gray-700 pb-2">
               <span>Results</span>
