@@ -49,7 +49,7 @@ export default function HomePage() {
       <section className="bg-gradient-to-br from-primary to-accent text-center py-24 px-6">
         <h1 className="text-4xl md:text-6xl font-bold text-white">
           Professional Customs{" "}
-          <span className="text-accent">Duty Calculator</span>
+          <span className="text-white">Duty Calculator</span>
         </h1>
         <p className="mt-4 text-background max-w-2xl mx-auto">
           Accurate duty calculations, tariff lookup, manifest checking, and
