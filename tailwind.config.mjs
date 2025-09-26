@@ -14,17 +14,22 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: "#F7D234", // our calculator yellow
-          dark: "#d4b100",
+          DEFAULT: "#D4AF37", // elegant gold
+          dark: "#B28C1D", // richer gold
         },
-        darkbg: "#1c1c1c", // background for cards/pages
-        accent: "#3f3f3f", // subtle gray accent
+        brand: {
+          navy: "#0A192F", // deep navy
+          blue: "#1E3A8A", // royal blue
+          darkbg: "#111827", // near black
+          accent: "#374151", // grayish accent
+        },
       },
       fontFamily: {
         sans: ["Inter", "ui-sans-serif", "system-ui"],
       },
       boxShadow: {
-        soft: "0 4px 10px rgba(0, 0, 0, 0.2)",
+        soft: "0 4px 20px rgba(0, 0, 0, 0.25)", // deeper shadow
+        glow: "0 0 12px rgba(212, 175, 55, 0.5)", // subtle gold glow
       },
     },
   },
