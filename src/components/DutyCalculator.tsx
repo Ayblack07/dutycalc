@@ -330,6 +330,7 @@ ETLS (0.5%): ${formatCurrency(etls)}
                     setInvoice(e.target.value ? parseFloat(e.target.value) : undefined)
                   }
                   placeholder="Amount (leave empty if none)"
+                  className="placeholder:text-white/90 border border-white"
                 />
 
                 <div className="flex gap-2 items-center">
@@ -364,7 +365,7 @@ ETLS (0.5%): ${formatCurrency(etls)}
                         setInvoiceExchangeRate(parseFloat(e.target.value) || 0);
                         setManualInvoiceRate(true);
                       }}
-                      className="w-36"
+                      className=" border border-white w-36"
                     />
                   </div>
                 </div>
@@ -388,6 +389,7 @@ ETLS (0.5%): ${formatCurrency(etls)}
                     setFreight(e.target.value ? parseFloat(e.target.value) : undefined)
                   }
                   placeholder="Amount (leave empty if none)"
+                  className="placeholder:text-white/90 border border-white"
                 />
 
                 <div className="flex gap-2 items-center">
@@ -422,7 +424,7 @@ ETLS (0.5%): ${formatCurrency(etls)}
                         setFreightExchangeRate(parseFloat(e.target.value) || 0);
                         setManualFreightRate(true);
                       }}
-                      className="w-36"
+                      className=" border border-white w-36"
                     />
                   </div>
                 </div>
@@ -445,6 +447,7 @@ ETLS (0.5%): ${formatCurrency(etls)}
                   setInsurance(e.target.value ? parseFloat(e.target.value) : undefined);
                   setManualInsurance(true);
                 }}
+                className="border border-white"
               />
               {!manualInsurance && (
                 <p className="text-sm text-white mt-1">
@@ -461,6 +464,7 @@ ETLS (0.5%): ${formatCurrency(etls)}
                   type="number"
                   value={dutyRate || ""}
                   onChange={(e) => setDutyRate(parseFloat(e.target.value) || 0)}
+                  className="border border-white"
                 />
               </div>
 
@@ -471,6 +475,7 @@ ETLS (0.5%): ${formatCurrency(etls)}
                     type="number"
                     value={levyRate || ""}
                     onChange={(e) => setLevyRate(parseFloat(e.target.value) || 0)}
+                    className="border border-white"
                   />
                 </div>
 
