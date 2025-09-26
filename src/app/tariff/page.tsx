@@ -108,7 +108,7 @@ export default function TariffPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0D0E10] via-[#1b2a4a] to-[#063064] text-white py-10 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#09607B] to-[#1B8B77] text-white py-10 px-4">
       {/* Header */}
       <div className="text-center max-w-2xl mx-auto mb-10">
         <h1 className="text-3xl md:text-4xl font-bold mb-2">
@@ -129,7 +129,7 @@ export default function TariffPage() {
               setPage(1);
             }}
             placeholder="Search by HS code or description"
-            className="bg-white text-black border border-[#063064] w-full md:w-1/2"
+            className="bg-white text-black border border-[#09607B] w-full md:w-1/2"
           />
           <div className="flex flex-wrap gap-3 w-full md:w-auto">
             <Button
@@ -148,11 +148,11 @@ export default function TariffPage() {
         </div>
 
         {/* Table */}
-        <div className="bg-black/40 border border-blue-900 rounded-xl shadow-lg backdrop-blur-sm p-4 md:p-6">
+        <div className="bg-white border-[#09607B] rounded-xl shadow-lg backdrop-blur-sm p-4 md:p-6">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[800px]">
               <thead>
-                <tr className="bg-gradient-to-r from-[#063064] to-[#0d47a1] text-white">
+                <tr className="bg-gradient-to-r from-[#09607B] to-[#07546b] text-white">
                   <th className="p-2">S/No</th>
                   <th className="p-2">HS Code</th>
                   <th className="p-2">Description</th>
@@ -167,7 +167,7 @@ export default function TariffPage() {
                   <tr
                     key={row.id}
                     className={`hover:bg-[#2c3446] ${
-                      i % 2 === 0 ? "bg-[#1a237e]/40" : "bg-[#004d40]/40"
+                      i % 2 === 0 ? "bg-[#1B8B77]" : "bg-[#1B8B77]/40"
                     }`}
                   >
                     <td className="p-2">{row.id}</td>
@@ -192,14 +192,14 @@ export default function TariffPage() {
               <Button
                 onClick={prevPage}
                 disabled={page === 1}
-                className="bg-[#063064] text-white disabled:opacity-50"
+                className="bg-[#09607B] text-white disabled:opacity-50"
               >
                 Prev
               </Button>
               <Button
                 onClick={nextPage}
                 disabled={page === totalPages || totalPages === 0}
-                className="bg-[#063064] text-white disabled:opacity-50"
+                className="bg-[#09607B] text-white disabled:opacity-50"
               >
                 Next
               </Button>

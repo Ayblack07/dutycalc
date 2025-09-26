@@ -285,7 +285,7 @@ ETLS (0.5%): ${formatCurrency(etls)}
 
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Input Section */}
-        <Card className="bg-gradient-to-br from-[#09607B] to-[#1B8B77] text-white border border-[#0F4F46] rounded-lg shadow-md">
+        <Card className="bg-gradient-to-br from-[#09607B] to-[#1B8B77] text-white border border-white rounded-lg shadow-md">
           <CardHeader>
             <CardTitle>Input Values</CardTitle>
           </CardHeader>
@@ -299,7 +299,7 @@ ETLS (0.5%): ${formatCurrency(etls)}
                     <SelectTrigger>
                       <SelectValue placeholder="Select Mode" />
                     </SelectTrigger>
-                    <SelectContent className="bg-black text-white">
+                    <SelectContent className="bg-[1b8b77] text-white">
                       <SelectItem value="withVAT">WITH VAT</SelectItem>
                       <SelectItem value="noVAT">NO VAT</SelectItem>
                       <SelectItem value="idec">IDEC</SelectItem>
@@ -345,7 +345,7 @@ ETLS (0.5%): ${formatCurrency(etls)}
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-black text-white max-h-60 overflow-y-auto">
+                      <SelectContent className="bg-[#1b8b77] text-white max-h-60 overflow-y-auto">
                         {currencies.map((c) => (
                           <SelectItem key={c} value={c}>
                             {c}
@@ -371,7 +371,7 @@ ETLS (0.5%): ${formatCurrency(etls)}
               </div>
 
               {invoice !== undefined && (
-                <p className="text-sm text-gray-400 mt-1">
+                <p className="text-sm text-white mt-1">
                   = {formatCurrency(invoiceNGN)}
                 </p>
               )}
@@ -403,7 +403,7 @@ ETLS (0.5%): ${formatCurrency(etls)}
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-black text-white max-h-60 overflow-y-auto">
+                      <SelectContent className="bg-[#1b8b77] text-white max-h-60 overflow-y-auto">
                         {currencies.map((c) => (
                           <SelectItem key={c} value={c}>
                             {c}
@@ -429,7 +429,7 @@ ETLS (0.5%): ${formatCurrency(etls)}
               </div>
 
               {freight !== undefined && (
-                <p className="text-sm text-gray-400 mt-1">
+                <p className="text-sm text-white mt-1">
                   = {formatCurrency(freightNGN)}
                 </p>
               )}
@@ -447,7 +447,7 @@ ETLS (0.5%): ${formatCurrency(etls)}
                 }}
               />
               {!manualInsurance && (
-                <p className="text-sm text-gray-400 mt-1">
+                <p className="text-sm text-white mt-1">
                   Auto: {formatCurrency(calculatedInsurance)}
                 </p>
               )}
@@ -490,9 +490,9 @@ ETLS (0.5%): ${formatCurrency(etls)}
         </Card>
 
         {/* Results Section */}
-        <Card className="bg-gradient-to-br from-[#09607B] to-[#1B8B77] text-white border border-[#0F4F46] rounded-lg shadow-md">
+        <Card className="bg-gradient-to-br from-[#09607B] to-[#1B8B77] text-white border border-white rounded-lg shadow-md">
           <CardHeader>
-            <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-gray-700 pb-2">
+            <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-white pb-2">
               <span>Results</span>
               <div className="flex gap-2 w-full sm:w-auto">
                 <Button
@@ -562,7 +562,7 @@ ETLS (0.5%): ${formatCurrency(etls)}
                 </>
               )}
 
-              <div className="flex justify-between font-bold border-t border-gray-700 pt-2 mt-2">
+              <div className="flex justify-between font-bold border-t border-white pt-2 mt-2">
                 <span>{getCalculationLabel()}:</span>
                 <span className="text-green-500">{formatCurrency(getFinalTotal())}</span>
               </div>

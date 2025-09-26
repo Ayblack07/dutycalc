@@ -38,7 +38,7 @@ export default function ExchangeRateClient() {
         Exchange Rates
       </h1>
 
-      <Card className="bg-[#0D0E10] text-white shadow-md">
+      <Card className="bg-[#09607b] text-white shadow-md">
         <CardHeader>
           <CardTitle className="text-lg sm:text-xl">
             Current Exchange Rates
