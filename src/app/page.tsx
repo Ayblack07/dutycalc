@@ -214,7 +214,7 @@ export default function HomePage() {
       </section>
 
       {/* News Section */}
-      <section className="bg-[#cee9f1] py-20 px-6">
+      <section className="bg-gray-100 py-20 px-6">
         <h2 className="text-3xl font-bold text-primary text-center mb-12">
           Latest News
         </h2>
@@ -224,7 +224,7 @@ export default function HomePage() {
             news.map((item) => (
               <article
                 key={item.id}
-                className="bg-white p-6 rounded-xl shadow-soft hover:shadow-glow transition flex flex-col justify-between"
+                className="bg-[#effbff] p-6 rounded-xl shadow-soft hover:shadow-glow transition flex flex-col justify-between"
               >
                 <div>
                   <h3 className="text-xl font-bold text-primary mb-2">
