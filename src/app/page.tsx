@@ -60,12 +60,13 @@ export default function HomePage() {
           <span className="text-white">Customs Duty Calculator</span>
         </h1>
         <p className="mt-4 text-background max-w-2xl mx-auto">
-          Welcome to DutyCalc, your trusted partner in seamless import and export operations. 
-          Our platform is designed to simplify complex logistics, offering tools and resources 
-          to help you navigate international trade with ease. From comprehensive duty calculations, 
-          to stress-free manifest checker, we empower businesses and individuals alike to make 
-          informed decisions and optimize their supply chains. Experience efficiency, transparency, 
-          and reliability, all in one place.
+          Welcome to DutyCalc, your trusted partner in seamless import and export
+          operations. Our platform is designed to simplify complex logistics,
+          offering tools and resources to help you navigate international trade
+          with ease. From comprehensive duty calculations, to stress-free
+          manifest checker, we empower businesses and individuals alike to make
+          informed decisions and optimize their supply chains. Experience
+          efficiency, transparency, and reliability, all in one place.
         </p>
         <div className="mt-8 flex justify-center gap-6">
           <Link
@@ -83,7 +84,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Highlights Section (Updated) */}
+      {/* Highlights Section */}
       <section className="bg-background py-20 px-6">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
           {/* Accuracy */}
@@ -126,114 +127,94 @@ export default function HomePage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 max-w-7xl mx-auto">
           {/* Duty Calculator */}
-          <div className="bg-white p-6 rounded-xl shadow-soft hover:shadow-glow transition">
-            <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-xl bg-primary/10 text-primary mx-auto">
+          <div className="bg-white p-6 rounded-xl shadow-soft hover:shadow-glow transition flex flex-col items-center text-center">
+            <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-primary/10 text-primary">
               <Calculator size={28} />
             </div>
-            <h3 className="text-xl font-bold text-primary mb-2 text-center">
-              Duty Calculator
-            </h3>
-            <p className="text-gray-600 mb-4 text-center">
+            <h3 className="text-xl font-bold text-primary mb-2">Duty Calculator</h3>
+            <p className="text-gray-600 mb-4">
               Accurate customs duty calculations with real-time exchange rates.
             </p>
-            <div className="text-center">
-              <Link
-                href="/calculator"
-                className="text-accent font-semibold hover:underline"
-              >
-                Explore Duty Calculator →
-              </Link>
-            </div>
+            <Link
+              href="/calculator"
+              className="bg-primary text-white font-semibold px-4 py-2 rounded-lg shadow-soft hover:bg-primary-dark transition"
+            >
+              Explore
+            </Link>
           </div>
 
           {/* Tariff Lookup */}
-          <div className="bg-white p-6 rounded-xl shadow-soft hover:shadow-glow transition">
-            <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-xl bg-secondary/10 text-secondary mx-auto">
+          <div className="bg-white p-6 rounded-xl shadow-soft hover:shadow-glow transition flex flex-col items-center text-center">
+            <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-secondary/10 text-secondary">
               <Search size={28} />
             </div>
-            <h3 className="text-xl font-bold text-primary mb-2 text-center">
-              Tariff Lookup
-            </h3>
-            <p className="text-gray-600 mb-4 text-center">
+            <h3 className="text-xl font-bold text-primary mb-2">Tariff Lookup</h3>
+            <p className="text-gray-600 mb-4">
               Search HS codes and tariff classifications with a full database.
             </p>
-            <div className="text-center">
-              <Link
-                href="/tariff"
-                className="text-accent font-semibold hover:underline"
-              >
-                Explore Tariff Lookup →
-              </Link>
-            </div>
+            <Link
+              href="/tariff"
+              className="bg-secondary text-white font-semibold px-4 py-2 rounded-lg shadow-soft hover:bg-secondary-dark transition"
+            >
+              Explore
+            </Link>
           </div>
 
           {/* Manifest Check */}
-          <div className="bg-white p-6 rounded-xl shadow-soft hover:shadow-glow transition">
-            <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-xl bg-accent/10 text-accent mx-auto">
+          <div className="bg-white p-6 rounded-xl shadow-soft hover:shadow-glow transition flex flex-col items-center text-center">
+            <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-accent/10 text-accent">
               <FileText size={28} />
             </div>
-            <h3 className="text-xl font-bold text-primary mb-2 text-center">
-              Manifest Check
-            </h3>
-            <p className="text-gray-600 mb-4 text-center">
+            <h3 className="text-xl font-bold text-primary mb-2">Manifest Check</h3>
+            <p className="text-gray-600 mb-4">
               Verify Bill of Lading and Airway Bill details for documentation.
             </p>
-            <div className="text-center">
-              <Link
-                href="/manifest"
-                className="text-accent font-semibold hover:underline"
-              >
-                Explore Manifest Check →
-              </Link>
-            </div>
+            <Link
+              href="/manifest"
+              className="bg-accent text-white font-semibold px-4 py-2 rounded-lg shadow-soft hover:bg-accent-dark transition"
+            >
+              Explore
+            </Link>
           </div>
 
           {/* Learning Hub */}
-          <div className="bg-white p-6 rounded-xl shadow-soft hover:shadow-glow transition">
-            <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-xl bg-primary/10 text-primary mx-auto">
+          <div className="bg-white p-6 rounded-xl shadow-soft hover:shadow-glow transition flex flex-col items-center text-center">
+            <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-primary/10 text-primary">
               <BookOpen size={28} />
             </div>
-            <h3 className="text-xl font-bold text-primary mb-2 text-center">
-              Learning Hub
-            </h3>
-            <p className="text-gray-600 mb-4 text-center">
+            <h3 className="text-xl font-bold text-primary mb-2">Learning Hub</h3>
+            <p className="text-gray-600 mb-4">
               Comprehensive guides, tutorials, and glossaries for trade ops.
             </p>
-            <div className="text-center">
-              <Link
-                href="/learning-hub"
-                className="text-accent font-semibold hover:underline"
-              >
-                Explore Learning Hub →
-              </Link>
-            </div>
+            <Link
+              href="/learning-hub"
+              className="bg-primary text-white font-semibold px-4 py-2 rounded-lg shadow-soft hover:bg-primary-dark transition"
+            >
+              Explore
+            </Link>
           </div>
 
           {/* Exchange Rate */}
-          <div className="bg-white p-6 rounded-xl shadow-soft hover:shadow-glow transition">
-            <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-xl bg-secondary/10 text-secondary mx-auto">
+          <div className="bg-white p-6 rounded-xl shadow-soft hover:shadow-glow transition flex flex-col items-center text-center">
+            <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-secondary/10 text-secondary">
               <DollarSign size={28} />
             </div>
-            <h3 className="text-xl font-bold text-primary mb-2 text-center">
-              Exchange Rates
-            </h3>
-            <p className="text-gray-600 mb-4 text-center">
+            <h3 className="text-xl font-bold text-primary mb-2">Exchange Rates</h3>
+            <p className="text-gray-600 mb-4">
               View and track the latest customs exchange rates from Supabase.
             </p>
-            <div className="text-center">
-              <Link
-                href="/exchange-rate"
-                className="text-accent font-semibold hover:underline"
-              >
-                Explore Exchange Rates →
-              </Link>
-            </div>
+            <Link
+              href="/exchange-rate"
+              className="bg-secondary text-white font-semibold px-4 py-2 rounded-lg shadow-soft hover:bg-secondary-dark transition"
+            >
+              Explore
+            </Link>
           </div>
         </div>
       </section>
 
       {/* News Section */}
-      <section className="bg-background py-20 px-6">
+      <section className="bg-gray-100 py-20 px-6">
         <h2 className="text-3xl font-bold text-primary text-center mb-12">
           Latest News
         </h2>
@@ -243,34 +224,30 @@ export default function HomePage() {
             news.map((item) => (
               <article
                 key={item.id}
-                className="bg-white p-6 rounded-xl shadow-soft hover:shadow-glow transition"
+                className="bg-white p-6 rounded-xl shadow-soft hover:shadow-glow transition flex flex-col justify-between"
               >
-                <h3 className="text-xl font-bold text-primary mb-2">
-                  {item.title}
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  {item.content
-                    ? item.content.length > 140
-                      ? item.content.slice(0, 140) + "…"
-                      : item.content
-                    : ""}
-                </p>
-                <div className="flex items-center justify-between">
-                  <p className="text-sm text-gray-500">
-                    By {item.author ?? "DutyCalc"}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {formatDate(item.created_at)}
+                <div>
+                  <h3 className="text-xl font-bold text-primary mb-2">
+                    {item.title}
+                  </h3>
+                  <p className="text-gray-600 mb-4">
+                    {item.content
+                      ? item.content.length > 140
+                        ? item.content.slice(0, 140) + "…"
+                        : item.content
+                      : ""}
                   </p>
                 </div>
-                <div className="mt-4">
-                  <Link
-                    href={`/news/${item.id}`}
-                    className="text-accent font-semibold hover:underline"
-                  >
-                    Read More →
-                  </Link>
+                <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                  <p>By {item.author ?? "DutyCalc"}</p>
+                  <p>{formatDate(item.created_at)}</p>
                 </div>
+                <Link
+                  href={`/news/${item.id}`}
+                  className="bg-accent text-white font-semibold px-4 py-2 rounded-lg shadow-soft hover:bg-accent-dark transition text-center"
+                >
+                  Read More
+                </Link>
               </article>
             ))
           ) : (
