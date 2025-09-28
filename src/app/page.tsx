@@ -52,7 +52,7 @@ export default function HomePage() {
   return (
     <main className="bg-gray-50">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-800 to-blue-600 text-center py-24 px-6 rounded-b-3xl shadow-md">
+      <section className="bg-[#2D3748] text-center py-24 px-6 rounded-b-3xl shadow-md">
         <h1 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight">
           Professional Customs <span className="text-blue-200">Calculator</span>
         </h1>
