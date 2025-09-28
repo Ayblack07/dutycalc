@@ -85,8 +85,8 @@ export default function HomePage() {
       </section>
 
       {/* Highlights Section */}
-      <section className="bg-background py-2 px-2">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+      <section className="bg-background py-6 px-3">
+        <div className="max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
           {/* Accuracy */}
           <div className="bg-white p-8 rounded-xl shadow-soft hover:shadow-glow transition">
             <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-primary/10 text-primary mx-auto">
