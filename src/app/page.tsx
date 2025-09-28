@@ -214,7 +214,7 @@ export default function HomePage() {
       </section>
 
       {/* News Section */}
-      <section className="bg-gray-100 py-20 px-6">
+      <section className="bg-[#cee9f1] py-20 px-6">
         <h2 className="text-3xl font-bold text-primary text-center mb-12">
           Latest News
         </h2>
