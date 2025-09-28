@@ -46,14 +46,19 @@ export default function HomePage() {
   return (
     <main>
       {/* Hero Section */}
-      <section className="bg-[#2d3748] text-center py-24 px-6">
+      <section className="bg-gradient-to-br from-primary to-accent text-center py-24 px-6">
         <h1 className="text-4xl md:text-6xl font-bold text-white">
           Professional Customs{" "}
           <span className="text-white">Duty Calculator</span>
         </h1>
         <p className="mt-4 text-background max-w-2xl mx-auto">
-          Accurate duty calculations, tariff lookup, manifest checking, and
-          comprehensive trade resources for Nigerian import/export operations.
+          Welcome to DutyCalc, 
+          your trusted partner in seamless import and export operations. 
+          Our platform is designed to simplify complex logistics, 
+          offering tools and resources to help you navigate international trade with ease. 
+          From comprehensive duty calculations, to stress-free manifest checker,
+          we empower businesses and individuals alike to make informed decisions 
+          and optimize their supply chains. Experience efficiency, transparency, and reliability, all in one place.
         </p>
         <div className="mt-8 flex justify-center gap-6">
           <Link
