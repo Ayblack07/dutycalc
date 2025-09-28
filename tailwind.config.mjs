@@ -13,12 +13,15 @@ export default {
   theme: {
     extend: {
       colors: {
+        base: {
+          DEFAULT: "#2D3748", // Dark slate/blue-gray (new main text color)
+        },
         primary: {
           DEFAULT: "#09607B", // Deep teal
           dark: "#074C62",
         },
         secondary: {
-          DEFAULT: "#607B09", // Olive-green
+          DEFAULT: "#607B09", // Olive green
           dark: "#4C6007",
         },
         accent: {

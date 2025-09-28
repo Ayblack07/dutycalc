@@ -2,7 +2,16 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Calculator, Search, FileText, BookOpen, DollarSign } from "lucide-react";
+import {
+  Calculator,
+  Search,
+  FileText,
+  BookOpen,
+  DollarSign,
+  BarChart,
+  Database,
+  RefreshCcw,
+} from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
 
 type NewsItem = {
@@ -48,17 +57,15 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-primary to-accent text-center py-24 px-6">
         <h1 className="text-4xl md:text-6xl font-bold text-white">
-          Professional Customs{" "}
-          <span className="text-white">Duty Calculator</span>
+          <span className="text-white">Customs Duty Calculator</span>
         </h1>
         <p className="mt-4 text-background max-w-2xl mx-auto">
-          Welcome to DutyCalc, 
-          your trusted partner in seamless import and export operations. 
-          Our platform is designed to simplify complex logistics, 
-          offering tools and resources to help you navigate international trade with ease. 
-          From comprehensive duty calculations, to stress-free manifest checker,
-          we empower businesses and individuals alike to make informed decisions 
-          and optimize their supply chains. Experience efficiency, transparency, and reliability, all in one place.
+          Welcome to DutyCalc, your trusted partner in seamless import and export operations. 
+          Our platform is designed to simplify complex logistics, offering tools and resources 
+          to help you navigate international trade with ease. From comprehensive duty calculations, 
+          to stress-free manifest checker, we empower businesses and individuals alike to make 
+          informed decisions and optimize their supply chains. Experience efficiency, transparency, 
+          and reliability, all in one place.
         </p>
         <div className="mt-8 flex justify-center gap-6">
           <Link
@@ -76,19 +83,35 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Highlights Section */}
-      <section className="bg-background py-16 text-center grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div>
-          <h3 className="text-3xl font-bold text-primary">99.9%</h3>
-          <p className="text-gray-600">Calculation Accuracy</p>
-        </div>
-        <div>
-          <h3 className="text-3xl font-bold text-secondary">10,000+</h3>
-          <p className="text-gray-600">HS Codes Database</p>
-        </div>
-        <div>
-          <h3 className="text-3xl font-bold text-accent">24/7</h3>
-          <p className="text-gray-600">Real-time Updates</p>
+      {/* Highlights Section (Updated) */}
+      <section className="bg-background py-20 px-6">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+          {/* Accuracy */}
+          <div className="bg-white p-8 rounded-xl shadow-soft hover:shadow-glow transition">
+            <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-primary/10 text-primary mx-auto">
+              <BarChart size={28} />
+            </div>
+            <h3 className="text-3xl font-bold text-primary">99.9%</h3>
+            <p className="text-gray-600">Proven Calculation Accuracy</p>
+          </div>
+
+          {/* Database */}
+          <div className="bg-white p-8 rounded-xl shadow-soft hover:shadow-glow transition">
+            <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-secondary/10 text-secondary mx-auto">
+              <Database size={28} />
+            </div>
+            <h3 className="text-3xl font-bold text-secondary">10,000+</h3>
+            <p className="text-gray-600">HS Codes in our Database</p>
+          </div>
+
+          {/* Updates */}
+          <div className="bg-white p-8 rounded-xl shadow-soft hover:shadow-glow transition">
+            <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-accent/10 text-accent mx-auto">
+              <RefreshCcw size={28} />
+            </div>
+            <h3 className="text-3xl font-bold text-accent">24/7</h3>
+            <p className="text-gray-600">Live Real-time Updates</p>
+          </div>
         </div>
       </section>
 
