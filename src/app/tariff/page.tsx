@@ -52,7 +52,7 @@ export default function TariffPage() {
   const [rows, setRows] = useState<TariffRow[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const rowsPerPage = 20;
+  const rowsPerPage = 10;
 
   const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
