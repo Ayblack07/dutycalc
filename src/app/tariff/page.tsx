@@ -55,6 +55,7 @@ export default function TariffPage() {
   const rowsPerPage = 20;
 
   const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
+  const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
   // Fetch data
   useEffect(() => {
@@ -194,7 +195,12 @@ export default function TariffPage() {
           {sections.map((section) => (
             <div
               key={section.id}
-              className="bg-white rounded-xl shadow-lg p-4 flex flex-col items-center text-center"
+              className="bg-white rounded-xl shadow-lg p-4 flex flex-col items-center text-center cursor-pointer"
+              onClick={() =>
+                setExpandedSection(
+                  expandedSection === section.id ? null : section.id
+                )
+              }
             >
               <div
                 className={`w-12 h-12 flex items-center justify-center rounded-full text-white font-bold text-lg ${section.color}`}
@@ -204,25 +210,30 @@ export default function TariffPage() {
               <h2 className="mt-3 text-lg font-semibold text-gray-800">
                 {section.title}
               </h2>
-              <div className="flex flex-wrap justify-center gap-2 mt-3">
-                {section.chapters.map((ch) => (
-                  <Button
-                    key={ch}
-                    onClick={() => {
-                      setSelectedChapter(ch);
-                      setPage(1);
-                    }}
-                    size="sm"
-                    className={`${
-                      selectedChapter === ch
-                        ? "bg-[#09607B] text-white"
-                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                    }`}
-                  >
-                    Ch {ch}
-                  </Button>
-                ))}
-              </div>
+
+              {/* Collapsible chapters */}
+              {expandedSection === section.id && (
+                <div className="flex flex-wrap justify-center gap-2 mt-3">
+                  {section.chapters.map((ch) => (
+                    <Button
+                      key={ch}
+                      onClick={(e) => {
+                        e.stopPropagation(); // prevent collapsing when clicking button
+                        setSelectedChapter(ch);
+                        setPage(1);
+                      }}
+                      size="sm"
+                      className={`${
+                        selectedChapter === ch
+                          ? "bg-[#09607B] text-white"
+                          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                      }`}
+                    >
+                      Ch {ch}
+                    </Button>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>
