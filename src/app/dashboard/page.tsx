@@ -1,68 +1,106 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient";
 
-// Supabase user type
-type User = {
-  id: string;
-  email: string;
-  user_metadata?: {
-    full_name?: string;
-  };
+type Profile = {
+  first_name: string;
+  last_name: string;
 };
 
 export default function Dashboard() {
-  const [user, setUser] = useState<User | null>(null);
+  const supabase = createClientComponentClient();
   const router = useRouter();
 
-  useEffect(() => {
-    const getUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
+  const [profile, setProfile] = useState<Profile | null>(null);
 
-      if (error || !data?.user) {
-        router.push("/login"); // redirect if not logged in
-      } else {
-        setUser({
-          id: data.user.id,
-          email: data.user.email!,
-          user_metadata: data.user.user_metadata,
-        });
+  useEffect(() => {
+    const getProfile = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        router.push("/auth");
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("first_name, last_name")
+        .eq("id", user.id)
+        .single();
+
+      if (!error && data) {
+        setProfile(data);
       }
     };
 
-    getUser();
-  }, [router]);
+    getProfile();
+  }, [supabase, router]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    setUser(null);
-    router.push("/login");
+    router.push("/auth");
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
-
-      {user ? (
-        <div className="space-y-4">
-          <p>
-            Welcome,{" "}
-            <span className="font-semibold">
-              {user.user_metadata?.full_name ?? user.email}
-            </span>
-          </p>
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="bg-primary text-white shadow-md">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+          <h1 className="text-xl font-bold">DutyCalc Dashboard</h1>
           <button
             onClick={handleLogout}
-            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg"
+            className="bg-white text-primary px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition"
           >
             Logout
           </button>
         </div>
-      ) : (
-        <p>Loading user info...</p>
-      )}
+      </header>
+
+      {/* Content */}
+      <main className="max-w-7xl mx-auto p-6">
+        <div className="bg-white rounded-xl shadow p-6">
+          <h2 className="text-2xl font-semibold text-gray-800">
+            Welcome,{" "}
+            {profile
+              ? `${profile.first_name} ${profile.last_name}`
+              : "Loading..."}
+            🎉
+          </h2>
+          <p className="text-gray-600 mt-2">
+            Here you can manage your calculations, subscription, and account.
+          </p>
+        </div>
+
+        {/* Feature Grid */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+          <div className="bg-primary/10 border border-primary rounded-xl p-6 shadow-sm">
+            <h3 className="text-lg font-semibold text-primary">
+              Duty Calculator
+            </h3>
+            <p className="text-sm text-gray-600 mt-2">
+              Calculate duties with accuracy.
+            </p>
+          </div>
+
+          <div className="bg-secondary/10 border border-secondary rounded-xl p-6 shadow-sm">
+            <h3 className="text-lg font-semibold text-secondary">Tariff Lookup</h3>
+            <p className="text-sm text-gray-600 mt-2">
+              Explore tariffs and HS codes.
+            </p>
+          </div>
+
+          <div className="bg-accent/10 border border-accent rounded-xl p-6 shadow-sm">
+            <h3 className="text-lg font-semibold text-accent">Learning Hub</h3>
+            <p className="text-sm text-gray-600 mt-2">
+              Access resources and guides.
+            </p>
+          </div>
+        </div>
+      </main>
     </div>
   );
 }

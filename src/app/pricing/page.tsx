@@ -10,7 +10,7 @@ const plans = [
     description: "Great for testing the platform",
     features: ["2 calculations per month", "Limited access to features"],
     buttonText: "Get Started",
-    href: "/signup",
+    href: "/auth",
     highlight: false,
   },
   {
