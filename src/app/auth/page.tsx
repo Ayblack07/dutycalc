@@ -1,140 +1,59 @@
 "use client";
 
-import { useState } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { AuthError, User } from "@supabase/supabase-js";
 
 export default function AuthPage() {
   const supabase = createClientComponentClient();
   const router = useRouter();
 
-  const [tab, setTab] = useState<"login" | "signup">("login");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Get current user
+  useEffect(() => {
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (data?.user) {
+        setUser(data.user);
+        router.push("/dashboard");
+      }
+    };
+    getUser();
+  }, [supabase, router]);
+
+  const handleGoogleSignup = async () => {
     setLoading(true);
     setError(null);
-
-    if (tab === "signup") {
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-
-      if (signUpError) {
-        setError(signUpError.message);
-      } else if (data.user) {
-        // insert into profiles table
-        await supabase.from("profiles").insert({
-          id: data.user.id,
-          first_name: firstName,
-          last_name: lastName,
-        });
-
-        router.push("/dashboard");
-      }
-    } else {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (signInError) {
-        setError(signInError.message);
-      } else {
-        router.push("/dashboard");
-      }
-    }
-
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/dashboard` },
+    });
+    if (error) setError(error.message);
     setLoading(false);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="bg-white shadow-xl rounded-2xl w-full max-w-md p-8">
-        {/* Tabs */}
-        <div className="flex mb-6">
-          <button
-            onClick={() => setTab("login")}
-            className={`flex-1 py-2 font-semibold rounded-l-lg ${
-              tab === "login"
-                ? "bg-primary text-white"
-                : "bg-gray-100 text-gray-600"
-            }`}
-          >
-            Login
-          </button>
-          <button
-            onClick={() => setTab("signup")}
-            className={`flex-1 py-2 font-semibold rounded-r-lg ${
-              tab === "signup"
-                ? "bg-primary text-white"
-                : "bg-gray-100 text-gray-600"
-            }`}
-          >
-            Sign Up
-          </button>
-        </div>
+    <div className="flex items-center justify-center min-h-screen bg-background px-4">
+      <div className="w-full max-w-md bg-white shadow-soft rounded-xl p-6 space-y-6">
+        <h2 className="text-2xl font-bold text-center text-primary">
+          Sign up / Log in
+        </h2>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {tab === "signup" && (
-            <>
-              <input
-                type="text"
-                placeholder="First Name"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                required
-                className="w-full border rounded-lg px-3 py-2"
-              />
-              <input
-                type="text"
-                placeholder="Last Name"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                required
-                className="w-full border rounded-lg px-3 py-2"
-              />
-            </>
-          )}
-          <input
-            type="email"
-            placeholder="Email Address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full border rounded-lg px-3 py-2"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="w-full border rounded-lg px-3 py-2"
-          />
+        {error && (
+          <p className="text-red-600 text-sm text-center">{error}</p>
+        )}
 
-          {error && <p className="text-red-500 text-sm">{error}</p>}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-primary hover:bg-primary-dark text-white py-2 rounded-lg font-semibold transition"
-          >
-            {loading
-              ? "Please wait..."
-              : tab === "signup"
-              ? "Create Account"
-              : "Login"}
-          </button>
-        </form>
+        <button
+          onClick={handleGoogleSignup}
+          disabled={loading}
+          className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-accent text-white px-4 py-3 rounded-lg font-semibold shadow transition"
+        >
+          {loading ? "Loading..." : "Continue with Google"}
+        </button>
       </div>
     </div>
   );

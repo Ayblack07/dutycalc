@@ -1,94 +1,75 @@
 "use client";
 
-import { CheckCircle } from "lucide-react";
 import Link from "next/link";
 
 const plans = [
   {
     name: "Free",
     price: "₦0",
-    description: "Great for testing the platform",
-    features: ["2 calculations per month", "Limited access to features"],
-    buttonText: "Get Started",
-    href: "/auth",
-    highlight: false,
+    desc: "Try DutyCalc with limited access",
+    features: ["2 calculations / month", "Basic Tariff Lookup"],
+    cta: "Get Started",
+    href: "/signup",
   },
   {
     name: "Basic",
     price: "₦2,500 / month",
-    yearly: "₦2,000 / month (yearly billing)",
-    description: "For regular users",
-    features: ["Unlimited calculations", "Basic support"],
-    buttonText: "Choose Basic",
+    desc: "Affordable access for individuals",
+    features: ["Unlimited calculations", "Tariff & Manifest Lookup"],
+    cta: "Subscribe",
     href: "/signup",
-    highlight: false,
+    highlight: true,
   },
   {
     name: "Pro",
     price: "₦3,000 / month",
-    yearly: "₦2,500 / month (yearly billing)",
-    description: "Best for professionals and businesses",
+    desc: "Full access for professionals & businesses",
     features: [
-      "All features unlocked",
+      "Unlimited everything",
+      "Learning Hub premium",
       "Priority support",
-      "Unlimited calculations",
     ],
-    buttonText: "Choose Pro",
+    cta: "Subscribe",
     href: "/signup",
-    highlight: true,
   },
 ];
 
 export default function PricingPage() {
   return (
-    <div className="bg-[#F6F7F9] min-h-screen py-16 px-6">
-      <div className="max-w-6xl mx-auto text-center">
-        <h1 className="text-4xl font-bold text-[#2D3748] mb-4">Pricing Plans</h1>
-        <p className="text-gray-600 mb-12">
-          Choose the plan that works best for you. Upgrade anytime.
+    <div className="bg-background min-h-screen py-16 px-6">
+      <div className="max-w-6xl mx-auto text-center mb-12">
+        <h1 className="text-3xl font-bold text-primary">Pricing Plans</h1>
+        <p className="text-gray-600 mt-2">
+          Choose a plan that fits your needs.
         </p>
+      </div>
 
-        <div className="grid gap-8 md:grid-cols-3">
-          {plans.map((plan) => (
-            <div
-              key={plan.name}
-              className={`rounded-2xl shadow-lg p-8 flex flex-col ${
-                plan.highlight
-                  ? "bg-white border-2 border-[#1B8B77]"
-                  : "bg-white border border-gray-200"
-              }`}
+      <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        {plans.map((plan) => (
+          <div
+            key={plan.name}
+            className={`rounded-2xl p-6 shadow-soft bg-white border ${
+              plan.highlight ? "border-primary shadow-glow" : "border-gray-200"
+            }`}
+          >
+            <h2 className="text-xl font-semibold text-gray-800">{plan.name}</h2>
+            <p className="text-2xl font-bold text-primary mt-2">{plan.price}</p>
+            <p className="text-sm text-gray-500 mt-1">{plan.desc}</p>
+
+            <ul className="mt-4 space-y-2 text-sm text-gray-700">
+              {plan.features.map((f) => (
+                <li key={f}>✅ {f}</li>
+              ))}
+            </ul>
+
+            <Link
+              href={plan.href}
+              className="block mt-6 bg-primary hover:bg-accent text-white px-4 py-2 rounded-lg font-semibold transition"
             >
-              <h2 className="text-2xl font-bold text-[#2D3748] mb-2">
-                {plan.name}
-              </h2>
-              <p className="text-xl font-semibold text-[#09607B]">{plan.price}</p>
-              {plan.yearly && (
-                <p className="text-sm text-gray-500">{plan.yearly}</p>
-              )}
-              <p className="text-gray-600 my-4">{plan.description}</p>
-
-              <ul className="text-left flex-1 space-y-2 mb-6">
-                {plan.features.map((feature, idx) => (
-                  <li key={idx} className="flex items-center gap-2 text-gray-700">
-                    <CheckCircle size={18} className="text-[#1B8B77]" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-
-              <Link
-                href={plan.href}
-                className={`block text-center px-4 py-2 rounded-lg font-semibold transition ${
-                  plan.highlight
-                    ? "bg-[#1B8B77] hover:bg-[#09607B] text-white"
-                    : "bg-gray-100 hover:bg-gray-200 text-[#2D3748]"
-                }`}
-              >
-                {plan.buttonText}
-              </Link>
-            </div>
-          ))}
-        </div>
+              {plan.cta}
+            </Link>
+          </div>
+        ))}
       </div>
     </div>
   );

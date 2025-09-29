@@ -2,103 +2,90 @@
 
 import { useEffect, useState } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { useRouter } from "next/navigation";
+import { User } from "@supabase/supabase-js";
+import Link from "next/link";
 
-type Profile = {
-  first_name: string;
-  last_name: string;
-};
-
-export default function Dashboard() {
+export default function DashboardPage() {
   const supabase = createClientComponentClient();
-  const router = useRouter();
-
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [trialDaysLeft, setTrialDaysLeft] = useState<number | null>(null);
 
   useEffect(() => {
-    const getProfile = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+    const fetchUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (data?.user) {
+        setUser(data.user);
 
-      if (!user) {
-        router.push("/auth");
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("first_name, last_name")
-        .eq("id", user.id)
-        .single();
-
-      if (!error && data) {
-        setProfile(data);
+        // Dummy trial days left (replace with DB logic)
+        setTrialDaysLeft(25);
       }
     };
-
-    getProfile();
-  }, [supabase, router]);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push("/auth");
-  };
+    fetchUser();
+  }, [supabase]);
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-primary text-white shadow-md">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <h1 className="text-xl font-bold">DutyCalc Dashboard</h1>
-          <button
-            onClick={handleLogout}
-            className="bg-white text-primary px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition"
-          >
-            Logout
-          </button>
-        </div>
-      </header>
+    <div className="min-h-screen bg-background flex">
+      {/* Sidebar */}
+      <aside className="w-64 bg-white border-r shadow-sm hidden md:block">
+        <div className="p-4 text-xl font-bold text-primary">DutyCalc</div>
+        <nav className="space-y-2 p-4">
+          <Link href="/dashboard" className="block px-3 py-2 rounded hover:bg-gray-100">🏠 Dashboard</Link>
+          <Link href="/calculator" className="block px-3 py-2 rounded hover:bg-gray-100">🧮 Calculator</Link>
+          <Link href="/tariff" className="block px-3 py-2 rounded hover:bg-gray-100">🔍 Tariff Lookup</Link>
+          <Link href="/manifest" className="block px-3 py-2 rounded hover:bg-gray-100">📑 Manifest</Link>
+          <Link href="/learning-hub" className="block px-3 py-2 rounded hover:bg-gray-100">📚 Learning Hub</Link>
+          <Link href="/pricing" className="block px-3 py-2 rounded hover:bg-gray-100">💳 Pricing</Link>
+        </nav>
+      </aside>
 
-      {/* Content */}
-      <main className="max-w-7xl mx-auto p-6">
-        <div className="bg-white rounded-xl shadow p-6">
-          <h2 className="text-2xl font-semibold text-gray-800">
-            Welcome,{" "}
-            {profile
-              ? `${profile.first_name} ${profile.last_name}`
-              : "Loading..."}
-            🎉
-          </h2>
-          <p className="text-gray-600 mt-2">
-            Here you can manage your calculations, subscription, and account.
+      {/* Main */}
+      <main className="flex-1 p-6 space-y-6">
+        <div className="bg-white shadow-soft rounded-xl p-6">
+          <h1 className="text-2xl font-bold text-primary">
+            Welcome {user?.user_metadata?.full_name || "Guest"} 👋
+          </h1>
+          <p className="text-gray-600">
+            {trialDaysLeft
+              ? `Your free trial ends in ${trialDaysLeft} days.`
+              : "Loading trial info..."}
           </p>
+          {trialDaysLeft !== null && trialDaysLeft <= 0 && (
+            <Link
+              href="/pricing"
+              className="inline-block mt-4 bg-accent hover:bg-primary text-white px-4 py-2 rounded-lg shadow"
+            >
+              Upgrade Now
+            </Link>
+          )}
         </div>
 
-        {/* Feature Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-          <div className="bg-primary/10 border border-primary rounded-xl p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-primary">
-              Duty Calculator
-            </h3>
-            <p className="text-sm text-gray-600 mt-2">
-              Calculate duties with accuracy.
-            </p>
-          </div>
+        {/* Quick Actions */}
+        <div className="grid md:grid-cols-3 gap-4">
+          <Link href="/calculator" className="bg-white p-6 rounded-xl shadow-soft hover:shadow-glow transition">
+            🧮 <span className="font-semibold">Run Calculator</span>
+          </Link>
+          <Link href="/tariff" className="bg-white p-6 rounded-xl shadow-soft hover:shadow-glow transition">
+            🔍 <span className="font-semibold">Tariff Lookup</span>
+          </Link>
+          <Link href="/manifest" className="bg-white p-6 rounded-xl shadow-soft hover:shadow-glow transition">
+            📑 <span className="font-semibold">Check Manifest</span>
+          </Link>
+        </div>
 
-          <div className="bg-secondary/10 border border-secondary rounded-xl p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-secondary">Tariff Lookup</h3>
-            <p className="text-sm text-gray-600 mt-2">
-              Explore tariffs and HS codes.
-            </p>
-          </div>
-
-          <div className="bg-accent/10 border border-accent rounded-xl p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-accent">Learning Hub</h3>
-            <p className="text-sm text-gray-600 mt-2">
-              Access resources and guides.
-            </p>
-          </div>
+        {/* Learning Hub Preview */}
+        <div className="bg-white rounded-xl p-6 shadow-soft">
+          <h2 className="text-lg font-bold text-primary mb-4">Learning Hub</h2>
+          <ul className="space-y-2 text-gray-700">
+            <li>📘 How to use DutyCalc effectively</li>
+            <li>📘 Understanding Tariff Codes</li>
+            <li>📘 Import duty basics in Nigeria</li>
+          </ul>
+          <Link
+            href="/learning-hub"
+            className="inline-block mt-4 text-primary font-semibold"
+          >
+            Explore more →
+          </Link>
         </div>
       </main>
     </div>
