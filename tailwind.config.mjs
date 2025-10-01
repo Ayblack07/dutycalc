@@ -14,21 +14,22 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: "#09607B", // Deep Teal Blue (Main Brand Color)
+          DEFAULT: "#09607B", // Deep Teal Blue
           dark: "#074C62",
         },
         secondary: {
-          DEFAULT: "#F5B700", // Warm Amber Yellow (Highlight / Action)
+          DEFAULT: "#F5B700", // Warm Amber Yellow
           dark: "#C48F00",
         },
         accent: {
-          DEFAULT: "#20C997", // Fresh Mint Green (Balance)
-          dark: "#18A77D",
+          DEFAULT: "#20C997", // Fresh Mint Green
+          dark: "#17A589",
         },
         neutral: {
-          dark: "#2C3E50", // Charcoal Navy (Text / Contrast)
-          light: "#F8F9FA", // Soft Gray White (Background / Calm Areas)
+          dark: "#2C3E50", // Charcoal Navy (text/contrast)
+          light: "#F8F9FA", // Soft Gray White (background)
         },
+        background: "#F8F9FA", // alias for neutral.light
         white: "#FFFFFF",
       },
       fontFamily: {
