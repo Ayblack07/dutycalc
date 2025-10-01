@@ -33,7 +33,7 @@ export const metadata: Metadata = {
 
   // ✅ Add favicon/logo here
   icons: {
-    icon: "/favicon.ico", // Standard browser favicon
+    icon: "/favicon.ico",
     shortcut: "/favicon-32x32.png", // High-res tab bar icon
     apple: "/apple-touch-icon.png", // iOS/iPadOS home screen icon
   },
