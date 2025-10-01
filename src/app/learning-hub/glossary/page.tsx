@@ -37,7 +37,7 @@ export default function GlossaryPage() {
           placeholder="Search terms..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="bg-primary text-white border border-secondary"
+          className="bg-neutral-200 text-black border border-primary"
         />
       </div>
 
@@ -46,7 +46,7 @@ export default function GlossaryPage() {
         {filtered.map((item, index) => (
           <Card
             key={index}
-            className="bg-accent text-white border border-[#063064]"
+            className="bg-primary text-white border border-[#063064]"
           >
             <CardHeader>
               <CardTitle className="text-lg">{item.term}</CardTitle>

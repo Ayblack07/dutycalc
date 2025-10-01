@@ -28,8 +28,11 @@ export default function Navbar() {
     <nav className="bg-white/80 backdrop-blur-sm border-b border-gray-200 text-gray-800 shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex justify-between items-center px-4 py-3">
         {/* Logo */}
-        <Link href="/" className="text-xl font-bold text-primary">
-          DutyCalc
+        <Link href="/" className="text-xl font-bold">
+        <span className="text-primary">Duty</span>
+        <span className="text-secondary">Calc</span> 
+          constructor(parameters) {
+          }
         </Link>
 
         {/* Desktop Menu */}
