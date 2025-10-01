@@ -97,7 +97,7 @@ export default function TariffPage() {
   const prevPage = () => setPage((p) => Math.max(p - 1, 1));
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#09607B] to-[#1B8B77] text-white py-10 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-accent to-primary text-white py-10 px-4">
       {/* Header */}
       <div className="text-center max-w-2xl mx-auto mb-10">
         <h1 className="text-3xl md:text-4xl font-bold mb-2">Customs Tariff</h1>
