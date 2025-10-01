@@ -13,22 +13,22 @@ export default {
   theme: {
     extend: {
       colors: {
-        base: {
-          DEFAULT: "#2D3748", // Dark slate/blue-gray (new main text color)
-        },
         primary: {
-          DEFAULT: "#09607B", // Deep teal
+          DEFAULT: "#09607B", // Deep Teal Blue (Main Brand Color)
           dark: "#074C62",
         },
         secondary: {
-          DEFAULT: "#607B09", // Olive green
-          dark: "#4C6007",
+          DEFAULT: "#F5B700", // Warm Amber Yellow (Highlight / Action)
+          dark: "#C48F00",
         },
         accent: {
-          DEFAULT: "#1B8B77", // Vibrant green
-          dark: "#166B5D",
+          DEFAULT: "#20C997", // Fresh Mint Green (Balance)
+          dark: "#18A77D",
         },
-        background: "#F6F7F9", // Light background
+        neutral: {
+          dark: "#2C3E50", // Charcoal Navy (Text / Contrast)
+          light: "#F8F9FA", // Soft Gray White (Background / Calm Areas)
+        },
         white: "#FFFFFF",
       },
       fontFamily: {
