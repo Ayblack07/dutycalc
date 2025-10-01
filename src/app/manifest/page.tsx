@@ -227,7 +227,7 @@ export default function ManifestPage() {
       {/* Table */}
       <div className="overflow-x-auto border rounded-lg shadow-sm bg-white">
         <table className="w-full border-collapse text-sm">
-          <thead className="bg-gradient-to-r from-[#09607B] to-[#1B8B77] text-white">
+          <thead className="bg-gradient-to-r from-primary to-accent text-white">
             <tr>
               <th className="p-2">Manifest</th>
               <th className="p-2">Port of Entry</th>

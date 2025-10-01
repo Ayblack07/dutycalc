@@ -38,7 +38,7 @@ export default function ExchangeRateClient() {
         Exchange Rates
       </h1>
 
-      <Card className="bg-[#09607b] text-white shadow-md">
+      <Card className="bg-primary text-white shadow-md">
         <CardHeader>
           <CardTitle className="text-lg sm:text-xl">
             Current Exchange Rates
@@ -47,9 +47,9 @@ export default function ExchangeRateClient() {
         <CardContent>
           {/* ✅ Mobile responsive scroll */}
           <div className="overflow-x-auto">
-            <table className="min-w-full border-collapse border border-gray-700 text-left text-sm sm:text-base">
+            <table className="min-w-full border-collapse border border-neutral-400 text-left text-sm sm:text-base">
               <thead>
-                <tr className="bg-gray-800">
+                <tr className="bg-secondary">
                   <th className="border border-gray-700 px-3 sm:px-4 py-2">
                     Name
                   </th>
