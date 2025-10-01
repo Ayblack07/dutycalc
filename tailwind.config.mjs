@@ -34,11 +34,13 @@ export default {
       },
       fontFamily: {
         sans: ["Inter", "ui-sans-serif", "system-ui"],
+        heading: ['Montserrat', 'sans-serif'],
       },
       boxShadow: {
         soft: "0 4px 10px rgba(0, 0, 0, 0.1)",
         glow: "0 0 12px rgba(9, 96, 123, 0.3)",
       },
+      
     },
   },
   plugins: [tailwindAnimate, forms, typography],

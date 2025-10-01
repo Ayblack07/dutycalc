@@ -53,16 +53,13 @@ export default function HomePage() {
       : "";
 
   return (
-    <main className="min-h-screen"> {/* Ensure main takes full height */}
+    <main>
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary to-accent text-center py-24 px-6 overflow-hidden">
-        {/* Optional: Add a subtle pattern or overlay */}
-        <div className="absolute inset-0 bg-white opacity-5 mix-blend-overlay pointer-events-none"></div>
-
-        <h1 className="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-4 drop-shadow-lg">
-          Customs Duty <span className="text-accent-light">Calculator</span>
+      <section className="bg-gradient-to-br from-primary to-accent text-center py-24 px-6">
+        <h1 className="text-4xl md:text-6xl font-bold text-white">
+          <span className="text-white">Customs Duty Calculator</span>
         </h1>
-        <p className="mt-4 text-lg text-white max-w-3xl mx-auto opacity-90 leading-relaxed">
+        <p className="mt-4 text-background max-w-2xl mx-auto">
           Welcome to DutyCalc, your trusted partner in seamless import and export
           operations. Our platform is designed to simplify complex logistics,
           offering tools and resources to help you navigate international trade
@@ -71,189 +68,191 @@ export default function HomePage() {
           informed decisions and optimize their supply chains. Experience
           efficiency, transparency, and reliability, all in one place.
         </p>
-        <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
+        <div className="mt-8 flex justify-center gap-6">
           <Link
             href="/calculator"
-            className="inline-flex items-center justify-center bg-accent text-white font-bold px-8 py-4 rounded-full shadow-soft hover:bg-accent-dark transition-all duration-300 transform hover:-translate-y-1 text-lg"
+            className="bg-accent text-white font-semibold px-6 py-3 rounded-lg shadow-soft hover:bg-accent-dark transition"
           >
-            Start Calculating <Calculator className="ml-2" size={20} />
+            Start Calculating
           </Link>
           <Link
             href="/tariff"
-            className="inline-flex items-center justify-center bg-white border-2 border-primary text-primary font-bold px-8 py-4 rounded-full hover:bg-primary-light hover:text-primary-dark transition-all duration-300 transform hover:-translate-y-1 text-lg"
+            className="bg-white border border-accent text-primary font-semibold px-6 py-3 rounded-lg hover:bg-background transition"
           >
-            Explore Tariffs <Search className="ml-2" size={20} />
+            Learn More
           </Link>
         </div>
       </section>
 
       {/* Highlights Section */}
-      <section className="bg-background py-16 px-6">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+      <section className="bg-background py-6 px-3">
+        <div className="max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
           {/* Accuracy */}
-          <div className="bg-card p-8 rounded-2xl shadow-soft hover:shadow-glow transition-all duration-300 transform hover:-translate-y-2">
-            <div className="flex items-center justify-center w-20 h-20 mb-4 rounded-full bg-primary-light text-primary mx-auto border-4 border-primary/20">
-              <BarChart size={36} strokeWidth={2.5} />
+          <div className="bg-white p-8 rounded-xl shadow-soft hover:shadow-glow transition">
+            <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-primary/10 text-primary mx-auto">
+              <BarChart size={28} />
             </div>
-            <h3 className="text-4xl font-extrabold text-primary mb-2">99.9%</h3>
-            <p className="text-light-text text-lg">Proven Calculation Accuracy</p>
+            <h3 className="text-3xl font-bold text-primary">99.9%</h3>
+            <p className="text-gray-600">Proven Calculation Accuracy</p>
           </div>
 
           {/* Database */}
-          <div className="bg-card p-8 rounded-2xl shadow-soft hover:shadow-glow transition-all duration-300 transform hover:-translate-y-2">
-            <div className="flex items-center justify-center w-20 h-20 mb-4 rounded-full bg-secondary-light text-secondary mx-auto border-4 border-secondary/20">
-              <Database size={36} strokeWidth={2.5} />
+          <div className="bg-white p-8 rounded-xl shadow-soft hover:shadow-glow transition">
+            <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-secondary/10 text-secondary mx-auto">
+              <Database size={28} />
             </div>
-            <h3 className="text-4xl font-extrabold text-secondary mb-2">10,000+</h3>
-            <p className="text-light-text text-lg">HS Codes in our Database</p>
+            <h3 className="text-3xl font-bold text-secondary">10,000+</h3>
+            <p className="text-gray-600">HS Codes in our Database</p>
           </div>
 
           {/* Updates */}
-          <div className="bg-card p-8 rounded-2xl shadow-soft hover:shadow-glow transition-all duration-300 transform hover:-translate-y-2">
-            <div className="flex items-center justify-center w-20 h-20 mb-4 rounded-full bg-accent-light text-accent mx-auto border-4 border-accent/20">
-              <RefreshCcw size={36} strokeWidth={2.5} />
+          <div className="bg-white p-8 rounded-xl shadow-soft hover:shadow-glow transition">
+            <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-accent/10 text-accent mx-auto">
+              <RefreshCcw size={28} />
             </div>
-            <h3 className="text-4xl font-extrabold text-accent mb-2">Live</h3>
-            <p className="text-light-text text-lg">Real-time Regulations & Rates</p>
+            <h3 className="text-3xl font-bold text-accent">24/7</h3>
+            <p className="text-gray-600">Live Real-time Updates</p>
           </div>
         </div>
       </section>
 
       {/* Feature Cards */}
-      <section className="bg-gradient-to-br from-background to-gray-50 py-20 px-6">
-        <h2 className="text-4xl font-extrabold text-primary text-center mb-4">
+      <section className="bg-background py-20 px-6">
+        <h2 className="text-3xl font-bold text-primary text-center mb-6">
           Complete Trade Platform
         </h2>
-        <p className="text-light-text text-xl text-center max-w-3xl mx-auto mb-16">
-          Everything you need for successful import/export operations in Nigeria.
-          Streamline your workflow with our integrated tools.
+        <p className="text-gray-600 text-center mb-12">
+          Everything you need for successful import/export operations in Nigeria
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 max-w-7xl mx-auto">
           {/* Duty Calculator */}
-          <div className="bg-card p-8 rounded-2xl shadow-soft hover:shadow-glow transition-all duration-300 flex flex-col items-center text-center border border-border">
-            <div className="flex items-center justify-center w-16 h-16 mb-6 rounded-full bg-primary-light text-primary">
-              <Calculator size={28} strokeWidth={2} />
+          <div className="bg-white p-6 rounded-xl shadow-soft hover:shadow-glow transition flex flex-col items-center text-center">
+            <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-primary/10 text-primary">
+              <Calculator size={28} />
             </div>
-            <h3 className="text-2xl font-bold text-text mb-3">Duty Calculator</h3>
-            <p className="text-light-text mb-6 flex-grow">
-              Accurate customs duty calculations with real-time exchange rates and up-to-date regulations.
+            <h3 className="text-xl font-bold text-primary mb-2">Duty Calculator</h3>
+            <p className="text-gray-600 mb-4">
+              Accurate customs duty calculations with real-time exchange rates.
             </p>
             <Link
               href="/calculator"
-              className="mt-auto bg-primary text-white font-semibold px-6 py-3 rounded-full shadow-soft hover:bg-primary-dark transition-colors duration-300 text-base"
+              className="bg-primary text-white font-semibold px-4 py-2 rounded-lg shadow-soft hover:bg-primary-dark transition"
             >
-              Explore Tool
+              Explore
             </Link>
           </div>
 
           {/* Tariff Lookup */}
-          <div className="bg-card p-8 rounded-2xl shadow-soft hover:shadow-glow transition-all duration-300 flex flex-col items-center text-center border border-border">
-            <div className="flex items-center justify-center w-16 h-16 mb-6 rounded-full bg-secondary-light text-secondary">
-              <Search size={28} strokeWidth={2} />
+          <div className="bg-white p-6 rounded-xl shadow-soft hover:shadow-glow transition flex flex-col items-center text-center">
+            <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-secondary/10 text-secondary">
+              <Search size={28} />
             </div>
-            <h3 className="text-2xl font-bold text-text mb-3">Tariff Lookup</h3>
-            <p className="text-light-text mb-6 flex-grow">
-              Search HS codes and tariff classifications within our comprehensive and frequently updated database.
+            <h3 className="text-xl font-bold text-primary mb-2">Tariff Lookup</h3>
+            <p className="text-gray-600 mb-4">
+              Search HS codes and tariff classifications with a full database.
             </p>
             <Link
               href="/tariff"
-              className="mt-auto bg-secondary text-white font-semibold px-6 py-3 rounded-full shadow-soft hover:bg-secondary-dark transition-colors duration-300 text-base"
+              className="bg-secondary text-white font-semibold px-4 py-2 rounded-lg shadow-soft hover:bg-secondary-dark transition"
             >
-              Explore Tool
+              Explore
             </Link>
           </div>
 
           {/* Manifest Check */}
-          <div className="bg-card p-8 rounded-2xl shadow-soft hover:shadow-glow transition-all duration-300 flex flex-col items-center text-center border border-border">
-            <div className="flex items-center justify-center w-16 h-16 mb-6 rounded-full bg-accent-light text-accent">
-              <FileText size={28} strokeWidth={2} />
+          <div className="bg-white p-6 rounded-xl shadow-soft hover:shadow-glow transition flex flex-col items-center text-center">
+            <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-accent/10 text-accent">
+              <FileText size={28} />
             </div>
-            <h3 className="text-2xl font-bold text-text mb-3">Manifest Check</h3>
-            <p className="text-light-text mb-6 flex-grow">
-              Verify Bill of Lading and Airway Bill details, ensuring accuracy and smoother documentation processes.
+            <h3 className="text-xl font-bold text-primary mb-2">Manifest Check</h3>
+            <p className="text-gray-600 mb-4">
+              Verify Bill of Lading and Airway Bill details for documentation.
             </p>
             <Link
               href="/manifest"
-              className="mt-auto bg-accent text-white font-semibold px-6 py-3 rounded-full shadow-soft hover:bg-accent-dark transition-colors duration-300 text-base"
+              className="bg-accent text-white font-semibold px-4 py-2 rounded-lg shadow-soft hover:bg-accent-dark transition"
             >
-              Explore Tool
+              Explore
             </Link>
           </div>
 
           {/* Learning Hub */}
-          <div className="bg-card p-8 rounded-2xl shadow-soft hover:shadow-glow transition-all duration-300 flex flex-col items-center text-center border border-border">
-            <div className="flex items-center justify-center w-16 h-16 mb-6 rounded-full bg-primary-light text-primary">
-              <BookOpen size={28} strokeWidth={2} />
+          <div className="bg-white p-6 rounded-xl shadow-soft hover:shadow-glow transition flex flex-col items-center text-center">
+            <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-primary/10 text-primary">
+              <BookOpen size={28} />
             </div>
-            <h3 className="text-2xl font-bold text-text mb-3">Learning Hub</h3>
-            <p className="text-light-text mb-6 flex-grow">
-              Access comprehensive guides, insightful tutorials, and essential glossaries for all trade operations.
+            <h3 className="text-xl font-bold text-primary mb-2">Learning Hub</h3>
+            <p className="text-gray-600 mb-4">
+              Comprehensive guides, tutorials, and glossaries for trade ops.
             </p>
             <Link
               href="/learning-hub"
-              className="mt-auto bg-primary text-white font-semibold px-6 py-3 rounded-full shadow-soft hover:bg-primary-dark transition-colors duration-300 text-base"
+              className="bg-primary text-white font-semibold px-4 py-2 rounded-lg shadow-soft hover:bg-primary-dark transition"
             >
-              Explore Hub
+              Explore
             </Link>
           </div>
 
           {/* Exchange Rate */}
-          <div className="bg-card p-8 rounded-2xl shadow-soft hover:shadow-glow transition-all duration-300 flex flex-col items-center text-center border border-border">
-            <div className="flex items-center justify-center w-16 h-16 mb-6 rounded-full bg-secondary-light text-secondary">
-              <DollarSign size={28} strokeWidth={2} />
+          <div className="bg-white p-6 rounded-xl shadow-soft hover:shadow-glow transition flex flex-col items-center text-center">
+            <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-secondary/10 text-secondary">
+              <DollarSign size={28} />
             </div>
-            <h3 className="text-2xl font-bold text-text mb-3">Exchange Rates</h3>
-            <p className="text-light-text mb-6 flex-grow">
-              View and track the latest official customs exchange rates directly from our Supabase integration.
+            <h3 className="text-xl font-bold text-primary mb-2">Exchange Rates</h3>
+            <p className="text-gray-600 mb-4">
+              View and track the latest customs exchange rates from Supabase.
             </p>
             <Link
               href="/exchange-rate"
-              className="mt-auto bg-secondary text-white font-semibold px-6 py-3 rounded-full shadow-soft hover:bg-secondary-dark transition-colors duration-300 text-base"
+              className="bg-secondary text-white font-semibold px-4 py-2 rounded-lg shadow-soft hover:bg-secondary-dark transition"
             >
-              Explore Rates
+              Explore
             </Link>
           </div>
         </div>
       </section>
 
       {/* News Section */}
-      <section className="bg-gray-50 py-20 px-6">
-        <h2 className="text-4xl font-extrabold text-primary text-center mb-4">
-          Latest News & Updates
+      <section className="bg-gray-100 py-20 px-6">
+        <h2 className="text-3xl font-bold text-primary text-center mb-12">
+          Latest News
         </h2>
-        <p className="text-light-text text-xl text-center max-w-3xl mx-auto mb-16">
-          Stay informed with the newest developments in customs regulations, trade policies, and DutyCalc features.
-        </p>
 
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
           {news.length > 0 ? (
             news.map((item) => (
               <article
                 key={item.id}
-                className="bg-news-bg p-8 rounded-2xl shadow-soft hover:shadow-glow transition-all duration-300 flex flex-col border border-border"
+                className="bg-[#effbff] p-6 rounded-xl shadow-soft hover:shadow-glow transition flex flex-col justify-between"
               >
-                <h3 className="text-2xl font-bold text-text mb-3">
-                  <Link href={`/news/${item.id}`} className="news-link-highlight">
+                <div>
+                  <h3 className="text-xl font-bold text-primary mb-2">
                     {item.title}
-                  </Link>
-                </h3>
-                <p className="text-light-text text-base mb-4 flex-grow">
-                  {item.content
-                    ? item.content.length > 180 // Increased content preview
-                      ? item.content.slice(0, 180) + "…"
-                      : item.content
-                    : "No content preview available."}
-                </p>
-                <div className="mt-auto flex items-center justify-between text-sm text-gray-500 pt-4 border-t border-border/50">
-                  <p className="font-medium">By {item.author ?? "DutyCalc"}</p>
-                  <p className="text-xs">{formatDate(item.created_at)}</p>
+                  </h3>
+                  <p className="text-gray-600 mb-4">
+                    {item.content
+                      ? item.content.length > 140
+                        ? item.content.slice(0, 140) + "…"
+                        : item.content
+                      : ""}
+                  </p>
                 </div>
+                <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                  <p>By {item.author ?? "DutyCalc"}</p>
+                  <p>{formatDate(item.created_at)}</p>
+                </div>
+                <Link
+                  href={`/news/${item.id}`}
+                  className="bg-accent text-white font-semibold px-4 py-2 rounded-lg shadow-soft hover:bg-accent-dark transition text-center"
+                >
+                  Read More
+                </Link>
               </article>
             ))
           ) : (
-            <p className="text-light-text text-center col-span-full py-10 text-xl">
-              No news available at the moment. Please check back later!
+            <p className="text-gray-600 text-center col-span-3">
+              No news available
             </p>
           )}
         </div>
