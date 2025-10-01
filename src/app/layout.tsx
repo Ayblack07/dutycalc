@@ -3,7 +3,7 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import type { Metadata } from "next";
 
-// ✅ Add global site-wide SEO metadata here
+// ✅ Global site-wide SEO metadata
 export const metadata: Metadata = {
   title: {
     default: "DutyCalc – Nigeria Customs Duty Calculator",
@@ -30,6 +30,14 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+
+  // ✅ Add favicon/logo here
+  icons: {
+    icon: "/favicon.ico", // Standard browser favicon
+    shortcut: "/favicon-32x32.png", // High-res tab bar icon
+    apple: "/apple-touch-icon.png", // iOS/iPadOS home screen icon
+  },
+  manifest: "/site.webmanifest", // For PWA support
 };
 
 export default function RootLayout({
