@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export default function Header() {
   return (
-    <header className="bg-gradient-to-r from-[#09607B] to-[#607B09] py-24 px-6 text-center text-white">
+    <header className="bg-gradient-to-r from-primary to-secondary py-24 px-6 text-center text-white">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl md:text-6xl font-bold mb-4">
           Professional Customs <span className="text-[#F6F7F9]">Duty Calculator</span>
