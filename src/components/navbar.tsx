@@ -30,9 +30,7 @@ export default function Navbar() {
         {/* Logo */}
         <Link href="/" className="text-xl font-bold">
         <span className="text-primary">Duty</span>
-        <span className="text-secondary">Calc</span> 
-          constructor(parameters) {
-          }
+         <span className="text-secondary">Calc</span>
         </Link>
 
         {/* Desktop Menu */}
