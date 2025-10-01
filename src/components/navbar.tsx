@@ -11,7 +11,6 @@ import {
   Phone,
   ChevronDown,
   List,
-  DollarSign,
 } from "lucide-react";
 
 export default function Navbar() {
@@ -21,7 +20,6 @@ export default function Navbar() {
   const links = [
     { href: "/calculator", label: "Calculator", icon: Calculator },
     { href: "/tariff", label: "Tariff Lookup", icon: Search },
-    { href: "/pricing", label: "Pricing", icon: DollarSign },
     { href: "/manifest", label: "Manifest Check", icon: FileText },
     { href: "/contact", label: "Contact", icon: Phone },
   ];
