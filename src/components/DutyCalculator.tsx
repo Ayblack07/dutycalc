@@ -285,7 +285,7 @@ ETLS (0.5%): ${formatCurrency(etls)}
 
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Input Section */}
-        <Card className="bg-gradient-to-br from-[#09607B] to-[#1B8B77] text-white border border-white rounded-lg shadow-md">
+        <Card className="bg-primary text-white border border-white rounded-lg shadow-md">
           <CardHeader>
             <CardTitle>Input Values</CardTitle>
           </CardHeader>
@@ -311,7 +311,7 @@ ETLS (0.5%): ${formatCurrency(etls)}
                 <Button
                   variant="outline"
                   size="sm"
-                  className="bg-[#607b09] hover:[#4c6307] text-white w-full sm:w-auto"
+                  className="bg-secondary hover:[#4c6307] text-white w-full sm:w-auto"
                 >
                   <LinkIcon className="w-3 h-3 mr-1" />
                   Check Tariff
@@ -483,7 +483,7 @@ ETLS (0.5%): ${formatCurrency(etls)}
                   <Button
                     variant="outline"
                     size="sm"
-                    className="bg-[#607b09] hover:[#4c6307] text-white"
+                    className="bg-secondary hover:[#4c6307] text-white"
                   >
                     <LinkIcon className="w-3 h-3 mr-1" />
                     Exchange Rates
@@ -495,7 +495,7 @@ ETLS (0.5%): ${formatCurrency(etls)}
         </Card>
 
         {/* Results Section */}
-        <Card className="bg-gradient-to-br from-[#09607B] to-[#1B8B77] text-white border border-white rounded-lg shadow-md">
+        <Card className="bg-primary text-white border border-white rounded-lg shadow-md">
           <CardHeader>
             <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-white pb-2">
               <span>Results</span>
