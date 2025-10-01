@@ -25,8 +25,8 @@ export default function GlossaryPage() {
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-white mb-2">Glossary</h1>
-        <p className="text-gray-300">
+        <h1 className="text-3xl font-bold text-primary mb-2">Glossary</h1>
+        <p className="text-primary">
           Quick definitions of common cargo and shipping terms.
         </p>
       </div>
@@ -37,7 +37,7 @@ export default function GlossaryPage() {
           placeholder="Search terms..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="bg-white text-black border border-[#063064]"
+          className="bg-primary text-white border border-secondary"
         />
       </div>
 
@@ -46,7 +46,7 @@ export default function GlossaryPage() {
         {filtered.map((item, index) => (
           <Card
             key={index}
-            className="bg-gradient-to-r from-[#1e293b] to-[#0f172a] text-white border border-[#063064]"
+            className="bg-accent text-white border border-[#063064]"
           >
             <CardHeader>
               <CardTitle className="text-lg">{item.term}</CardTitle>

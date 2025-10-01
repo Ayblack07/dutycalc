@@ -7,7 +7,7 @@ export default function ProhibitionListPage() {
   const [activeTab, setActiveTab] = useState<"import" | "export">("import");
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10 bg-[#0a1a3c] text-white rounded-lg shadow-lg">
+    <div className="max-w-6xl mx-auto px-6 py-10 bg-primary text-white rounded-lg shadow-lg">
       {/* Page Heading */}
       <h1 className="text-3xl font-bold mb-6 text-center">Prohibition List</h1>
       <p className="mb-8 text-center text-gray-200">
@@ -21,7 +21,7 @@ export default function ProhibitionListPage() {
           onClick={() => setActiveTab("import")}
           className={`px-6 py-2 rounded-t-lg font-semibold transition ${
             activeTab === "import"
-              ? "bg-blue-600 text-white"
+              ? "bg-secondary text-white"
               : "bg-gray-200 text-gray-800 hover:bg-gray-300"
           }`}
         >
@@ -31,7 +31,7 @@ export default function ProhibitionListPage() {
           onClick={() => setActiveTab("export")}
           className={`px-6 py-2 rounded-t-lg font-semibold transition ${
             activeTab === "export"
-              ? "bg-blue-600 text-white"
+              ? "bg-secondary text-white"
               : "bg-gray-200 text-gray-800 hover:bg-gray-300"
           }`}
         >
