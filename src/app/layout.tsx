@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 // ✅ Global site-wide SEO metadata
 export const metadata: Metadata = {
   title: {
-    default: "DutyCalc – Nigeria Customs Duty Calculator",
+    default: "DutyCalc",
     template: "%s | DutyCalc",
   },
   description:
@@ -15,14 +15,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "https://dutycalc.ng",
-    title: "DutyCalc Pro – Nigeria Customs Duty Calculator",
+    title: "DutyCalc",
     description:
       "Accurate duty calculations, tariff lookup, manifest checker, and exchange rates for Nigeria imports & exports.",
-    siteName: "DutyCalc Pro",
+    siteName: "DutyCalc",
   },
   twitter: {
     card: "summary_large_image",
-    title: "DutyCalc – Nigeria Customs Duty Calculator",
+    title: "DutyCalc",
     description:
       "Accurate duty calculations, tariff lookup, manifest checker, and exchange rates for Nigeria imports & exports.",
   },
