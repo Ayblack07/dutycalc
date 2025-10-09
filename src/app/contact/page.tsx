@@ -84,7 +84,7 @@ export default function ContactPage() {
       <section className="grid md:grid-cols-2 gap-12 mb-20">
         {/* Form */}
         <div className="bg-primary p-8 rounded-xl shadow">
-          <h2 className="text-2xl font-bold mb-6">Send a Message</h2>
+          <h2 className="text-2xl text-white font-bold mb-6">Send a Message</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <input
               type="text"
