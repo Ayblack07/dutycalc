@@ -206,7 +206,9 @@ export default function ManifestPage() {
 
         {/* Quick Filter Buttons */}
         <div className="flex flex-wrap gap-3">
-          <Button variant="outline" onClick={today}>
+          <Button variant="outline" onClick={today}
+          className="bg-primary text-white"
+          >
             Today
           </Button>
           <Button variant="outline" onClick={thisWeek}>
