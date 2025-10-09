@@ -12,7 +12,7 @@ export default function ProhibitionListPage() {
       <h1 className="text-3xl font-bold mb-6 text-center">Prohibition List</h1>
       <p className="mb-8 text-center text-gray-200">
         Below is the official prohibition list for imports and exports as
-        published by the Nigeria Customs Service. Select a tab to view details.
+        published by the <link href="https://customs.gov.ng">Nigeria Customs Service.</link> Select a tab to view details.
       </p>
 
       {/* Tabs */}
@@ -115,7 +115,7 @@ export default function ProhibitionListPage() {
                 href="#schedule4"
                 className="underline text-yellow-400 hover:text-yellow-300"
               >
-                Goods in Schedule 4: Absolutely Prohibited Items
+                Goods: Schedule 4: <link href="https://customs.gov.ng/?page_id=3077">The Importation of which is absolutely prohibited</link>
               </Link>
             </p>
           </div>
@@ -148,18 +148,6 @@ export default function ProhibitionListPage() {
     </div>
   </section>
 )}
-
-      {/* Schedule 4 Section */}
-      <section id="schedule4" className="mt-12">
-        <h3 className="text-xl font-bold text-red-400 mb-4">
-          Schedule 4: Absolutely Prohibited Items
-        </h3>
-        <p className="text-gray-200">
-          Goods under Schedule 4 are absolutely prohibited from importation into
-          Nigeria. Examples include certain hazardous chemicals, counterfeit
-          currency, and items deemed dangerous to national security or health.
-        </p>
-      </section>
     </div>
   );
 }
