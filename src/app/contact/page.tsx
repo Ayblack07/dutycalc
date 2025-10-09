@@ -92,7 +92,7 @@ export default function ContactPage() {
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               required
-              className="w-full p-3 rounded bg-black border border-gray-700 focus:border-[#F7D234]"
+              className="w-full p-3 rounded bg-[#f5f7f9] border border-accent focus:border-[#F7D234]"
             />
             <input
               type="email"
@@ -100,7 +100,7 @@ export default function ContactPage() {
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               required
-              className="w-full p-3 rounded bg-black border border-gray-700 focus:border-[#F7D234]"
+              className="w-full p-3 rounded bg-[#f5f7f9] border border-accent focus:border-[#F7D234]"
             />
             <input
               type="text"
@@ -108,14 +108,14 @@ export default function ContactPage() {
               value={form.subject}
               onChange={(e) => setForm({ ...form, subject: e.target.value })}
               required
-              className="w-full p-3 rounded bg-black border border-gray-700 focus:border-[#F7D234]"
+              className="w-full p-3 rounded bg-[#f5f7f9] border border-accent focus:border-[#F7D234]"
             />
             <textarea
               placeholder="Your Message"
               value={form.message}
               onChange={(e) => setForm({ ...form, message: e.target.value })}
               required
-              className="w-full p-3 h-32 rounded bg-primary border border-[#f6f7f9] focus:border-[#F7D234]"
+              className="w-full p-3 h-32 rounded bg-[#f5f7f9] border border-accent focus:border-[#F7D234]"
             />
             <button
               type="submit"
@@ -131,14 +131,14 @@ export default function ContactPage() {
 
         {/* Contact Info */}
         <div className="bg-primary p-8 rounded-xl shadow space-y-6">
-          <h2 className="text-2xl font-bold mb-6">Our Contact</h2>
+          <h2 className="text-2xl text-white font-bold mb-6">Our Contact</h2>
           <div className="flex items-center gap-3">
             <Mail className="text-[#F7D234]" />
-            <p>support@yourdomain.com</p>
+            <p className="text-white">support@dutycalc.ng</p>
           </div>
           <div className="flex items-center gap-3">
             <MapPin className="text-[#F7D234]" />
-            <p>123 Customs House, Lagos, Nigeria</p>
+            <p className="text-white">Abuja, Nigeria</p>
           </div>
         </div>
       </section>
