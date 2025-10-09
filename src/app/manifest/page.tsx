@@ -217,12 +217,12 @@ export default function ManifestPage() {
             This Week
           </Button>
           <Button variant="outline" onClick={thisMonth}
-          className="bg-[#7b0960] text-white"
+          className="bg-secondary text-black"
           >
             This Month
           </Button>
           <Button
-            className="bg-[#607B09] text-white hover:bg-[#4e6707]"
+            className="bg-red-500 text-white hover:bg-[#4e6707]"
             onClick={resetFilters}
           >
             <RotateCcw className="w-4 h-4 mr-2" /> Reset
