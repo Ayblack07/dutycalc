@@ -154,7 +154,24 @@ export default function ManifestPage() {
 
       {/* Filters */}
       <div className="space-y-4 bg-white p-4 rounded-lg shadow-sm border">
-        <div>
+        <Input
+          placeholder="Search manifests..."
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+          className="w-64"
+        />
+
+        <div className="flex flex-wrap gap-4">
+          <div>
+            <Label>Reg From</Label>
+            <Input
+              type="date"
+              onChange={(e) =>
+                setDateRegFrom(e.target.value ? new Date(e.target.value) : null)
+              }
+            />
+          </div>
+          <div>
   <Label>Reg From</Label>
   <Input
     type="date"
@@ -194,6 +211,7 @@ export default function ManifestPage() {
     }
   />
 </div>
+        </div>
 
         {/* Quick Filter Buttons */}
         <div className="flex flex-wrap gap-3">
