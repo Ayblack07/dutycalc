@@ -154,55 +154,46 @@ export default function ManifestPage() {
 
       {/* Filters */}
       <div className="space-y-4 bg-white p-4 rounded-lg shadow-sm border">
-        <Input
-          placeholder="Search manifests..."
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          className="w-64"
-        />
-
-        <div className="flex flex-wrap gap-4">
-          <div>
-            <Label>Reg From</Label>
-            <Input
-              type="date"
-              onChange={(e) =>
-                setDateRegFrom(e.target.value ? new Date(e.target.value) : null)
-              }
-            />
-          </div>
-          <div>
-            <Label>Reg To</Label>
-            <Input
-              type="date"
-              onChange={(e) =>
-                setDateRegTo(e.target.value ? new Date(e.target.value) : null)
-              }
-            />
-          </div>
-          <div>
-            <Label>Departure From</Label>
-            <Input
-              type="date"
-              onChange={(e) =>
-                setDateDepartureFrom(
-                  e.target.value ? new Date(e.target.value) : null
-                )
-              }
-            />
-          </div>
-          <div>
-            <Label>Departure To</Label>
-            <Input
-              type="date"
-              onChange={(e) =>
-                setDateDepartureTo(
-                  e.target.value ? new Date(e.target.value) : null
-                )
-              }
-            />
-          </div>
-        </div>
+        <div>
+  <Label>Reg From</Label>
+  <Input
+    type="date"
+    value={dateRegFrom ? format(dateRegFrom, "yyyy-MM-dd") : ""}
+    onChange={(e) =>
+      setDateRegFrom(e.target.value ? new Date(e.target.value) : null)
+    }
+  />
+</div>
+<div>
+  <Label>Reg To</Label>
+  <Input
+    type="date"
+    value={dateRegTo ? format(dateRegTo, "yyyy-MM-dd") : ""}
+    onChange={(e) =>
+      setDateRegTo(e.target.value ? new Date(e.target.value) : null)
+    }
+  />
+</div>
+<div>
+  <Label>Departure From</Label>
+  <Input
+    type="date"
+    value={dateDepartureFrom ? format(dateDepartureFrom, "yyyy-MM-dd") : ""}
+    onChange={(e) =>
+      setDateDepartureFrom(e.target.value ? new Date(e.target.value) : null)
+    }
+  />
+</div>
+<div>
+  <Label>Departure To</Label>
+  <Input
+    type="date"
+    value={dateDepartureTo ? format(dateDepartureTo, "yyyy-MM-dd") : ""}
+    onChange={(e) =>
+      setDateDepartureTo(e.target.value ? new Date(e.target.value) : null)
+    }
+  />
+</div>
 
         {/* Quick Filter Buttons */}
         <div className="flex flex-wrap gap-3">
