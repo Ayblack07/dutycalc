@@ -211,10 +211,14 @@ export default function ManifestPage() {
           >
             Today
           </Button>
-          <Button variant="outline" onClick={thisWeek}>
+          <Button variant="outline" onClick={thisWeek}
+          className="bg-[#607b09] text-white"
+          >
             This Week
           </Button>
-          <Button variant="outline" onClick={thisMonth}>
+          <Button variant="outline" onClick={thisMonth}
+          className="bg-[#7b0960] text-white"
+          >
             This Month
           </Button>
           <Button
