@@ -166,51 +166,42 @@ export default function ManifestPage() {
             <Label>Reg From</Label>
             <Input
               type="date"
+              value={dateRegFrom ? format(dateRegFrom, "yyyy-MM-dd") : ""}
               onChange={(e) =>
                 setDateRegFrom(e.target.value ? new Date(e.target.value) : null)
               }
             />
           </div>
           <div>
-  <Label>Reg From</Label>
-  <Input
-    type="date"
-    value={dateRegFrom ? format(dateRegFrom, "yyyy-MM-dd") : ""}
-    onChange={(e) =>
-      setDateRegFrom(e.target.value ? new Date(e.target.value) : null)
-    }
-  />
-</div>
-<div>
-  <Label>Reg To</Label>
-  <Input
-    type="date"
-    value={dateRegTo ? format(dateRegTo, "yyyy-MM-dd") : ""}
-    onChange={(e) =>
-      setDateRegTo(e.target.value ? new Date(e.target.value) : null)
-    }
-  />
-</div>
-<div>
-  <Label>Departure From</Label>
-  <Input
-    type="date"
-    value={dateDepartureFrom ? format(dateDepartureFrom, "yyyy-MM-dd") : ""}
-    onChange={(e) =>
-      setDateDepartureFrom(e.target.value ? new Date(e.target.value) : null)
-    }
-  />
-</div>
-<div>
-  <Label>Departure To</Label>
-  <Input
-    type="date"
-    value={dateDepartureTo ? format(dateDepartureTo, "yyyy-MM-dd") : ""}
-    onChange={(e) =>
-      setDateDepartureTo(e.target.value ? new Date(e.target.value) : null)
-    }
-  />
-</div>
+            <Label>Reg To</Label>
+            <Input
+              type="date"
+              value={dateRegTo ? format(dateRegTo, "yyyy-MM-dd") : ""}
+              onChange={(e) =>
+                setDateRegTo(e.target.value ? new Date(e.target.value) : null)
+              }
+            />
+          </div>
+          <div>
+            <Label>Departure From</Label>
+            <Input
+              type="date"
+              value={dateDepartureFrom ? format(dateDepartureFrom, "yyyy-MM-dd") : ""}
+              onChange={(e) =>
+                setDateDepartureFrom(e.target.value ? new Date(e.target.value) : null)
+              }
+            />
+          </div>
+          <div>
+            <Label>Departure To</Label>
+            <Input
+              type="date"
+              value={dateDepartureTo ? format(dateDepartureTo, "yyyy-MM-dd") : ""}
+              onChange={(e) =>
+                setDateDepartureTo(e.target.value ? new Date(e.target.value) : null)
+              }
+            />
+          </div>
         </div>
 
         {/* Quick Filter Buttons */}
