@@ -12,7 +12,7 @@ export default function ProhibitionListPage() {
       <h1 className="text-3xl font-bold mb-6 text-center">Prohibition List</h1>
       <p className="mb-8 text-center text-gray-200">
         Below is the official prohibition list for imports and exports as
-        published by the <link href="https://customs.gov.ng">Nigeria Customs Service.</link> Select a tab to view details.
+        published by the Nigeria Customs Service. Select a tab to view details.
       </p>
 
       {/* Tabs */}
@@ -109,15 +109,7 @@ export default function ProhibitionListPage() {
               </li>
             </ol>
 
-            {/* Schedule 4 link */}
-            <p className="mt-6">
-              <Link
-                href="#schedule4"
-                className="underline text-yellow-400 hover:text-yellow-300"
-              >
-                Goods: Schedule 4: <link href="https://customs.gov.ng/?page_id=3077">The Importation of which is absolutely prohibited</link>
-              </Link>
-            </p>
+           
           </div>
         </section>
       )}
