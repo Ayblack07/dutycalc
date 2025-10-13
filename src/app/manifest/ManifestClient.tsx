@@ -35,66 +35,77 @@ export default function ManifestPage() {
   const [dateRegTo, setDateRegTo] = useState<Date | null>(null);
   const [dateDepartureFrom, setDateDepartureFrom] = useState<Date | null>(null);
   const [dateDepartureTo, setDateDepartureTo] = useState<Date | null>(null);
-
-  const [lastManifest, setLastManifest] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [lastManifestNo, setLastManifestNo] = useState<string | null>(null);
 
-  const pageSize = 20;
-
-  // Fetch manifests with filters and cursor
-  const fetchManifests = async (reset: boolean = false) => {
-    if (loading) return;
+  // Fetch manifests from Supabase with filters
+  const fetchManifests = async (reset = false) => {
     setLoading(true);
 
-    let query = supabase
-      .from("manifest")
-      .select("*")
-      .order("manifest_no", { ascending: false })
-      .limit(pageSize);
+    let query = supabase.from("manifest").select("*", { count: "exact" }).order("manifest_no", { ascending: false });
 
-    if (!reset && lastManifest) query = query.lt("manifest_no", lastManifest);
-
-    // Keyword filter
+    // Case-insensitive search
     if (keyword.trim()) {
       query = query.or(
         `manifest_no.ilike.%${keyword}%,destination.ilike.%${keyword}%,command.ilike.%${keyword}%,air_shipping_line.ilike.%${keyword}%`
       );
     }
 
-    // Registration date filter
-    if (dateRegFrom) query = query.gte("date_of_registration", dateRegFrom.toISOString());
-    if (dateRegTo) query = query.lte("date_of_registration", dateRegTo.toISOString());
+    // Date of registration filters
+    if (dateRegFrom || dateRegTo) {
+      const from = dateRegFrom ? startOfDay(dateRegFrom).toISOString() : null;
+      const to = dateRegTo ? endOfDay(dateRegTo).toISOString() : null;
+      if (from && to) query = query.gte("date_of_registration", from).lte("date_of_registration", to);
+      else if (from) query = query.gte("date_of_registration", from);
+      else if (to) query = query.lte("date_of_registration", to);
+    }
 
-    // Departure date filter
-    if (dateDepartureFrom)
-      query = query.gte("date_of_departure", dateDepartureFrom.toISOString());
-    if (dateDepartureTo)
-      query = query.lte("date_of_departure", dateDepartureTo.toISOString());
+    // Date of departure filters
+    if (dateDepartureFrom || dateDepartureTo) {
+      const from = dateDepartureFrom ? startOfDay(dateDepartureFrom).toISOString() : null;
+      const to = dateDepartureTo ? endOfDay(dateDepartureTo).toISOString() : null;
+      if (from && to) query = query.gte("date_of_departure", from).lte("date_of_departure", to);
+      else if (from) query = query.gte("date_of_departure", from);
+      else if (to) query = query.lte("date_of_departure", to);
+    }
 
-    const { data, error } = await query;
+    // Cursor pagination
+    if (lastManifestNo && !reset) {
+      query = query.lt("manifest_no", lastManifestNo);
+    }
+
+    query = query.limit(pageSize);
+
+    const { data, error, count } = await query;
 
     if (error) console.error("Supabase fetch error:", error);
     else {
-      const newData = data || [];
-      setManifests((prev) => (reset ? newData : [...prev, ...newData]));
-      if (newData.length > 0) {
-        setLastManifest(newData[newData.length - 1].manifest_no);
-        setHasMore(newData.length === pageSize);
-      } else setHasMore(false);
+      if (reset) setManifests(data || []);
+      else setManifests((prev) => [...prev, ...(data || [])]);
+
+      setHasMore((data?.length || 0) === pageSize);
+      setLastManifestNo(data?.[data.length - 1]?.manifest_no || null);
     }
 
     setLoading(false);
   };
 
-  // Fetch initial data or when filters change
-  useEffect(() => {
-    setLastManifest(null);
-    setHasMore(true);
+  // Reset and fetch new data
+  const resetAndFetch = () => {
+    setManifests([]);
+    setLastManifestNo(null);
+    setPage(1);
     fetchManifests(true);
+  };
+
+  useEffect(() => {
+    resetAndFetch();
   }, [keyword, dateRegFrom, dateRegTo, dateDepartureFrom, dateDepartureTo]);
 
-  // Quick filter functions
+  // Quick filters
   const today = () => {
     const now = new Date();
     setDateRegFrom(startOfDay(now));
@@ -116,10 +127,15 @@ export default function ManifestPage() {
     setDateRegTo(null);
     setDateDepartureFrom(null);
     setDateDepartureTo(null);
-    setManifests([]);
-    setLastManifest(null);
-    setHasMore(true);
   };
+
+  // Sort exact matches first (case-insensitive)
+  const sortedManifests = [...manifests].sort((a, b) => {
+    const keywordLower = keyword.toLowerCase();
+    const aExact = a.manifest_no.toLowerCase() === keywordLower ? -1 : 0;
+    const bExact = b.manifest_no.toLowerCase() === keywordLower ? -1 : 0;
+    return aExact - bExact;
+  });
 
   return (
     <>
@@ -129,35 +145,11 @@ export default function ManifestPage() {
           name="description"
           content="Search and filter registered manifests by number, destination, command, and shipping line. Stay updated with the latest Nigeria Customs cargo records using DutyCalc."
         />
-        <meta
-          name="keywords"
-          content="Nigeria manifest, customs manifest, nigeria customs manifest, today manifest, manifest checker, import manifest Nigeria, dutycalc manifest, cargo records Nigeria"
-        />
         <link rel="canonical" href="https://dutycalc.ng/manifest" />
-        <meta property="og:title" content="DutyCalc Manifest Checker" />
-        <meta
-          property="og:description"
-          content="Quickly search and view Nigerian customs manifests online using DutyCalc."
-        />
-        <meta property="og:url" content="https://dutycalc.ng/manifest" />
-        <meta property="og:type" content="website" />
-        <meta name="robots" content="index, follow" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebPage",
-              name: "DutyCalc Manifest Checker",
-              url: "https://dutycalc.ng/manifest",
-              description:
-                "Nigeria Customs manifest lookup and filtering tool for air and sea cargo records.",
-            }),
-          }}
-        />
       </Head>
 
       <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-8 bg-[#F6F7F9] rounded-lg">
+        {/* Heading */}
         <div className="text-center space-y-2">
           <h1 className="text-3xl md:text-4xl font-bold text-[#09607B]">
             DutyCalc Manifest Checker – Nigeria Customs Records
@@ -177,7 +169,6 @@ export default function ManifestPage() {
             onChange={(e) => setKeyword(e.target.value)}
             className="w-64"
           />
-
           <div className="flex flex-wrap gap-4">
             <div>
               <Label>Reg From</Label>
@@ -205,9 +196,7 @@ export default function ManifestPage() {
                 type="date"
                 value={dateDepartureFrom ? format(dateDepartureFrom, "yyyy-MM-dd") : ""}
                 onChange={(e) =>
-                  setDateDepartureFrom(
-                    e.target.value ? new Date(e.target.value) : null
-                  )
+                  setDateDepartureFrom(e.target.value ? new Date(e.target.value) : null)
                 }
               />
             </div>
@@ -217,9 +206,7 @@ export default function ManifestPage() {
                 type="date"
                 value={dateDepartureTo ? format(dateDepartureTo, "yyyy-MM-dd") : ""}
                 onChange={(e) =>
-                  setDateDepartureTo(
-                    e.target.value ? new Date(e.target.value) : null
-                  )
+                  setDateDepartureTo(e.target.value ? new Date(e.target.value) : null)
                 }
               />
             </div>
@@ -236,10 +223,7 @@ export default function ManifestPage() {
             <Button variant="outline" onClick={thisMonth} className="bg-secondary text-black">
               This Month
             </Button>
-            <Button
-              className="bg-red-500 text-white hover:bg-[#4e6707]"
-              onClick={resetFilters}
-            >
+            <Button className="bg-red-500 text-white hover:bg-[#4e6707]" onClick={resetFilters}>
               <RotateCcw className="w-4 h-4 mr-2" /> Reset
             </Button>
           </div>
@@ -261,8 +245,8 @@ export default function ManifestPage() {
               </tr>
             </thead>
             <tbody>
-              {manifests.length > 0 ? (
-                manifests.map((row, idx) => (
+              {sortedManifests.length > 0 ? (
+                sortedManifests.map((row, idx) => (
                   <tr
                     key={row.manifest_no}
                     className={`border-t transition-colors duration-200 ${
@@ -298,7 +282,7 @@ export default function ManifestPage() {
           </table>
         </div>
 
-        {/* Load More */}
+        {/* Pagination */}
         {hasMore && (
           <div className="flex justify-center mt-4">
             <Button onClick={() => fetchManifests()} disabled={loading}>
