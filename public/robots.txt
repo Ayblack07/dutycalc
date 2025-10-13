@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://www.dutycalc.ng
+Host: https://dutycalc.ng
 
 # Sitemaps
-Sitemap: https://www.dutycalc.ng/sitemap.xml
+Sitemap: https://dutycalc.ng/sitemap.xml
