@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Head from "next/head";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,6 @@ import { Label } from "@/components/ui/label";
 import { RotateCcw } from "lucide-react";
 import {
   format,
-  isWithinInterval,
   startOfDay,
   endOfDay,
   startOfWeek,
@@ -36,14 +35,15 @@ export default function ManifestPage() {
   const [dateRegTo, setDateRegTo] = useState<Date | null>(null);
   const [dateDepartureFrom, setDateDepartureFrom] = useState<Date | null>(null);
   const [dateDepartureTo, setDateDepartureTo] = useState<Date | null>(null);
-  
-  const [lastManifest, setLastManifest] = useState<string | null>(null); // cursor
+
+  const [lastManifest, setLastManifest] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
+
   const pageSize = 20;
 
-  // Fetch manifests using cursor-based pagination
-  const fetchManifests = async (reset = false) => {
+  // Fetch manifests with filters and cursor
+  const fetchManifests = async (reset: boolean = false) => {
     if (loading) return;
     setLoading(true);
 
@@ -53,103 +53,48 @@ export default function ManifestPage() {
       .order("manifest_no", { ascending: false })
       .limit(pageSize);
 
-    if (lastManifest && !reset) {
-      query = query.lt("manifest_no", lastManifest); // fetch older manifests
-    }
+    if (!reset && lastManifest) query = query.lt("manifest_no", lastManifest);
 
-    if (keyword.trim() !== "") {
+    // Keyword filter
+    if (keyword.trim()) {
       query = query.or(
         `manifest_no.ilike.%${keyword}%,destination.ilike.%${keyword}%,command.ilike.%${keyword}%,air_shipping_line.ilike.%${keyword}%`
       );
     }
 
+    // Registration date filter
+    if (dateRegFrom) query = query.gte("date_of_registration", dateRegFrom.toISOString());
+    if (dateRegTo) query = query.lte("date_of_registration", dateRegTo.toISOString());
+
+    // Departure date filter
+    if (dateDepartureFrom)
+      query = query.gte("date_of_departure", dateDepartureFrom.toISOString());
+    if (dateDepartureTo)
+      query = query.lte("date_of_departure", dateDepartureTo.toISOString());
+
     const { data, error } = await query;
 
-    if (error) {
-      console.error("Supabase fetch error:", error);
-    } else if (data && data.length > 0) {
-      const sorted = data.sort(
-        (a, b) =>
-          parseInt(b.manifest_no.replace(/\D/g, ""), 10) -
-          parseInt(a.manifest_no.replace(/\D/g, ""), 10)
-      );
-      if (reset) {
-        setManifests(sorted);
-      } else {
-        setManifests((prev) => [...prev, ...sorted]);
-      }
-      setLastManifest(sorted[sorted.length - 1].manifest_no);
-      setHasMore(data.length === pageSize);
-    } else {
-      setHasMore(false);
+    if (error) console.error("Supabase fetch error:", error);
+    else {
+      const newData = data || [];
+      setManifests((prev) => (reset ? newData : [...prev, ...newData]));
+      if (newData.length > 0) {
+        setLastManifest(newData[newData.length - 1].manifest_no);
+        setHasMore(newData.length === pageSize);
+      } else setHasMore(false);
     }
 
     setLoading(false);
   };
 
-  // Reset & search
-  const handleSearch = () => {
+  // Fetch initial data or when filters change
+  useEffect(() => {
     setLastManifest(null);
     setHasMore(true);
     fetchManifests(true);
-  };
+  }, [keyword, dateRegFrom, dateRegTo, dateDepartureFrom, dateDepartureTo]);
 
-  // Initial load
-  useEffect(() => {
-    fetchManifests(true);
-  }, []);
-
-  // Filtering by keyword and dates
-  const filtered = useMemo(() => {
-    return manifests.filter((row) => {
-      const kw = keyword.toLowerCase();
-      const matchKeyword =
-        !kw ||
-        row.manifest_no?.toLowerCase().includes(kw) ||
-        row.destination?.toLowerCase().includes(kw) ||
-        row.command?.toLowerCase().includes(kw) ||
-        row.air_shipping_line?.toLowerCase().includes(kw);
-
-      const regDate = row.date_of_registration
-        ? new Date(row.date_of_registration)
-        : null;
-      const departureDate = row.date_of_departure
-        ? new Date(row.date_of_departure)
-        : null;
-
-      const matchReg =
-        (!dateRegFrom && !dateRegTo) ||
-        (regDate &&
-          ((dateRegFrom &&
-            dateRegTo &&
-            isWithinInterval(regDate, {
-              start: startOfDay(dateRegFrom),
-              end: endOfDay(dateRegTo),
-            })) ||
-            (dateRegFrom && !dateRegTo && regDate >= startOfDay(dateRegFrom)) ||
-            (!dateRegFrom && dateRegTo && regDate <= endOfDay(dateRegTo))));
-
-      const matchDeparture =
-        (!dateDepartureFrom && !dateDepartureTo) ||
-        (departureDate &&
-          ((dateDepartureFrom &&
-            dateDepartureTo &&
-            isWithinInterval(departureDate, {
-              start: startOfDay(dateDepartureFrom),
-              end: endOfDay(dateDepartureTo),
-            })) ||
-            (dateDepartureFrom &&
-              !dateDepartureTo &&
-              departureDate >= startOfDay(dateDepartureFrom)) ||
-            (!dateDepartureFrom &&
-              dateDepartureTo &&
-              departureDate <= endOfDay(dateDepartureTo))));
-
-      return matchKeyword && matchReg && matchDeparture;
-    });
-  }, [manifests, keyword, dateRegFrom, dateRegTo, dateDepartureFrom, dateDepartureTo]);
-
-  // Quick filters
+  // Quick filter functions
   const today = () => {
     const now = new Date();
     setDateRegFrom(startOfDay(now));
@@ -171,9 +116,9 @@ export default function ManifestPage() {
     setDateRegTo(null);
     setDateDepartureFrom(null);
     setDateDepartureTo(null);
+    setManifests([]);
     setLastManifest(null);
     setHasMore(true);
-    fetchManifests(true);
   };
 
   return (
@@ -213,7 +158,6 @@ export default function ManifestPage() {
       </Head>
 
       <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-8 bg-[#F6F7F9] rounded-lg">
-        {/* Heading */}
         <div className="text-center space-y-2">
           <h1 className="text-3xl md:text-4xl font-bold text-[#09607B]">
             DutyCalc Manifest Checker – Nigeria Customs Records
@@ -308,7 +252,7 @@ export default function ManifestPage() {
               <tr>
                 <th className="p-2">Manifest</th>
                 <th className="p-2">Port of Entry</th>
-<th className="p-2">Command</th>
+                <th className="p-2">Command</th>
                 <th className="p-2">Place of Departure</th>
                 <th className="p-2">Air/Shipping Line</th>
                 <th className="p-2">Voyage/Flight No</th>
@@ -317,8 +261,8 @@ export default function ManifestPage() {
               </tr>
             </thead>
             <tbody>
-              {filtered.length > 0 ? (
-                filtered.map((row, idx) => (
+              {manifests.length > 0 ? (
+                manifests.map((row, idx) => (
                   <tr
                     key={row.manifest_no}
                     className={`border-t transition-colors duration-200 ${
@@ -357,11 +301,7 @@ export default function ManifestPage() {
         {/* Load More */}
         {hasMore && (
           <div className="flex justify-center mt-4">
-            <Button
-              onClick={() => fetchManifests()}
-              disabled={loading}
-              className="bg-[#09607B] text-white"
-            >
+            <Button onClick={() => fetchManifests()} disabled={loading}>
               {loading ? "Loading..." : "Load More"}
             </Button>
           </div>
