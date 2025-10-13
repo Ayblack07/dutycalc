@@ -14,6 +14,7 @@ import {
   endOfWeek,
   startOfMonth,
   endOfMonth,
+  isWithinInterval,
 } from "date-fns";
 import { supabase } from "@/lib/supabaseClient";
 
@@ -29,6 +30,8 @@ export type ManifestRow = {
 };
 
 export default function ManifestPage() {
+  const pageSize = 20;
+
   const [manifests, setManifests] = useState<ManifestRow[]>([]);
   const [keyword, setKeyword] = useState("");
   const [dateRegFrom, setDateRegFrom] = useState<Date | null>(null);
@@ -36,114 +39,101 @@ export default function ManifestPage() {
   const [dateDepartureFrom, setDateDepartureFrom] = useState<Date | null>(null);
   const [dateDepartureTo, setDateDepartureTo] = useState<Date | null>(null);
   const [page, setPage] = useState(1);
-  const [pageData, setPageData] = useState<ManifestRow[]>([]);
-  const [pageKeys, setPageKeys] = useState<(string | null)[]>([null]);
-  const pageSize = 20;
-  const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(false);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const fetchPage = async (pageIndex: number) => {
-    setLoading(true);
-
-    const startCursor = pageKeys[pageIndex] || null;
+  const fetchPage = async (pageNumber: number) => {
+    const start = (pageNumber - 1) * pageSize;
+    const end = start + pageSize - 1;
 
     let query = supabase.from("manifest").select("*", { count: "exact" }).order("manifest_no", { ascending: false });
 
-    // Case-insensitive search
+    // Search filter
     if (keyword.trim()) {
-      query = query.or(
-        `manifest_no.ilike.%${keyword}%,destination.ilike.%${keyword}%,command.ilike.%${keyword}%,air_shipping_line.ilike.%${keyword}%`
+      query = query.ilike("manifest_no", `%${keyword}%`).or(
+        `destination.ilike.%${keyword}%,command.ilike.%${keyword}%,air_shipping_line.ilike.%${keyword}%`
       );
     }
 
     // Registration date filter
     if (dateRegFrom || dateRegTo) {
-      const from = dateRegFrom ? startOfDay(dateRegFrom).toISOString() : null;
-      const to = dateRegTo ? endOfDay(dateRegTo).toISOString() : null;
-      if (from && to) query = query.gte("date_of_registration", from).lte("date_of_registration", to);
-      else if (from) query = query.gte("date_of_registration", from);
-      else if (to) query = query.lte("date_of_registration", to);
+      query = query.gte("date_of_registration", dateRegFrom ? dateRegFrom.toISOString() : "1900-01-01");
+      query = query.lte("date_of_registration", dateRegTo ? endOfDay(dateRegTo).toISOString() : new Date().toISOString());
     }
 
     // Departure date filter
     if (dateDepartureFrom || dateDepartureTo) {
-      const from = dateDepartureFrom ? startOfDay(dateDepartureFrom).toISOString() : null;
-      const to = dateDepartureTo ? endOfDay(dateDepartureTo).toISOString() : null;
-      if (from && to) query = query.gte("date_of_departure", from).lte("date_of_departure", to);
-      else if (from) query = query.gte("date_of_departure", from);
-      else if (to) query = query.lte("date_of_departure", to);
+      query = query.gte("date_of_departure", dateDepartureFrom ? dateDepartureFrom.toISOString() : "1900-01-01");
+      query = query.lte("date_of_departure", dateDepartureTo ? endOfDay(dateDepartureTo).toISOString() : new Date().toISOString());
     }
 
-    if (startCursor) {
-      query = query.lt("manifest_no", startCursor);
-    }
-
-    query = query.limit(pageSize);
-
-    const { data, error } = await query;
+    const { data, count, error } = await query.range(start, end);
 
     if (error) {
       console.error("Supabase fetch error:", error);
-      setLoading(false);
-      return;
+    } else {
+      setManifests(data || []);
+      setTotalPages(count ? Math.ceil(count / pageSize) : 1);
     }
-
-    if (data) {
-      setPageData(data);
-
-      // Store last key for next page
-      const newKeys = [...pageKeys];
-      if (!newKeys[pageIndex + 1]) newKeys[pageIndex + 1] = data[data.length - 1]?.manifest_no || null;
-      setPageKeys(newKeys);
-
-      setHasMore(data.length === pageSize);
-    }
-
-    setLoading(false);
   };
 
-  // Reset filters and pages
-  const resetAndFetch = () => {
-    setPage(1);
-    setPageKeys([null]);
-    fetchPage(0);
-  };
-
+  // Fetch first page on mount
   useEffect(() => {
-    resetAndFetch();
-  }, [keyword, dateRegFrom, dateRegTo, dateDepartureFrom, dateDepartureTo]);
+    fetchPage(1);
+  }, []);
 
-  // Quick filters
+  // Handler for filters: always reset to page 1
+  const applyFilters = () => {
+    setPage(1);
+    fetchPage(1);
+  };
+
+  // Quick Filters
   const today = () => {
     const now = new Date();
     setDateRegFrom(startOfDay(now));
     setDateRegTo(endOfDay(now));
+    applyFilters();
   };
+
   const thisWeek = () => {
     const now = new Date();
     setDateRegFrom(startOfWeek(now));
     setDateRegTo(endOfWeek(now));
+    applyFilters();
   };
+
   const thisMonth = () => {
     const now = new Date();
     setDateRegFrom(startOfMonth(now));
     setDateRegTo(endOfMonth(now));
+    applyFilters();
   };
+
   const resetFilters = () => {
     setKeyword("");
     setDateRegFrom(null);
     setDateRegTo(null);
     setDateDepartureFrom(null);
     setDateDepartureTo(null);
+    setPage(1);
+    fetchPage(1);
   };
 
-  // Sort exact match first
-  const keywordLower = keyword.toLowerCase();
-  const sortedPageData = [...pageData].sort((a, b) => {
-    const aExact = a.manifest_no.toLowerCase() === keywordLower ? -1 : 0;
-    const bExact = b.manifest_no.toLowerCase() === keywordLower ? -1 : 0;
-    return aExact - bExact;
-  });
+  // Pagination handlers
+  const prevPage = () => {
+    if (page > 1) {
+      const newPage = page - 1;
+      setPage(newPage);
+      fetchPage(newPage);
+    }
+  };
+  const nextPage = () => {
+    if (page < totalPages) {
+      const newPage = page + 1;
+      setPage(newPage);
+      fetchPage(newPage);
+    }
+  };
 
   return (
     <>
@@ -157,15 +147,13 @@ export default function ManifestPage() {
       </Head>
 
       <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-8 bg-[#F6F7F9] rounded-lg">
-        {/* Heading */}
         <div className="text-center space-y-2">
           <h1 className="text-3xl md:text-4xl font-bold text-[#09607B]">
             DutyCalc Manifest Checker – Nigeria Customs Records
           </h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Search and filter registered manifests by number, destination, command,
-            shipping line, or date. Stay updated with the latest cargo records from
-            the Nigeria Customs platform.
+            shipping line, or date.
           </p>
         </div>
 
@@ -174,18 +162,23 @@ export default function ManifestPage() {
           <Input
             placeholder="Search manifests..."
             value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
+            onChange={(e) => {
+              setKeyword(e.target.value);
+              applyFilters();
+            }}
             className="w-64"
           />
+
           <div className="flex flex-wrap gap-4">
             <div>
               <Label>Reg From</Label>
               <Input
                 type="date"
                 value={dateRegFrom ? format(dateRegFrom, "yyyy-MM-dd") : ""}
-                onChange={(e) =>
-                  setDateRegFrom(e.target.value ? new Date(e.target.value) : null)
-                }
+                onChange={(e) => {
+                  setDateRegFrom(e.target.value ? new Date(e.target.value) : null);
+                  applyFilters();
+                }}
               />
             </div>
             <div>
@@ -193,9 +186,10 @@ export default function ManifestPage() {
               <Input
                 type="date"
                 value={dateRegTo ? format(dateRegTo, "yyyy-MM-dd") : ""}
-                onChange={(e) =>
-                  setDateRegTo(e.target.value ? new Date(e.target.value) : null)
-                }
+                onChange={(e) => {
+                  setDateRegTo(e.target.value ? new Date(e.target.value) : null);
+                  applyFilters();
+                }}
               />
             </div>
             <div>
@@ -203,9 +197,10 @@ export default function ManifestPage() {
               <Input
                 type="date"
                 value={dateDepartureFrom ? format(dateDepartureFrom, "yyyy-MM-dd") : ""}
-                onChange={(e) =>
-                  setDateDepartureFrom(e.target.value ? new Date(e.target.value) : null)
-                }
+                onChange={(e) => {
+                  setDateDepartureFrom(e.target.value ? new Date(e.target.value) : null);
+                  applyFilters();
+                }}
               />
             </div>
             <div>
@@ -213,9 +208,10 @@ export default function ManifestPage() {
               <Input
                 type="date"
                 value={dateDepartureTo ? format(dateDepartureTo, "yyyy-MM-dd") : ""}
-                onChange={(e) =>
-                  setDateDepartureTo(e.target.value ? new Date(e.target.value) : null)
-                }
+                onChange={(e) => {
+                  setDateDepartureTo(e.target.value ? new Date(e.target.value) : null);
+                  applyFilters();
+                }}
               />
             </div>
           </div>
@@ -253,8 +249,8 @@ export default function ManifestPage() {
               </tr>
             </thead>
             <tbody>
-              {sortedPageData.length > 0 ? (
-                sortedPageData.map((row, idx) => (
+              {manifests.length > 0 ? (
+                manifests.map((row, idx) => (
                   <tr
                     key={row.manifest_no}
                     className={`border-t transition-colors duration-200 ${
@@ -267,16 +263,8 @@ export default function ManifestPage() {
                     <td className="p-2">{row.origin}</td>
                     <td className="p-2">{row.air_shipping_line}</td>
                     <td className="p-2">{row.voyage_flight_no || "-"}</td>
-                    <td className="p-2">
-                      {row.date_of_registration
-                        ? format(new Date(row.date_of_registration), "yyyy-MM-dd")
-                        : "-"}
-                    </td>
-                    <td className="p-2">
-                      {row.date_of_departure
-                        ? format(new Date(row.date_of_departure), "yyyy-MM-dd")
-                        : "-"}
-                    </td>
+                    <td className="p-2">{row.date_of_registration ? format(new Date(row.date_of_registration), "yyyy-MM-dd") : "-"}</td>
+                    <td className="p-2">{row.date_of_departure ? format(new Date(row.date_of_departure), "yyyy-MM-dd") : "-"}</td>
                   </tr>
                 ))
               ) : (
@@ -292,13 +280,13 @@ export default function ManifestPage() {
 
         {/* Pagination */}
         <div className="flex justify-between items-center mt-4">
-          <Button variant="outline" onClick={() => { if (page > 1) { setPage((p) => p - 1); fetchPage(page - 2); }}} disabled={page === 1}>
+          <Button variant="outline" disabled={page === 1} onClick={prevPage}>
             Previous
           </Button>
           <span className="text-sm text-gray-600">
-            Page {page}
+            Page {page} of {totalPages}
           </span>
-          <Button variant="outline" onClick={() => { if (hasMore) { fetchPage(page); setPage((p) => p + 1); }}} disabled={!hasMore}>
+          <Button variant="outline" disabled={page >= totalPages} onClick={nextPage}>
             Next
           </Button>
         </div>
