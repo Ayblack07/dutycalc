@@ -18,17 +18,17 @@ export const metadata: Metadata = {
     "DutyCalc",
   ],
   alternates: {
-    canonical: "https://www.dutycalc.ng/calculator",
+    canonical: "https://dutycalc.ng/calculator",
   },
   openGraph: {
     title: "Nigeria Customs Duty Calculator | DutyCalc",
     description:
       "Calculate customs duties, import tariffs, and VAT instantly with Nigeria’s leading customs calculator — DutyCalc.",
-    url: "https://www.dutycalc.ng/calculator",
+    url: "https://dutycalc.ng/calculator",
     siteName: "DutyCalc",
     images: [
       {
-        url: "https://www.dutycalc.ng/og-image.png", // optional if you have one
+        url: "https://dutycalc.ng/og-image.png", // optional if you have one
         width: 1200,
         height: 630,
         alt: "Nigeria Customs Duty Calculator",
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     title: "Nigeria Customs Duty Calculator | DutyCalc",
     description:
       "Calculate customs duty and tariffs instantly with DutyCalc — accurate and up to date with Nigeria Customs rates.",
-    images: ["https://www.dutycalc.ng/og-image.png"],
+    images: ["https://dutycalc.ng/og-image.png"],
   },
 };
 

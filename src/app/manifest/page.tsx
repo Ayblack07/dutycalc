@@ -151,13 +151,13 @@ export default function ManifestPage() {
           name="keywords"
           content="Nigeria manifest, customs manifest, nigeria customs manifest, today manifest, manifest checker, import manifest Nigeria, dutycalc manifest, cargo records Nigeria"
         />
-        <link rel="canonical" href="https://www.dutycalc.ng/manifest" />
+        <link rel="canonical" href="https://dutycalc.ng/manifest" />
         <meta property="og:title" content="DutyCalc Manifest Checker" />
         <meta
           property="og:description"
           content="Quickly search and view Nigerian customs manifests online using DutyCalc."
         />
-        <meta property="og:url" content="https://www.dutycalc.ng/manifest" />
+        <meta property="og:url" content="https://dutycalc.ng/manifest" />
         <meta property="og:type" content="website" />
         <meta name="robots" content="index, follow" />
         <script
@@ -167,7 +167,7 @@ export default function ManifestPage() {
               "@context": "https://schema.org",
               "@type": "WebPage",
               name: "DutyCalc Manifest Checker",
-              url: "https://www.dutycalc.ng/manifest",
+              url: "https://dutycalc.ng/manifest",
               description:
                 "Nigeria Customs manifest lookup and filtering tool for air and sea cargo records.",
             }),
