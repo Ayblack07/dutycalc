@@ -36,28 +36,70 @@ export default function ManifestPage() {
   const [dateRegTo, setDateRegTo] = useState<Date | null>(null);
   const [dateDepartureFrom, setDateDepartureFrom] = useState<Date | null>(null);
   const [dateDepartureTo, setDateDepartureTo] = useState<Date | null>(null);
-  const [page, setPage] = useState(1);
+  
+  const [lastManifest, setLastManifest] = useState<string | null>(null); // cursor
+  const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
   const pageSize = 20;
 
-  // Fetch manifests
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data, error } = await supabase.from("manifest").select("*");
-      if (error) {
-        console.error("Supabase error:", error);
-      } else {
-        const sorted = (data || []).sort((a, b) => {
-          const numA = parseInt(a.manifest_no.replace(/\D/g, ""), 10);
-          const numB = parseInt(b.manifest_no.replace(/\D/g, ""), 10);
-          return numB - numA;
-        });
+  // Fetch manifests using cursor-based pagination
+  const fetchManifests = async (reset = false) => {
+    if (loading) return;
+    setLoading(true);
+
+    let query = supabase
+      .from("manifest")
+      .select("*")
+      .order("manifest_no", { ascending: false })
+      .limit(pageSize);
+
+    if (lastManifest && !reset) {
+      query = query.lt("manifest_no", lastManifest); // fetch older manifests
+    }
+
+    if (keyword.trim() !== "") {
+      query = query.or(
+        `manifest_no.ilike.%${keyword}%,destination.ilike.%${keyword}%,command.ilike.%${keyword}%,air_shipping_line.ilike.%${keyword}%`
+      );
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error("Supabase fetch error:", error);
+    } else if (data && data.length > 0) {
+      const sorted = data.sort(
+        (a, b) =>
+          parseInt(b.manifest_no.replace(/\D/g, ""), 10) -
+          parseInt(a.manifest_no.replace(/\D/g, ""), 10)
+      );
+      if (reset) {
         setManifests(sorted);
+      } else {
+        setManifests((prev) => [...prev, ...sorted]);
       }
-    };
-    fetchData();
+      setLastManifest(sorted[sorted.length - 1].manifest_no);
+      setHasMore(data.length === pageSize);
+    } else {
+      setHasMore(false);
+    }
+
+    setLoading(false);
+  };
+
+  // Reset & search
+  const handleSearch = () => {
+    setLastManifest(null);
+    setHasMore(true);
+    fetchManifests(true);
+  };
+
+  // Initial load
+  useEffect(() => {
+    fetchManifests(true);
   }, []);
 
-  // Filtering
+  // Filtering by keyword and dates
   const filtered = useMemo(() => {
     return manifests.filter((row) => {
       const kw = keyword.toLowerCase();
@@ -107,12 +149,6 @@ export default function ManifestPage() {
     });
   }, [manifests, keyword, dateRegFrom, dateRegTo, dateDepartureFrom, dateDepartureTo]);
 
-  // Pagination
-  const paginated = useMemo(() => {
-    const start = (page - 1) * pageSize;
-    return filtered.slice(start, start + pageSize);
-  }, [filtered, page]);
-
   // Quick filters
   const today = () => {
     const now = new Date();
@@ -135,12 +171,13 @@ export default function ManifestPage() {
     setDateRegTo(null);
     setDateDepartureFrom(null);
     setDateDepartureTo(null);
-    setPage(1);
+    setLastManifest(null);
+    setHasMore(true);
+    fetchManifests(true);
   };
 
   return (
     <>
-      {/* ✅ SEO Head Tags */}
       <Head>
         <title>Manifest Checker | Nigeria Customs Manifest Lookup - DutyCalc</title>
         <meta
@@ -175,7 +212,6 @@ export default function ManifestPage() {
         />
       </Head>
 
-      {/* ✅ Main Page */}
       <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-8 bg-[#F6F7F9] rounded-lg">
         {/* Heading */}
         <div className="text-center space-y-2">
@@ -272,7 +308,7 @@ export default function ManifestPage() {
               <tr>
                 <th className="p-2">Manifest</th>
                 <th className="p-2">Port of Entry</th>
-                <th className="p-2">Command</th>
+<th className="p-2">Command</th>
                 <th className="p-2">Place of Departure</th>
                 <th className="p-2">Air/Shipping Line</th>
                 <th className="p-2">Voyage/Flight No</th>
@@ -281,8 +317,8 @@ export default function ManifestPage() {
               </tr>
             </thead>
             <tbody>
-              {paginated.length > 0 ? (
-                paginated.map((row, idx) => (
+              {filtered.length > 0 ? (
+                filtered.map((row, idx) => (
                   <tr
                     key={row.manifest_no}
                     className={`border-t transition-colors duration-200 ${
@@ -318,26 +354,18 @@ export default function ManifestPage() {
           </table>
         </div>
 
-        {/* Pagination */}
-        <div className="flex justify-between items-center mt-4">
-          <Button
-            variant="outline"
-            disabled={page === 1}
-            onClick={() => setPage((p) => p - 1)}
-          >
-            Previous
-          </Button>
-          <span className="text-sm text-gray-600">
-            Page {page} of {Math.ceil(filtered.length / pageSize)}
-          </span>
-          <Button
-            variant="outline"
-            disabled={page >= Math.ceil(filtered.length / pageSize)}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            Next
-          </Button>
-        </div>
+        {/* Load More */}
+        {hasMore && (
+          <div className="flex justify-center mt-4">
+            <Button
+              onClick={() => fetchManifests()}
+              disabled={loading}
+              className="bg-[#09607B] text-white"
+            >
+              {loading ? "Loading..." : "Load More"}
+            </Button>
+          </div>
+        )}
       </div>
     </>
   );
