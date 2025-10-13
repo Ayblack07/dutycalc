@@ -36,14 +36,16 @@ export default function ManifestPage() {
   const [dateDepartureFrom, setDateDepartureFrom] = useState<Date | null>(null);
   const [dateDepartureTo, setDateDepartureTo] = useState<Date | null>(null);
   const [page, setPage] = useState(1);
+  const [pageData, setPageData] = useState<ManifestRow[]>([]);
+  const [pageKeys, setPageKeys] = useState<(string | null)[]>([null]);
   const pageSize = 20;
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [lastManifestNo, setLastManifestNo] = useState<string | null>(null);
 
-  // Fetch manifests from Supabase with filters
-  const fetchManifests = async (reset = false) => {
+  const fetchPage = async (pageIndex: number) => {
     setLoading(true);
+
+    const startCursor = pageKeys[pageIndex] || null;
 
     let query = supabase.from("manifest").select("*", { count: "exact" }).order("manifest_no", { ascending: false });
 
@@ -54,7 +56,7 @@ export default function ManifestPage() {
       );
     }
 
-    // Date of registration filters
+    // Registration date filter
     if (dateRegFrom || dateRegTo) {
       const from = dateRegFrom ? startOfDay(dateRegFrom).toISOString() : null;
       const to = dateRegTo ? endOfDay(dateRegTo).toISOString() : null;
@@ -63,7 +65,7 @@ export default function ManifestPage() {
       else if (to) query = query.lte("date_of_registration", to);
     }
 
-    // Date of departure filters
+    // Departure date filter
     if (dateDepartureFrom || dateDepartureTo) {
       const from = dateDepartureFrom ? startOfDay(dateDepartureFrom).toISOString() : null;
       const to = dateDepartureTo ? endOfDay(dateDepartureTo).toISOString() : null;
@@ -72,33 +74,39 @@ export default function ManifestPage() {
       else if (to) query = query.lte("date_of_departure", to);
     }
 
-    // Cursor pagination
-    if (lastManifestNo && !reset) {
-      query = query.lt("manifest_no", lastManifestNo);
+    if (startCursor) {
+      query = query.lt("manifest_no", startCursor);
     }
 
     query = query.limit(pageSize);
 
-    const { data, error, count } = await query;
+    const { data, error } = await query;
 
-    if (error) console.error("Supabase fetch error:", error);
-    else {
-      if (reset) setManifests(data || []);
-      else setManifests((prev) => [...prev, ...(data || [])]);
+    if (error) {
+      console.error("Supabase fetch error:", error);
+      setLoading(false);
+      return;
+    }
 
-      setHasMore((data?.length || 0) === pageSize);
-      setLastManifestNo(data?.[data.length - 1]?.manifest_no || null);
+    if (data) {
+      setPageData(data);
+
+      // Store last key for next page
+      const newKeys = [...pageKeys];
+      if (!newKeys[pageIndex + 1]) newKeys[pageIndex + 1] = data[data.length - 1]?.manifest_no || null;
+      setPageKeys(newKeys);
+
+      setHasMore(data.length === pageSize);
     }
 
     setLoading(false);
   };
 
-  // Reset and fetch new data
+  // Reset filters and pages
   const resetAndFetch = () => {
-    setManifests([]);
-    setLastManifestNo(null);
     setPage(1);
-    fetchManifests(true);
+    setPageKeys([null]);
+    fetchPage(0);
   };
 
   useEffect(() => {
@@ -129,9 +137,9 @@ export default function ManifestPage() {
     setDateDepartureTo(null);
   };
 
-  // Sort exact matches first (case-insensitive)
-  const sortedManifests = [...manifests].sort((a, b) => {
-    const keywordLower = keyword.toLowerCase();
+  // Sort exact match first
+  const keywordLower = keyword.toLowerCase();
+  const sortedPageData = [...pageData].sort((a, b) => {
     const aExact = a.manifest_no.toLowerCase() === keywordLower ? -1 : 0;
     const bExact = b.manifest_no.toLowerCase() === keywordLower ? -1 : 0;
     return aExact - bExact;
@@ -245,8 +253,8 @@ export default function ManifestPage() {
               </tr>
             </thead>
             <tbody>
-              {sortedManifests.length > 0 ? (
-                sortedManifests.map((row, idx) => (
+              {sortedPageData.length > 0 ? (
+                sortedPageData.map((row, idx) => (
                   <tr
                     key={row.manifest_no}
                     className={`border-t transition-colors duration-200 ${
@@ -283,13 +291,17 @@ export default function ManifestPage() {
         </div>
 
         {/* Pagination */}
-        {hasMore && (
-          <div className="flex justify-center mt-4">
-            <Button onClick={() => fetchManifests()} disabled={loading}>
-              {loading ? "Loading..." : "Load More"}
-            </Button>
-          </div>
-        )}
+        <div className="flex justify-between items-center mt-4">
+          <Button variant="outline" onClick={() => { if (page > 1) { setPage((p) => p - 1); fetchPage(page - 2); }}} disabled={page === 1}>
+            Previous
+          </Button>
+          <span className="text-sm text-gray-600">
+            Page {page}
+          </span>
+          <Button variant="outline" onClick={() => { if (hasMore) { fetchPage(page); setPage((p) => p + 1); }}} disabled={!hasMore}>
+            Next
+          </Button>
+        </div>
       </div>
     </>
   );
