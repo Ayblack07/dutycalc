@@ -76,10 +76,10 @@ export default function HomePage() {
             Start Calculating
           </Link>
           <Link
-            href="/tariff"
+            href="/manifest"
             className="bg-white border border-accent text-primary font-semibold px-6 py-3 rounded-lg hover:bg-background transition"
           >
-            Learn More
+            Check manifest
           </Link>
         </div>
       </section>
