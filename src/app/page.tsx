@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import Head from "next/head";
 import {
   Calculator,
   Search,
@@ -33,11 +34,7 @@ export default function HomePage() {
         .order("created_at", { ascending: false })
         .limit(3);
 
-      if (!error && data) {
-        setNews(data as NewsItem[]);
-      } else if (error) {
-        console.error("Failed to fetch news:", error);
-      }
+      if (!error && data) setNews(data as NewsItem[]);
     };
 
     fetchNews();
@@ -54,19 +51,62 @@ export default function HomePage() {
 
   return (
     <main>
+      {/* SEO HEAD */}
+      <Head>
+        <title>
+          Nigeria Customs Duty Calculator & Daily Manifest Checker | DutyCalc
+        </title>
+        <meta
+          name="description"
+          content="DutyCalc is Nigeria’s #1 Customs Duty Calculator and Daily Manifest Checker. Instantly calculate import duties, verify shipping manifests, and access real-time tariff rates for Apapa, Tin Can, Onne, and all major Nigerian ports."
+        />
+        <meta
+          name="keywords"
+          content="Nigeria customs duty calculator, import duty Nigeria, manifest checker, daily manifest update, tariff lookup, HS code Nigeria, customs valuation, Apapa port duty, Tin Can import duty"
+        />
+        <meta property="og:title" content="Nigeria Customs Duty Calculator & Manifest Checker" />
+        <meta
+          property="og:description"
+          content="Calculate import duties and verify manifests instantly with DutyCalc — trusted by shippers, clearing agents, and logistics professionals across Nigeria."
+        />
+        <meta property="og:url" content="https://www.dutycalc.ng" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://www.dutycalc.ng/og-image.jpg" />
+        <link rel="canonical" href="https://www.dutycalc.ng" />
+
+        {/* JSON-LD Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "DutyCalc",
+              url: "https://www.dutycalc.ng",
+              potentialAction: {
+                "@type": "SearchAction",
+                target: "https://www.dutycalc.ng/manifest?search={query}",
+                "query-input": "required name=query",
+              },
+              description:
+                "DutyCalc helps importers and clearing agents calculate Nigeria Customs duties, verify daily manifests, and check tariff rates with real-time updates.",
+            }),
+          }}
+        />
+      </Head>
+
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-primary to-accent text-center py-24 px-6">
         <h1 className="text-4xl md:text-6xl font-bold text-white">
-          <span className="text-white">Customs Duty Calculator</span>
+          Nigeria Customs Duty Calculator & Daily Manifest Checker
         </h1>
         <p className="mt-4 text-background max-w-2xl mx-auto">
-          Welcome to DutyCalc, your trusted partner in seamless import and export
-          operations. Our platform is designed to simplify complex logistics,
-          offering tools and resources to help you navigate international trade
-          with ease. From comprehensive duty calculations, to stress-free
-          manifest checker, we empower businesses and individuals alike to make
-          informed decisions and optimize their supply chains. Experience
-          efficiency, transparency, and reliability, all in one place.
+          DutyCalc helps you calculate Nigeria Customs import and export duties
+          in seconds. You can also check daily shipping manifests updated
+          directly from major Nigerian ports — including Apapa, Tin Can, and
+          Onne. Whether you’re an importer, freight forwarder, or customs agent,
+          DutyCalc makes trade compliance and cargo tracking simple, accurate,
+          and fast.
         </p>
         <div className="mt-8 flex justify-center gap-6">
           <Link
@@ -79,15 +119,14 @@ export default function HomePage() {
             href="/manifest"
             className="bg-white border border-accent text-primary font-semibold px-6 py-3 rounded-lg hover:bg-background transition"
           >
-            Check manifest
+            Check Manifest
           </Link>
         </div>
       </section>
 
-      {/* Highlights Section */}
+      {/* Highlights */}
       <section className="bg-background py-6 px-3">
         <div className="max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-          {/* Accuracy */}
           <div className="bg-white p-8 rounded-xl shadow-soft hover:shadow-glow transition">
             <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-primary/10 text-primary mx-auto">
               <BarChart size={28} />
@@ -96,22 +135,20 @@ export default function HomePage() {
             <p className="text-gray-600">Proven Calculation Accuracy</p>
           </div>
 
-          {/* Database */}
           <div className="bg-white p-8 rounded-xl shadow-soft hover:shadow-glow transition">
             <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-secondary/10 text-secondary mx-auto">
               <Database size={28} />
             </div>
             <h3 className="text-3xl font-bold text-secondary">10,000+</h3>
-            <p className="text-gray-600">HS Codes in our Database</p>
+            <p className="text-gray-600">HS Codes in Database</p>
           </div>
 
-          {/* Updates */}
           <div className="bg-white p-8 rounded-xl shadow-soft hover:shadow-glow transition">
             <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-accent/10 text-accent mx-auto">
               <RefreshCcw size={28} />
             </div>
             <h3 className="text-3xl font-bold text-accent">24/7</h3>
-            <p className="text-gray-600">Live Real-time Updates</p>
+            <p className="text-gray-600">Real-Time Manifest Updates</p>
           </div>
         </div>
       </section>
@@ -119,21 +156,26 @@ export default function HomePage() {
       {/* Feature Cards */}
       <section className="bg-background py-20 px-6">
         <h2 className="text-3xl font-bold text-primary text-center mb-6">
-          Want to streamline your operations?
+          Simplify Nigeria Customs & Trade Operations
         </h2>
-        <p className="text-gray-600 text-center mb-12">
-          Dutycalc is built to save your time and help you simplify complex customs process. Check the features now!
+        <p className="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
+          DutyCalc provides instant duty calculations, daily manifests, tariff
+          lookup, and live exchange rates — everything you need for stress-free
+          customs clearance and documentation.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 max-w-7xl mx-auto">
-          {/* Duty Calculator */}
+          {/* Calculator */}
           <div className="bg-white p-6 rounded-xl shadow-soft hover:shadow-glow transition flex flex-col items-center text-center">
             <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-primary/10 text-primary">
               <Calculator size={28} />
             </div>
-            <h3 className="text-xl font-bold text-primary mb-2">Duty Calculator</h3>
+            <h3 className="text-xl font-bold text-primary mb-2">
+              Duty Calculator
+            </h3>
             <p className="text-gray-600 mb-4">
-              Accurate customs duty calculations with real-time exchange rates.
+              Get fast, accurate import duty estimates using verified customs
+              rates and exchange values.
             </p>
             <Link
               href="/calculator"
@@ -150,7 +192,8 @@ export default function HomePage() {
             </div>
             <h3 className="text-xl font-bold text-primary mb-2">Tariff Lookup</h3>
             <p className="text-gray-600 mb-4">
-              Search HS codes and tariff classifications with a full database.
+              Search for HS codes, tariff categories, and import classifications
+              within Nigeria’s customs schedule.
             </p>
             <Link
               href="/tariff"
@@ -160,14 +203,16 @@ export default function HomePage() {
             </Link>
           </div>
 
-          {/* Manifest Check */}
+          {/* Manifest Checker */}
           <div className="bg-white p-6 rounded-xl shadow-soft hover:shadow-glow transition flex flex-col items-center text-center">
             <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-accent/10 text-accent">
               <FileText size={28} />
             </div>
-            <h3 className="text-xl font-bold text-primary mb-2">Manifest Check</h3>
+            <h3 className="text-xl font-bold text-primary mb-2">
+              Manifest Checker
+            </h3>
             <p className="text-gray-600 mb-4">
-              Verify Bill of Lading and Airway Bill details for documentation.
+              Check and verify Bills of Lading, Airway Bills, and vessel manifests updated daily.
             </p>
             <Link
               href="/manifest"
@@ -184,7 +229,8 @@ export default function HomePage() {
             </div>
             <h3 className="text-xl font-bold text-primary mb-2">Learning Hub</h3>
             <p className="text-gray-600 mb-4">
-              Comprehensive guides, tutorials, and glossaries for trade ops.
+              Get free guides and tutorials on customs, shipping, and trade
+              compliance in Nigeria.
             </p>
             <Link
               href="/learning-hub"
@@ -194,14 +240,14 @@ export default function HomePage() {
             </Link>
           </div>
 
-          {/* Exchange Rate */}
+          {/* Exchange Rates */}
           <div className="bg-white p-6 rounded-xl shadow-soft hover:shadow-glow transition flex flex-col items-center text-center">
             <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-secondary/10 text-secondary">
               <DollarSign size={28} />
             </div>
             <h3 className="text-xl font-bold text-primary mb-2">Exchange Rates</h3>
             <p className="text-gray-600 mb-4">
-              View and track the latest customs exchange rates from Supabase.
+              Track daily CBN and customs exchange rates updated automatically.
             </p>
             <Link
               href="/exchange-rate"
