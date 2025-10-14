@@ -27,7 +27,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
-      url: "https://dutycalc.ng/learning",
+      url: "https://dutycalc.ng/learning-hub",
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.7,
