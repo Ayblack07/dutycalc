@@ -14,7 +14,6 @@ import {
   endOfWeek,
   startOfMonth,
   endOfMonth,
-  isWithinInterval,
 } from "date-fns";
 import { supabase } from "@/lib/supabaseClient";
 
@@ -40,73 +39,83 @@ export default function ManifestPage() {
   const [dateDepartureTo, setDateDepartureTo] = useState<Date | null>(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
 
-  const fetchPage = async (pageNumber: number) => {
-    const start = (pageNumber - 1) * pageSize;
-    const end = start + pageSize - 1;
+  // Fetch manifests whenever any filter changes
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      const start = (page - 1) * pageSize;
+      const end = start + pageSize - 1;
 
-    let query = supabase.from("manifest").select("*", { count: "exact" }).order("manifest_no", { ascending: false });
+      let query = supabase
+        .from("manifest")
+        .select("*", { count: "exact" })
+        .order("manifest_no", { ascending: false });
 
-    // Search filter
-    if (keyword.trim()) {
-      query = query.ilike("manifest_no", `%${keyword}%`).or(
-        `destination.ilike.%${keyword}%,command.ilike.%${keyword}%,air_shipping_line.ilike.%${keyword}%`
-      );
-    }
+      // Search across multiple columns (case-insensitive)
+      if (keyword.trim()) {
+        const kw = keyword.trim();
+        query = query.or(
+          `manifest_no.ilike.%${kw}%,destination.ilike.%${kw}%,command.ilike.%${kw}%,origin.ilike.%${kw}%,air_shipping_line.ilike.%${kw}%`
+        );
+      }
 
-    // Registration date filter
-    if (dateRegFrom || dateRegTo) {
-      query = query.gte("date_of_registration", dateRegFrom ? dateRegFrom.toISOString() : "1900-01-01");
-      query = query.lte("date_of_registration", dateRegTo ? endOfDay(dateRegTo).toISOString() : new Date().toISOString());
-    }
+      // Registration date filters
+      if (dateRegFrom || dateRegTo) {
+        query = query.gte(
+          "date_of_registration",
+          dateRegFrom ? dateRegFrom.toISOString() : "1900-01-01"
+        );
+        query = query.lte(
+          "date_of_registration",
+          dateRegTo ? endOfDay(dateRegTo).toISOString() : new Date().toISOString()
+        );
+      }
 
-    // Departure date filter
-    if (dateDepartureFrom || dateDepartureTo) {
-      query = query.gte("date_of_departure", dateDepartureFrom ? dateDepartureFrom.toISOString() : "1900-01-01");
-      query = query.lte("date_of_departure", dateDepartureTo ? endOfDay(dateDepartureTo).toISOString() : new Date().toISOString());
-    }
+      // Departure date filters
+      if (dateDepartureFrom || dateDepartureTo) {
+        query = query.gte(
+          "date_of_departure",
+          dateDepartureFrom ? dateDepartureFrom.toISOString() : "1900-01-01"
+        );
+        query = query.lte(
+          "date_of_departure",
+          dateDepartureTo ? endOfDay(dateDepartureTo).toISOString() : new Date().toISOString()
+        );
+      }
 
-    const { data, count, error } = await query.range(start, end);
+      const { data, count, error } = await query.range(start, end);
+      if (error) console.error("Supabase fetch error:", error);
 
-    if (error) {
-      console.error("Supabase fetch error:", error);
-    } else {
       setManifests(data || []);
       setTotalPages(count ? Math.ceil(count / pageSize) : 1);
-    }
-  };
+      setLoading(false);
+    };
 
-  // Fetch first page on mount
-  useEffect(() => {
-    fetchPage(1);
-  }, []);
+    fetchData();
+  }, [keyword, dateRegFrom, dateRegTo, dateDepartureFrom, dateDepartureTo, page]);
 
-  // Handler for filters: always reset to page 1
-  const applyFilters = () => {
-    setPage(1);
-    fetchPage(1);
-  };
-
-  // Quick Filters
+  // Quick filters
   const today = () => {
     const now = new Date();
     setDateRegFrom(startOfDay(now));
     setDateRegTo(endOfDay(now));
-    applyFilters();
+    setPage(1);
   };
 
   const thisWeek = () => {
     const now = new Date();
     setDateRegFrom(startOfWeek(now));
     setDateRegTo(endOfWeek(now));
-    applyFilters();
+    setPage(1);
   };
 
   const thisMonth = () => {
     const now = new Date();
     setDateRegFrom(startOfMonth(now));
     setDateRegTo(endOfMonth(now));
-    applyFilters();
+    setPage(1);
   };
 
   const resetFilters = () => {
@@ -116,23 +125,6 @@ export default function ManifestPage() {
     setDateDepartureFrom(null);
     setDateDepartureTo(null);
     setPage(1);
-    fetchPage(1);
-  };
-
-  // Pagination handlers
-  const prevPage = () => {
-    if (page > 1) {
-      const newPage = page - 1;
-      setPage(newPage);
-      fetchPage(newPage);
-    }
-  };
-  const nextPage = () => {
-    if (page < totalPages) {
-      const newPage = page + 1;
-      setPage(newPage);
-      fetchPage(newPage);
-    }
   };
 
   return (
@@ -164,7 +156,7 @@ export default function ManifestPage() {
             value={keyword}
             onChange={(e) => {
               setKeyword(e.target.value);
-              applyFilters();
+              setPage(1);
             }}
             className="w-64"
           />
@@ -175,10 +167,9 @@ export default function ManifestPage() {
               <Input
                 type="date"
                 value={dateRegFrom ? format(dateRegFrom, "yyyy-MM-dd") : ""}
-                onChange={(e) => {
-                  setDateRegFrom(e.target.value ? new Date(e.target.value) : null);
-                  applyFilters();
-                }}
+                onChange={(e) =>
+                  setDateRegFrom(e.target.value ? new Date(e.target.value) : null)
+                }
               />
             </div>
             <div>
@@ -186,10 +177,9 @@ export default function ManifestPage() {
               <Input
                 type="date"
                 value={dateRegTo ? format(dateRegTo, "yyyy-MM-dd") : ""}
-                onChange={(e) => {
-                  setDateRegTo(e.target.value ? new Date(e.target.value) : null);
-                  applyFilters();
-                }}
+                onChange={(e) =>
+                  setDateRegTo(e.target.value ? new Date(e.target.value) : null)
+                }
               />
             </div>
             <div>
@@ -197,10 +187,9 @@ export default function ManifestPage() {
               <Input
                 type="date"
                 value={dateDepartureFrom ? format(dateDepartureFrom, "yyyy-MM-dd") : ""}
-                onChange={(e) => {
-                  setDateDepartureFrom(e.target.value ? new Date(e.target.value) : null);
-                  applyFilters();
-                }}
+                onChange={(e) =>
+                  setDateDepartureFrom(e.target.value ? new Date(e.target.value) : null)
+                }
               />
             </div>
             <div>
@@ -208,26 +197,25 @@ export default function ManifestPage() {
               <Input
                 type="date"
                 value={dateDepartureTo ? format(dateDepartureTo, "yyyy-MM-dd") : ""}
-                onChange={(e) => {
-                  setDateDepartureTo(e.target.value ? new Date(e.target.value) : null);
-                  applyFilters();
-                }}
+                onChange={(e) =>
+                  setDateDepartureTo(e.target.value ? new Date(e.target.value) : null)
+                }
               />
             </div>
           </div>
 
           {/* Quick Filter Buttons */}
           <div className="flex flex-wrap gap-3">
-            <Button variant="outline" onClick={today} className="bg-primary text-white">
+            <Button onClick={today} className="bg-primary text-white">
               Today
             </Button>
-            <Button variant="outline" onClick={thisWeek} className="bg-[#607b09] text-white">
+            <Button onClick={thisWeek} className="bg-[#607b09] text-white">
               This Week
             </Button>
-            <Button variant="outline" onClick={thisMonth} className="bg-secondary text-black">
+            <Button onClick={thisMonth} className="bg-secondary text-black">
               This Month
             </Button>
-            <Button className="bg-red-500 text-white hover:bg-[#4e6707]" onClick={resetFilters}>
+            <Button className="bg-red-500 text-white" onClick={resetFilters}>
               <RotateCcw className="w-4 h-4 mr-2" /> Reset
             </Button>
           </div>
@@ -249,11 +237,17 @@ export default function ManifestPage() {
               </tr>
             </thead>
             <tbody>
-              {manifests.length > 0 ? (
+              {loading ? (
+                <tr>
+                  <td className="p-4 text-center text-gray-500" colSpan={8}>
+                    Loading...
+                  </td>
+                </tr>
+              ) : manifests.length > 0 ? (
                 manifests.map((row, idx) => (
                   <tr
                     key={row.manifest_no}
-                    className={`border-t transition-colors duration-200 ${
+                    className={`border-t ${
                       idx % 2 === 0 ? "bg-white" : "bg-gray-50"
                     } hover:bg-[#F0FDF4]`}
                   >
@@ -263,8 +257,16 @@ export default function ManifestPage() {
                     <td className="p-2">{row.origin}</td>
                     <td className="p-2">{row.air_shipping_line}</td>
                     <td className="p-2">{row.voyage_flight_no || "-"}</td>
-                    <td className="p-2">{row.date_of_registration ? format(new Date(row.date_of_registration), "yyyy-MM-dd") : "-"}</td>
-                    <td className="p-2">{row.date_of_departure ? format(new Date(row.date_of_departure), "yyyy-MM-dd") : "-"}</td>
+                    <td className="p-2">
+                      {row.date_of_registration
+                        ? format(new Date(row.date_of_registration), "yyyy-MM-dd")
+                        : "-"}
+                    </td>
+                    <td className="p-2">
+                      {row.date_of_departure
+                        ? format(new Date(row.date_of_departure), "yyyy-MM-dd")
+                        : "-"}
+                    </td>
                   </tr>
                 ))
               ) : (
@@ -280,13 +282,17 @@ export default function ManifestPage() {
 
         {/* Pagination */}
         <div className="flex justify-between items-center mt-4">
-          <Button variant="outline" disabled={page === 1} onClick={prevPage}>
+          <Button variant="outline" disabled={page === 1} onClick={() => setPage(page - 1)}>
             Previous
           </Button>
           <span className="text-sm text-gray-600">
             Page {page} of {totalPages}
           </span>
-          <Button variant="outline" disabled={page >= totalPages} onClick={nextPage}>
+          <Button
+            variant="outline"
+            disabled={page >= totalPages}
+            onClick={() => setPage(page + 1)}
+          >
             Next
           </Button>
         </div>
