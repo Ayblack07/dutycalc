@@ -119,10 +119,10 @@ export default function HomePage() {
       {/* Feature Cards */}
       <section className="bg-background py-20 px-6">
         <h2 className="text-3xl font-bold text-primary text-center mb-6">
-          Complete Trade Platform
+          Want to streamline your operations?
         </h2>
         <p className="text-gray-600 text-center mb-12">
-          Everything you need for successful import/export operations in Nigeria
+          Dutycalc is built to save your time and help you simplify complex customs process. Check the features now!
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 max-w-7xl mx-auto">
