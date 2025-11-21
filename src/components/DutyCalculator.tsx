@@ -210,7 +210,7 @@ const downloadPDF = () => {
     new Intl.NumberFormat("en-NG", { style: "decimal", minimumFractionDigits: 2 }).format(amount);
 
   // HEADER: green rectangle full width
-  doc.setFillColor(40, 160, 70); // green
+  doc.setFillColor(9, 96, 123); // green
   doc.rect(0, 0, pageWidth, 20, "F"); // full width rectangle at top
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(16);
@@ -241,7 +241,7 @@ const downloadPDF = () => {
     body: section1,
     theme: "grid",
     styles: { fontSize: 11, cellPadding: 1.5 },
-    headStyles: { fillColor: [40, 160, 70], textColor: 255 },
+    headStyles: { fillColor: [9, 96, 123], textColor: 255 },
     alternateRowStyles: { fillColor: [245, 245, 245] },
     margin: { left: 14, right: 14 },
     columnStyles: { 0: { cellWidth: 70 }, 1: { cellWidth: pageWidth - 70 - 28 } },
@@ -271,7 +271,7 @@ const downloadPDF = () => {
     body: section2,
     theme: "grid",
     styles: { fontSize: 11, cellPadding: 1.5 },
-    headStyles: { fillColor: [40, 160, 70], textColor: 255 },
+    headStyles: { fillColor: [9, 96, 123], textColor: 255 },
     alternateRowStyles: { fillColor: [245, 245, 245] },
     margin: { left: 14, right: 14 },
     columnStyles: { 0: { cellWidth: 70 }, 1: { cellWidth: pageWidth - 70 - 28 } },
@@ -280,7 +280,7 @@ const downloadPDF = () => {
   // TOTAL DUTY in a green rounded rectangle
   const finalY = (doc as any).lastAutoTable.finalY + 8;
   const totalText = `Total Duty: ${formatNumber(getFinalTotal())}`;
-  doc.setFillColor(40, 160, 70);
+  doc.setFillColor(9, 96, 123);
   const rectHeight = 12;
   doc.roundedRect(14, finalY, pageWidth - 28, rectHeight, 2, 2, "F");
   doc.setTextColor(255, 255, 255);
