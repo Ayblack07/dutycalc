@@ -1,93 +1,46 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { User } from "@supabase/supabase-js";
-import Link from "next/link";
+'use client';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import Sidebar from './components/Sidebar';
+import Topbar from './components/Topbar';
+import DashboardCards from './components/DashboardCards';
+import UserProfile from './components/UserProfile';
+import RecentActivities from './components/RecentActivities';
+import ActivityLog from './components/ActivityLog';
 
 export default function DashboardPage() {
-  const supabase = createClientComponentClient();
-  const [user, setUser] = useState<User | null>(null);
-  const [trialDaysLeft, setTrialDaysLeft] = useState<number | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      if (data?.user) {
-        setUser(data.user);
-
-        // Dummy trial days left (replace with DB logic)
-        setTrialDaysLeft(25);
-      }
-    };
-    fetchUser();
-  }, [supabase]);
+    if (typeof window !== 'undefined' && !localStorage.getItem('loggedIn')) {
+      router.push('/login');
+    }
+  }, [router]);
 
   return (
-    <div className="min-h-screen bg-background flex">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r shadow-sm hidden md:block">
-        <div className="p-4 text-xl font-bold text-primary">DutyCalc</div>
-        <nav className="space-y-2 p-4">
-          <Link href="/dashboard" className="block px-3 py-2 rounded hover:bg-gray-100">🏠 Dashboard</Link>
-          <Link href="/calculator" className="block px-3 py-2 rounded hover:bg-gray-100">🧮 Calculator</Link>
-          <Link href="/tariff" className="block px-3 py-2 rounded hover:bg-gray-100">🔍 Tariff Lookup</Link>
-          <Link href="/manifest" className="block px-3 py-2 rounded hover:bg-gray-100">📑 Manifest</Link>
-          <Link href="/learning-hub" className="block px-3 py-2 rounded hover:bg-gray-100">📚 Learning Hub</Link>
-          <Link href="/pricing" className="block px-3 py-2 rounded hover:bg-gray-100">💳 Pricing</Link>
-        </nav>
-      </aside>
+    <div className="flex h-screen">
+      <Sidebar />
 
-      {/* Main */}
-      <main className="flex-1 p-6 space-y-6">
-        <div className="bg-white shadow-soft rounded-xl p-6">
-          <h1 className="text-2xl font-bold text-primary">
-            Welcome {user?.user_metadata?.full_name || "Guest"} 👋
-          </h1>
-          <p className="text-gray-600">
-            {trialDaysLeft
-              ? `Your free trial ends in ${trialDaysLeft} days.`
-              : "Loading trial info..."}
-          </p>
-          {trialDaysLeft !== null && trialDaysLeft <= 0 && (
-            <Link
-              href="/pricing"
-              className="inline-block mt-4 bg-accent hover:bg-primary text-white px-4 py-2 rounded-lg shadow"
-            >
-              Upgrade Now
-            </Link>
-          )}
-        </div>
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <Topbar />
 
-        {/* Quick Actions */}
-        <div className="grid md:grid-cols-3 gap-4">
-          <Link href="/calculator" className="bg-white p-6 rounded-xl shadow-soft hover:shadow-glow transition">
-            🧮 <span className="font-semibold">Run Calculator</span>
-          </Link>
-          <Link href="/tariff" className="bg-white p-6 rounded-xl shadow-soft hover:shadow-glow transition">
-            🔍 <span className="font-semibold">Tariff Lookup</span>
-          </Link>
-          <Link href="/manifest" className="bg-white p-6 rounded-xl shadow-soft hover:shadow-glow transition">
-            📑 <span className="font-semibold">Check Manifest</span>
-          </Link>
-        </div>
+        <main className="p-6 bg-gray-100 flex-1 overflow-y-auto space-y-6">
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className="md:w-3/5 grid grid-cols-2 gap-6 w-full">
+              <DashboardCards />
+            </div>
 
-        {/* Learning Hub Preview */}
-        <div className="bg-white rounded-xl p-6 shadow-soft">
-          <h2 className="text-lg font-bold text-primary mb-4">Learning Hub</h2>
-          <ul className="space-y-2 text-gray-700">
-            <li>📘 How to use DutyCalc effectively</li>
-            <li>📘 Understanding Tariff Codes</li>
-            <li>📘 Import duty basics in Nigeria</li>
-          </ul>
-          <Link
-            href="/learning-hub"
-            className="inline-block mt-4 text-primary font-semibold"
-          >
-            Explore more →
-          </Link>
-        </div>
-      </main>
+            <div className="md:w-2/5 bg-white shadow rounded-lg p-6 flex flex-col justify-center items-center">
+              <UserProfile />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <RecentActivities />
+            <ActivityLog />
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
